@@ -23,5 +23,21 @@
         ]
       }
     ]
+  },
+  {
+    "id": "2",
+    "name": "Zubeen Garg - The Legend",
+    "category": "Heritage Series",
+    "price": "₹799",
+    "description": "Zubeen Garg - The Legend T-Shirt Design",
+    "tag": "",
+    "variants": [
+      {
+        "name": "Variant",
+        "images": [
+          "/products/legend.png"
+        ]
+      }
+    ]
   }
 ]
