@@ -198,7 +198,7 @@ const App = () => {
                             <button
                               type="button"
                               onClick={(e) => { e.stopPropagation(); setProductSliderIndex(product.id, -1, images.length); }}
-                              className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors z-10"
+                              className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors z-20"
                               aria-label="Previous image"
                             >
                               <ChevronLeft size={24} />
@@ -206,12 +206,12 @@ const App = () => {
                             <button
                               type="button"
                               onClick={(e) => { e.stopPropagation(); setProductSliderIndex(product.id, 1, images.length); }}
-                              className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors z-10"
+                              className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors z-20"
                               aria-label="Next image"
                             >
                               <ChevronRight size={24} />
                             </button>
-                            <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 z-10">
+                            <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 z-20">
                               {images.map((_, i) => (
                                 <button
                                   key={i}
@@ -227,11 +227,11 @@ const App = () => {
                       </>
                     )}
                     {product.tag && (
-                      <div className="absolute top-6 left-6 bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100 z-10">
+                      <div className="absolute top-6 left-6 bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100 z-20">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-black">{product.tag}</span>
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center p-8 z-10">
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center p-8 z-[15] pointer-events-none group-hover:pointer-events-auto">
                       <button
                         onClick={() => handleWhatsAppOrder(product.name, currentVariant?.name)}
                         className="w-full bg-yellow-400 text-black py-4 rounded-xl font-black uppercase text-sm tracking-widest flex items-center justify-center gap-3 transform translate-y-4 group-hover:translate-y-0 transition-all"
