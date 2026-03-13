@@ -6,6 +6,7 @@ const App = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const categories = ['All', 'Heritage Series', 'Lyrical Anthems', 'Stadium Series'];
+  const categoryLabels = { 'All': 'ALL', 'Heritage Series': 'HERITAGE SERIES', 'Lyrical Anthems': 'LYRICAL ANTHEMS', 'Stadium Series': 'STADIUM SERIES' };
 
   const products = [
     {
@@ -15,7 +16,7 @@ const App = () => {
       price: "₹799",
       description: "Intricate floral hand-embroidery on heavy-weight 240 GSM organic cotton.",
       image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=800",
-      tag: "Crafted"
+      tag: "CRAFTED."
     },
     {
       id: 2,
@@ -24,7 +25,7 @@ const App = () => {
       price: "₹699",
       description: "Minimalist typography on a soft-washed desert sand base. A tribute to timeless rhythm.",
       image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&q=80&w=800",
-      tag: "Iconic"
+      tag: "ICONIC."
     },
     {
       id: 3,
@@ -41,7 +42,7 @@ const App = () => {
       price: "₹749",
       description: "Subtle Canary Yellow tee with a crown-and-seven minimalist icon.",
       image: "https://images.unsplash.com/photo-1554568218-0f1715e72254?auto=format&fit=crop&q=80&w=800",
-      tag: "Fan Gear"
+      tag: "FAN GEAR"
     },
     {
       id: 5,
@@ -71,7 +72,7 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] font-sans text-[#1A1A1A]">
+    <div className="min-h-screen bg-white font-sans text-[#1A1A1A]">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,900;1,900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
         .font-display { font-family: 'Playfair Display', serif; }
@@ -83,18 +84,18 @@ const App = () => {
       <nav className="fixed w-full bg-white/90 backdrop-blur-xl z-50 border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg shadow-yellow-200">
-              <Star size={18} fill="#000" />
+            <div className="w-10 h-10 rounded-full flex items-center justify-center shadow-md" style={{ backgroundColor: '#E0A600' }}>
+              <Star size={18} fill="#fff" stroke="#fff" />
             </div>
             <div className="flex flex-col">
-              <span className="text-2xl font-display italic font-black leading-none tracking-tight">Starfruit Tees</span>
-              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">House of Starfruit</span>
+              <span className="text-2xl font-display font-black leading-none tracking-tight text-black">Starfruit Tees</span>
+              <span className="text-[9px] font-medium text-[#555] uppercase tracking-[0.2em] mt-1">House of Starfruit</span>
             </div>
           </div>
           
-          <div className="hidden md:flex items-center gap-10 font-bold text-xs uppercase tracking-widest text-slate-500">
-            <a href="#shop" className="hover:text-yellow-600 transition-colors">Drops</a>
-            <a href="#about" className="hover:text-yellow-600 transition-colors">The House</a>
+          <div className="hidden md:flex items-center gap-10 font-medium text-xs uppercase tracking-widest text-[#333]">
+            <a href="#shop" className="hover:text-black transition-colors">DROPS</a>
+            <a href="#about" className="hover:text-black transition-colors">THE HOUSE</a>
             <button 
               onClick={() => window.open('https://wa.me/910000000000', '_blank')}
               className="bg-black text-white px-7 py-3 rounded-full hover:bg-yellow-400 hover:text-black transition-all duration-300 flex items-center gap-2"
@@ -118,34 +119,28 @@ const App = () => {
       </nav>
 
       {/* Hero Section */}
-      <header className="relative pt-40 pb-24 px-6 overflow-hidden">
+      <header className="relative pt-40 pb-24 px-6 overflow-hidden" style={{ background: 'radial-gradient(ellipse 80% 50% at 100% 100%, rgba(224,166,0,0.08), transparent), #ffffff' }}>
         <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7 z-10">
-            <div className="flex items-center gap-2 mb-6">
-              <div className="h-[2px] w-8 bg-yellow-400"></div>
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-slate-400">
-                Crafted in Bangalore — Inspired by Heritage
-              </span>
-            </div>
-            <h1 className="text-6xl md:text-8xl font-display italic font-black leading-[0.9] mb-8">
+            <h1 className="text-6xl md:text-8xl font-display font-black leading-[0.9] mb-6">
               Culture <br />
-              <span className="text-yellow-500">Reimagined.</span>
+              <span className="italic" style={{ color: '#E0A600' }}>Reimagined.</span>
             </h1>
-            <p className="text-lg md:text-xl text-slate-500 mb-10 max-w-xl leading-relaxed">
+            <p className="text-lg md:text-xl text-[#555] mb-10 max-w-xl leading-relaxed font-normal">
               Premium apparel for the modern tribe. Bridging ancestral motifs with the electric energy of the contemporary world.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 items-center">
-              <a href="#shop" className="w-full sm:w-auto bg-black text-white px-10 py-5 rounded-2xl font-bold text-lg hover:shadow-2xl hover:shadow-yellow-200 transition-all flex items-center justify-center gap-3">
-                Explore The Drop <ArrowRight size={20} />
+              <a href="#shop" className="w-full sm:w-auto bg-black text-white px-10 py-5 rounded-full font-semibold text-base uppercase tracking-wide hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+                Explore The Drop <ArrowRight size={18} strokeWidth={2.5} />
               </a>
               <div className="flex items-center gap-3">
                 <div className="flex -space-x-3">
                   {[1,2,3].map(i => (
-                    <img key={i} src={`https://i.pravatar.cc/100?img=${i+20}`} className="w-12 h-12 rounded-full border-4 border-white" alt="User" />
+                    <img key={i} src={`https://i.pravatar.cc/100?img=${i+20}`} className="w-12 h-12 rounded-full border-4 border-white object-cover" alt="Tribe member" />
                   ))}
                 </div>
-                <div className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                  <span className="text-black block">Trusted by</span> 800+ of the Tribe
+                <div className="text-xs font-medium uppercase tracking-wider text-[#555]">
+                  <span className="text-black font-semibold block">Trusted by</span> 800+ of the Tribe
                 </div>
               </div>
             </div>
@@ -169,21 +164,21 @@ const App = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
             <div>
-              <h2 className="text-4xl md:text-5xl font-display italic font-black mb-4 uppercase">Latest Releases</h2>
-              <p className="text-slate-500 font-medium">Limited batches. Iconic silhouettes.</p>
+              <h2 className="text-4xl md:text-5xl font-display font-black mb-4 uppercase text-black tracking-tight">Latest Releases</h2>
+              <p className="text-[#555] font-normal">Limited batches. Iconic silhouettes.</p>
             </div>
             <div className="flex flex-wrap gap-2">
               {categories.map(cat => (
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all ${
+                  className={`px-6 py-2.5 rounded-full text-xs font-semibold uppercase tracking-widest transition-all ${
                     activeCategory === cat 
                       ? 'bg-black text-white' 
-                      : 'bg-slate-100 text-slate-400 hover:bg-yellow-400 hover:text-black'
+                      : 'bg-[#E0E0E0] text-[#333] hover:bg-[#d0d0d0]'
                   }`}
                 >
-                  {cat}
+                  {categoryLabels[cat]}
                 </button>
               ))}
             </div>
@@ -192,15 +187,15 @@ const App = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {filteredProducts.map(product => (
               <div key={product.id} className="group relative">
-                <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden bg-slate-100 mb-6">
+                <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#F5F5F5] mb-6 shadow-sm">
                   <img 
                     src={product.image} 
                     alt={product.name}
                     className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                   />
                   {product.tag && (
-                    <div className="absolute top-6 left-6 bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-sm">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-black">{product.tag}</span>
+                    <div className="absolute top-6 left-6 bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-black">{product.tag}</span>
                     </div>
                   )}
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center p-8">
@@ -275,12 +270,12 @@ const App = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-20">
             <div className="lg:col-span-5">
                <div className="flex items-center gap-3 mb-8">
-                  <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg">
-                    <Star size={20} fill="#000" />
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center shadow-md" style={{ backgroundColor: '#E0A600' }}>
+                    <Star size={20} fill="#fff" stroke="#fff" />
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-3xl font-display italic font-black leading-none tracking-tight">Starfruit Tees</span>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">House of Starfruit</span>
+                    <span className="text-3xl font-display font-black leading-none tracking-tight text-black">Starfruit Tees</span>
+                    <span className="text-[10px] font-medium text-[#555] uppercase tracking-[0.2em] mt-1">House of Starfruit</span>
                   </div>
                </div>
                <p className="text-slate-500 text-lg mb-8 leading-relaxed max-w-sm">
