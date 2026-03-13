@@ -58,7 +58,7 @@ export function loadProductsFromJSON(jsonString) {
 
 export async function loadProductsForSite() {
   try {
-    const res = await fetch('/products.json');
+    const res = await fetch(`/products.json?v=${import.meta.env.VITE_APP_VERSION || '2'}`);
     if (res.ok) {
       const data = await res.json();
       return Array.isArray(data) ? data : null;
