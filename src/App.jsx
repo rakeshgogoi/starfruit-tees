@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Instagram, MessageCircle, MapPin, Star, ChevronRight, ChevronLeft, Menu, X, ArrowRight } from 'lucide-react';
 import { loadProductsForSite, DEFAULT_PRODUCTS } from './data/products';
+import landingImage from './assets/landing.png';
 
 const App = () => {
   const [products, setProducts] = useState(DEFAULT_PRODUCTS);
@@ -125,7 +126,7 @@ const App = () => {
             <div className="relative group">
               <div className="absolute -inset-1 bg-gradient-to-tr from-yellow-400 to-red-500 rounded-2xl sm:rounded-[2.5rem] blur opacity-20 group-hover:opacity-40 transition duration-1000" />
               <img 
-                src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=1000" 
+                src={landingImage} 
                 alt="Starfruit Collection"
                 className="relative rounded-2xl sm:rounded-[2rem] shadow-2xl z-10 w-full object-cover aspect-[4/5]"
               />

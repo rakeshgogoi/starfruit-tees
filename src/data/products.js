@@ -14,7 +14,6 @@ export const DEFAULT_PRODUCTS = [
         images: [
           '/products/maya-shirt-black.png',
           '/products/maya-shirt-black-splash.png',
-          '/products/maya-shirt-black-rounded.png',
         ],
       },
       {
