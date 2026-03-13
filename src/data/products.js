@@ -3,26 +3,24 @@ const STORAGE_KEY = 'starfruit_products';
 export const DEFAULT_PRODUCTS = [
   {
     id: '1',
-    name: 'Maya',
+    name: 'Maya Black',
     category: 'Heritage Series',
     price: '₹799',
-    description: 'Premium 240 GSM organic cotton. Iconic design in Black or White. Limited batches.',
-    tag: 'CRAFTED.',
+    description: 'Premium 240 GSM organic cotton. Iconic design in Black. Limited batches.',
+    tag: '',
     variants: [
-      {
-        name: 'Black',
-        images: [
-          '/products/maya-shirt-black.png',
-          '/products/maya-shirt-black-splash.png',
-        ],
-      },
-      {
-        name: 'White',
-        images: [
-          '/products/maya-shirt-white.png',
-          '/products/maya-shirt-white-splash.png',
-        ],
-      },
+      { name: 'Black', images: ['/products/maya-shirt-black.png', '/products/maya-shirt-black-splash.png'] },
+    ],
+  },
+  {
+    id: '1b',
+    name: 'Maya White',
+    category: 'Heritage Series',
+    price: '₹799',
+    description: 'Premium 240 GSM organic cotton. Iconic design in White. Limited batches.',
+    tag: '',
+    variants: [
+      { name: 'White', images: ['/products/maya-shirt-white.png', '/products/maya-shirt-white-splash.png'] },
     ],
   },
 ];
