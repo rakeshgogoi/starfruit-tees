@@ -1,42 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Instagram, MessageCircle, MapPin, Star, ChevronRight, ChevronLeft, Menu, X, ArrowRight } from 'lucide-react';
+import { loadProductsForSite, DEFAULT_PRODUCTS } from './data/products';
 
 const App = () => {
+  const [products, setProducts] = useState(DEFAULT_PRODUCTS);
   const [activeCategory, setActiveCategory] = useState('All');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [sliderIndex, setSliderIndex] = useState({});
   const [selectedVariant, setSelectedVariant] = useState({});
 
+  useEffect(() => {
+    loadProductsForSite().then((loaded) => {
+      if (loaded && loaded.length > 0) setProducts(loaded);
+    });
+  }, []);
+
   const categories = ['All', 'Heritage Series', 'Lyrical Anthems', 'Stadium Series'];
   const categoryLabels = { 'All': 'ALL', 'Heritage Series': 'HERITAGE SERIES', 'Lyrical Anthems': 'LYRICAL ANTHEMS', 'Stadium Series': 'STADIUM SERIES' };
-
-  const products = [
-    {
-      id: 1,
-      name: "Maya",
-      category: "Heritage Series",
-      price: "₹799",
-      description: "Premium 240 GSM organic cotton. Iconic design in Black or White. Limited batches.",
-      tag: "CRAFTED.",
-      variants: [
-        {
-          name: "Black",
-          images: [
-            "/products/maya-shirt-black.png",
-            "/products/maya-shirt-black-splash.png",
-            "/products/maya-shirt-black-rounded.png",
-          ],
-        },
-        {
-          name: "White",
-          images: [
-            "/products/maya-shirt-white.png",
-            "/products/maya-shirt-white-splash.png",
-          ],
-        },
-      ],
-    },
-  ];
 
   const filteredProducts = activeCategory === 'All' 
     ? products 
@@ -88,6 +69,7 @@ const App = () => {
           <div className="hidden md:flex items-center gap-10 font-medium text-xs uppercase tracking-widest text-[#333]">
             <a href="#shop" className="hover:text-black transition-colors">DROPS</a>
             <a href="#about" className="hover:text-black transition-colors">THE HOUSE</a>
+            <Link to="/admin" className="hover:text-black transition-colors">ADMIN</Link>
             <button 
               onClick={() => window.open('https://wa.me/918720951721', '_blank')}
               className="bg-black text-white px-7 py-3 rounded-full hover:bg-yellow-400 hover:text-black transition-all duration-300 flex items-center gap-2"
@@ -106,6 +88,7 @@ const App = () => {
           <div className="md:hidden bg-white border-b border-slate-100 p-6 flex flex-col gap-4">
             <a href="#shop" onClick={() => setIsMenuOpen(false)} className="font-bold uppercase tracking-widest text-xs">Drops</a>
             <a href="#about" onClick={() => setIsMenuOpen(false)} className="font-bold uppercase tracking-widest text-xs">The House</a>
+            <Link to="/admin" onClick={() => setIsMenuOpen(false)} className="font-bold uppercase tracking-widest text-xs">Admin</Link>
           </div>
         )}
       </nav>

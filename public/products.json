@@ -1,0 +1,27 @@
+[
+  {
+    "id": "1",
+    "name": "Maya",
+    "category": "Heritage Series",
+    "price": "₹799",
+    "description": "Premium 240 GSM organic cotton. Iconic design in Black or White. Limited batches.",
+    "tag": "CRAFTED.",
+    "variants": [
+      {
+        "name": "Black",
+        "images": [
+          "/products/maya-shirt-black.png",
+          "/products/maya-shirt-black-splash.png",
+          "/products/maya-shirt-black-rounded.png"
+        ]
+      },
+      {
+        "name": "White",
+        "images": [
+          "/products/maya-shirt-white.png",
+          "/products/maya-shirt-white-splash.png"
+        ]
+      }
+    ]
+  }
+]
