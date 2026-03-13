@@ -15,16 +15,16 @@ export default function Admin() {
   const [products, setProducts] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(createEmptyProduct());
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState({ text: '', type: 'info' });
 
   useEffect(() => {
     const stored = loadProductsFromStorage();
     setProducts(stored || [...DEFAULT_PRODUCTS]);
   }, []);
 
-  const showMessage = (text) => {
-    setMessage(text);
-    setTimeout(() => setMessage(''), 3000);
+  const showMessage = (text, type = 'info') => {
+    setMessage({ text, type });
+    setTimeout(() => setMessage({ text: '', type: 'info' }), 4000);
   };
 
   const loadForm = (product) => {
@@ -57,13 +57,11 @@ export default function Admin() {
     });
   };
 
-  const updateVariantImage = (vIndex, imgIndex, value) => {
+  const setVariantImagesFromText = (vIndex, text) => {
+    const lines = text.split('\n').map((s) => s.trim()).filter(Boolean);
     setForm((prev) => {
       const next = [...(prev.variants || [])];
-      const images = [...(next[vIndex]?.images || [])];
-      images[imgIndex] = value;
-      if (imgIndex === images.length - 1 && value) images.push('');
-      next[vIndex] = { ...next[vIndex], images };
+      next[vIndex] = { ...next[vIndex], images: lines.length ? lines : [''] };
       return { ...prev, variants: next };
     });
   };
@@ -83,44 +81,22 @@ export default function Admin() {
     }));
   };
 
-  const addImageToVariant = (vIndex) => {
-    setForm((prev) => {
-      const next = [...(prev.variants || [])];
-      const images = [...(next[vIndex]?.images || []), ''];
-      next[vIndex] = { ...next[vIndex], images };
-      return { ...prev, variants: next };
-    });
-  };
-
-  const removeImageFromVariant = (vIndex, imgIndex) => {
-    setForm((prev) => {
-      const next = [...(prev.variants || [])];
-      const current = next[vIndex]?.images || [];
-      const images = current.filter((_, i) => i !== imgIndex);
-      if (images.length === 0) images.push('');
-      next[vIndex] = { ...next[vIndex], images };
-      return { ...prev, variants: next };
-    });
-  };
-
   const saveProduct = () => {
     const normalized = normalizeProduct(form, products);
     const exists = products.some((p) => String(p.id) === String(normalized.id));
-    let next;
-    if (exists) {
-      next = products.map((p) => (String(p.id) === String(normalized.id) ? normalized : p));
-    } else {
-      next = [...products, normalized];
-    }
+    const next = exists
+      ? products.map((p) => (String(p.id) === String(normalized.id) ? normalized : p))
+      : [...products, normalized];
     setProducts(next);
     saveProductsToStorage(next);
     setEditingId(null);
     setForm(createEmptyProduct());
-    showMessage('Product saved. Export JSON and add to public/products.json to update the live site.');
+    showMessage(`"${normalized.name}" saved. Use "Publish to site" below to update the live store.`, 'success');
   };
 
-  const deleteProduct = (id) => {
-    if (!confirm('Delete this product?')) return;
+  const deleteProduct = (id, e) => {
+    e?.stopPropagation();
+    if (!confirm('Delete this product? This cannot be undone.')) return;
     const next = products.filter((p) => String(p.id) !== String(id));
     setProducts(next);
     saveProductsToStorage(next);
@@ -128,7 +104,7 @@ export default function Admin() {
       setEditingId(null);
       setForm(createEmptyProduct());
     }
-    showMessage('Product deleted.');
+    showMessage('Product deleted.', 'success');
   };
 
   const startNew = () => {
@@ -145,7 +121,7 @@ export default function Admin() {
     a.download = 'products.json';
     a.click();
     URL.revokeObjectURL(url);
-    showMessage('Exported products.json. Save it as public/products.json and redeploy.');
+    showMessage('Downloaded products.json. Save it as public/products.json in your repo and redeploy.', 'success');
   };
 
   const handleImport = (e) => {
@@ -159,9 +135,9 @@ export default function Admin() {
         saveProductsToStorage(data);
         setEditingId(null);
         setForm(createEmptyProduct());
-        showMessage('Products imported.');
+        showMessage(`${data.length} product(s) imported.`, 'success');
       } else {
-        showMessage('Invalid JSON.');
+        showMessage('Invalid JSON file.', 'error');
       }
     };
     reader.readAsText(file);
@@ -169,212 +145,266 @@ export default function Admin() {
   };
 
   const resetToDefault = () => {
-    if (!confirm('Replace all products with default? This cannot be undone.')) return;
+    if (!confirm('Replace all products with the default list? This cannot be undone.')) return;
     setProducts([...DEFAULT_PRODUCTS]);
     saveProductsToStorage(DEFAULT_PRODUCTS);
     setEditingId(null);
     setForm(createEmptyProduct());
-    showMessage('Reset to default products.');
+    showMessage('Reset to default products.', 'success');
+  };
+
+  const firstImage = (product) => {
+    const v = product.variants?.[0];
+    return (v?.images && v.images[0]) || '';
   };
 
   const isEditing = editingId !== null;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans">
+    <div className="min-h-screen bg-slate-100 text-slate-800 font-sans">
       <style>{`
         .font-display { font-family: 'Playfair Display', serif; }
-        .font-sans { font-family: system-ui, sans-serif; }
       `}</style>
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Link to="/" className="text-slate-600 hover:text-black">← Back to site</Link>
-            <h1 className="text-xl font-display font-black">Admin — Products</h1>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={exportJSON}
-              className="px-4 py-2 rounded-lg bg-slate-800 text-white text-sm font-medium hover:bg-slate-700"
-            >
-              Export JSON
-            </button>
-            <label className="px-4 py-2 rounded-lg bg-slate-200 text-slate-800 text-sm font-medium hover:bg-slate-300 cursor-pointer">
-              Import JSON
-              <input type="file" accept=".json" className="hidden" onChange={handleImport} />
-            </label>
-            <button
-              type="button"
-              onClick={resetToDefault}
-              className="px-4 py-2 rounded-lg border border-slate-300 text-slate-600 text-sm hover:bg-slate-100"
-            >
-              Reset to default
-            </button>
+
+      {/* Header */}
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-20 shadow-sm">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-4">
+              <Link to="/" className="text-slate-500 hover:text-black text-sm font-medium">← Store</Link>
+              <h1 className="text-lg font-display font-black">Product manager</h1>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={exportJSON}
+                className="px-4 py-2 rounded-lg bg-black text-white text-sm font-medium hover:bg-slate-800"
+              >
+                Publish to site
+              </button>
+              <label className="px-4 py-2 rounded-lg bg-slate-200 text-slate-800 text-sm font-medium hover:bg-slate-300 cursor-pointer">
+                Import
+                <input type="file" accept=".json" className="hidden" onChange={handleImport} />
+              </label>
+              <button
+                type="button"
+                onClick={resetToDefault}
+                className="px-4 py-2 rounded-lg border border-slate-300 text-slate-600 text-sm hover:bg-slate-100"
+              >
+                Reset
+              </button>
+            </div>
           </div>
         </div>
-        {message && (
-          <div className="max-w-4xl mx-auto px-6 pb-2 text-sm text-amber-700 bg-amber-50 border-b border-amber-200">
-            {message}
+        {message.text && (
+          <div className={`max-w-5xl mx-auto px-4 sm:px-6 py-2 text-sm ${
+            message.type === 'success' ? 'bg-green-50 text-green-800' : message.type === 'error' ? 'bg-red-50 text-red-800' : 'bg-amber-50 text-amber-800'
+          }`}>
+            {message.text}
           </div>
         )}
       </header>
 
-      <main className="max-w-4xl mx-auto px-6 py-8">
-        <div className="flex flex-col md:flex-row gap-8">
-          <section className="md:w-56 flex-shrink-0">
-            <button
-              type="button"
-              onClick={startNew}
-              className="w-full py-2 rounded-lg bg-black text-white text-sm font-medium mb-4"
-            >
-              + Add product
-            </button>
-            <ul className="space-y-1">
-              {products.map((p) => (
-                <li key={p.id}>
-                  <button
-                    type="button"
-                    onClick={() => loadForm(p)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-sm ${editingId === p.id ? 'bg-slate-200 font-medium' : 'hover:bg-slate-100'}`}
-                  >
-                    {p.name || 'Untitled'} — {p.price}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </section>
-
-          <section className="flex-1 min-w-0">
-            {!isEditing ? (
-              <p className="text-slate-500 text-sm">Select a product to edit or add a new one.</p>
-            ) : (
-              <form
-                className="space-y-6 bg-white rounded-xl border border-slate-200 p-6"
-                onSubmit={(e) => { e.preventDefault(); saveProduct(); }}
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+        {!isEditing ? (
+          /* Product list view */
+          <>
+            <div className="flex items-center justify-between mb-6">
+              <p className="text-slate-600 text-sm">Add or edit products. Use “Publish to site” to update the live store.</p>
+              <button
+                type="button"
+                onClick={startNew}
+                className="px-5 py-2.5 rounded-xl bg-black text-white text-sm font-semibold hover:bg-slate-800 shadow-md"
               >
-                <div className="grid gap-4 sm:grid-cols-2">
+                + Add product
+              </button>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {products.map((p) => (
+                <div
+                  key={p.id}
+                  onClick={() => loadForm(p)}
+                  className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md hover:border-slate-300 cursor-pointer transition-all"
+                >
+                  <div className="aspect-[3/4] bg-slate-100 relative">
+                    {firstImage(p) ? (
+                      <img src={firstImage(p)} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-slate-400 text-sm">No image</div>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-semibold text-slate-900 truncate">{p.name || 'Untitled'}</h3>
+                    <p className="text-slate-500 text-sm mt-0.5">{p.price}</p>
+                    <div className="mt-3 flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => loadForm(p)}
+                        className="flex-1 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => deleteProduct(p.id, e)}
+                        className="px-3 py-1.5 rounded-lg border border-red-200 text-red-600 text-sm hover:bg-red-50"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          /* Edit form */
+          <div className="space-y-8">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => { setEditingId(null); setForm(createEmptyProduct()); }}
+                className="text-slate-500 hover:text-black text-sm font-medium"
+              >
+                ← Back to list
+              </button>
+              <span className="text-slate-400">/</span>
+              <span className="text-slate-700 font-medium">{form.name || 'New product'}</span>
+            </div>
+
+            <form
+              className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
+              onSubmit={(e) => { e.preventDefault(); saveProduct(); }}
+            >
+              {/* Basic info */}
+              <div className="p-6 sm:p-8 border-b border-slate-100">
+                <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">Basic info</h2>
+                <div className="grid gap-5 sm:grid-cols-2">
                   <div>
-                    <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Name</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Product name</label>
                     <input
                       type="text"
                       value={form.name}
                       onChange={(e) => updateForm('name', e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg"
+                      className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-400 focus:border-slate-400"
                       placeholder="e.g. Maya"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Price</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Price</label>
                     <input
                       type="text"
                       value={form.price}
                       onChange={(e) => updateForm('price', e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg"
+                      className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-400 focus:border-slate-400"
                       placeholder="e.g. ₹799"
                     />
                   </div>
                 </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Category</label>
+                <div className="mt-5">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
                   <select
                     value={form.category}
                     onChange={(e) => updateForm('category', e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg"
+                    className="w-full max-w-xs px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-400"
                   >
                     {CATEGORIES.map((c) => (
                       <option key={c} value={c}>{c}</option>
                     ))}
                   </select>
                 </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Tag (e.g. CRAFTED.)</label>
+                <div className="mt-5">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Tag (optional)</label>
                   <input
                     type="text"
                     value={form.tag}
                     onChange={(e) => updateForm('tag', e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg"
-                    placeholder="Optional"
+                    className="w-full max-w-xs px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-400"
+                    placeholder="e.g. CRAFTED."
                   />
                 </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Description</label>
+                <div className="mt-5">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
                   <textarea
                     value={form.description}
                     onChange={(e) => updateForm('description', e.target.value)}
                     rows={3}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg"
-                    placeholder="Product description"
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-400 focus:border-slate-400"
+                    placeholder="Short product description for the store."
                   />
                 </div>
+              </div>
 
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="block text-xs font-medium text-slate-500 uppercase tracking-wide">Variants (name + image URLs)</label>
-                    <button type="button" onClick={addVariant} className="text-sm text-slate-600 hover:text-black">+ Variant</button>
-                  </div>
-                  <div className="space-y-6">
-                    {(form.variants || []).map((v, vIndex) => (
-                      <div key={vIndex} className="border border-slate-200 rounded-lg p-4 space-y-3">
-                        <div className="flex gap-2 items-center">
-                          <input
-                            type="text"
-                            value={v.name}
-                            onChange={(e) => updateVariant(vIndex, 'name', e.target.value)}
-                            className="flex-1 px-3 py-2 border border-slate-200 rounded-lg"
-                            placeholder="Variant name (e.g. Black)"
-                          />
-                          <button type="button" onClick={() => removeVariant(vIndex)} className="text-red-600 text-sm">Remove</button>
-                        </div>
-                        <div className="space-y-2">
-                          <span className="text-xs text-slate-500">Image URLs or paths (e.g. /products/photo.png)</span>
-                          {(v.images || []).map((url, imgIndex) => (
-                            <div key={imgIndex} className="flex gap-2">
-                              <input
-                                type="text"
-                                value={url}
-                                onChange={(e) => updateVariantImage(vIndex, imgIndex, e.target.value)}
-                                className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm"
-                                placeholder="/products/image.png"
-                              />
-                              <button type="button" onClick={() => removeImageFromVariant(vIndex, imgIndex)} className="text-slate-400 hover:text-red-600">×</button>
-                            </div>
-                          ))}
-                          <button type="button" onClick={() => addImageToVariant(vIndex)} className="text-sm text-slate-600 hover:text-black">+ Image</button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-2 pt-2">
-                  <button type="submit" className="px-6 py-2 rounded-lg bg-black text-white font-medium">
-                    Save product
+              {/* Variants & images */}
+              <div className="p-6 sm:p-8 border-b border-slate-100">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Variants & images</h2>
+                  <button type="button" onClick={addVariant} className="text-sm font-medium text-slate-600 hover:text-black">
+                    + Add variant
                   </button>
+                </div>
+                <p className="text-slate-500 text-sm mb-4">
+                  Each variant (e.g. Black, White) can have multiple images. Use paths like <code className="bg-slate-100 px-1 rounded">/products/photo.png</code>. Add image files to <code className="bg-slate-100 px-1 rounded">public/products/</code> in your project.
+                </p>
+                <div className="space-y-6">
+                  {(form.variants || []).map((v, vIndex) => (
+                    <div key={vIndex} className="rounded-xl border border-slate-200 p-5 bg-slate-50/50">
+                      <div className="flex gap-3 items-center mb-3">
+                        <input
+                          type="text"
+                          value={v.name}
+                          onChange={(e) => updateVariant(vIndex, 'name', e.target.value)}
+                          className="flex-1 px-4 py-2 border border-slate-200 rounded-lg bg-white font-medium"
+                          placeholder="Variant name (e.g. Black)"
+                        />
+                        <button type="button" onClick={() => removeVariant(vIndex)} className="text-slate-400 hover:text-red-600 text-sm font-medium">
+                          Remove variant
+                        </button>
+                      </div>
+                      <label className="block text-sm text-slate-600 mb-1">Image paths (one per line)</label>
+                      <textarea
+                        value={(v.images || []).filter(Boolean).join('\n')}
+                        onChange={(e) => setVariantImagesFromText(vIndex, e.target.value)}
+                        rows={3}
+                        className="w-full px-4 py-2 border border-slate-200 rounded-lg bg-white text-sm font-mono focus:ring-2 focus:ring-slate-400"
+                        placeholder="/products/image1.png (one path per line)"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="p-6 sm:p-8 bg-slate-50 flex flex-wrap gap-3">
+                <button type="submit" className="px-6 py-2.5 rounded-xl bg-black text-white font-semibold hover:bg-slate-800">
+                  Save product
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setEditingId(null); setForm(createEmptyProduct()); }}
+                  className="px-6 py-2.5 rounded-xl border border-slate-300 text-slate-600 font-medium hover:bg-slate-100"
+                >
+                  Cancel
+                </button>
+                {products.some((p) => String(p.id) === String(form.id)) && (
                   <button
                     type="button"
-                    onClick={() => { setEditingId(null); setForm(createEmptyProduct()); }}
-                    className="px-6 py-2 rounded-lg border border-slate-300 text-slate-600"
+                    onClick={() => deleteProduct(form.id)}
+                    className="px-6 py-2.5 rounded-xl border border-red-200 text-red-600 font-medium hover:bg-red-50"
                   >
-                    Cancel
+                    Delete product
                   </button>
-                  {products.some((p) => String(p.id) === String(form.id)) && (
-                    <button
-                      type="button"
-                      onClick={() => deleteProduct(form.id)}
-                      className="px-6 py-2 rounded-lg border border-red-300 text-red-600 hover:bg-red-50"
-                    >
-                      Delete
-                    </button>
-                  )}
-                </div>
-              </form>
-            )}
-          </section>
-        </div>
+                )}
+              </div>
+            </form>
+          </div>
+        )}
 
-        <p className="mt-8 text-slate-500 text-sm">
-          To update the live site: Export JSON, save the file as <code className="bg-slate-200 px-1 rounded">public/products.json</code> in your repo, then commit and deploy.
-        </p>
+        {!isEditing && (
+          <p className="mt-8 text-slate-500 text-sm">
+            After editing, click <strong>Publish to site</strong> to download <code className="bg-slate-200 px-1 rounded">products.json</code>. Save it as <code className="bg-slate-200 px-1 rounded">public/products.json</code> in your repo, then commit and deploy.
+          </p>
+        )}
       </main>
     </div>
   );
