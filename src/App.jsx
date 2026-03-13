@@ -183,7 +183,7 @@ const App = () => {
               const currentVariant = product.variants ? product.variants[selectedVariant[product.id] ?? 0] : null;
 
               return (
-                <div key={product.id} className="group relative">
+                <div key={product.id} className="relative">
                   <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#F5F5F5] mb-6 shadow-sm">
                     {images.length > 0 && (
                       <>
@@ -231,14 +231,6 @@ const App = () => {
                         <span className="text-[10px] font-bold uppercase tracking-widest text-black">{product.tag}</span>
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center p-8 z-[15] pointer-events-none group-hover:pointer-events-auto">
-                      <button
-                        onClick={() => handleWhatsAppOrder(product.name, currentVariant?.name)}
-                        className="w-full bg-yellow-400 text-black py-4 rounded-xl font-black uppercase text-sm tracking-widest flex items-center justify-center gap-3 transform translate-y-4 group-hover:translate-y-0 transition-all"
-                      >
-                        <MessageCircle size={18} /> Inquire Now
-                      </button>
-                    </div>
                   </div>
                   {product.variants && product.variants.length > 1 && (
                     <div className="flex gap-2 mb-4">
@@ -267,6 +259,13 @@ const App = () => {
                       <span className="text-lg font-bold text-slate-400">{product.price}</span>
                     </div>
                     <p className="text-slate-500 text-sm leading-relaxed mb-4">{product.description}</p>
+                    <button
+                      type="button"
+                      onClick={() => handleWhatsAppOrder(product.name, currentVariant?.name)}
+                      className="w-full bg-black text-white py-3.5 rounded-full font-semibold text-sm uppercase tracking-wide flex items-center justify-center gap-2 hover:opacity-90 transition-opacity mb-4"
+                    >
+                      <MessageCircle size={18} /> Inquire Now
+                    </button>
                     <div className="flex items-center gap-2 text-[10px] font-black text-slate-300 uppercase tracking-widest">
                       <MapPin size={10} className="text-yellow-500" /> Bengaluru Hub
                     </div>
