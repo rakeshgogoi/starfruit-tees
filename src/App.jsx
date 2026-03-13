@@ -238,10 +238,8 @@ const App = () => {
                     </div>
                   )}
                   <div className="px-0.5 sm:px-2">
-                    <div className="flex justify-between items-start gap-1 mb-1 sm:mb-2">
-                      <h3 className="text-sm sm:text-lg md:text-xl lg:text-2xl font-display font-black truncate min-w-0">{product.name}</h3>
-                      <span className="text-xs sm:text-sm md:text-lg font-bold text-slate-400 flex-shrink-0">{product.price}</span>
-                    </div>
+                    <h3 className="text-xs sm:text-sm md:text-base font-display font-black leading-tight mb-0.5 sm:mb-1 line-clamp-3">{product.name}</h3>
+                    <p className="text-xs sm:text-sm font-bold text-slate-400 mb-1 sm:mb-2">{product.price}</p>
                     <p className="text-slate-500 text-[10px] sm:text-xs md:text-sm leading-relaxed mb-2 sm:mb-3 line-clamp-2 md:line-clamp-none">{product.description}</p>
                     <button
                       type="button"
