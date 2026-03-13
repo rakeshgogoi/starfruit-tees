@@ -15,7 +15,7 @@ const App = () => {
       category: "Heritage Series",
       price: "₹799",
       description: "Intricate floral hand-embroidery on heavy-weight 240 GSM organic cotton.",
-      image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=800",
+      image: "/products/maya-shirt-black.png",
       tag: "CRAFTED."
     },
     {
@@ -24,7 +24,7 @@ const App = () => {
       category: "Lyrical Anthems",
       price: "₹699",
       description: "Minimalist typography on a soft-washed desert sand base. A tribute to timeless rhythm.",
-      image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&q=80&w=800",
+      image: "/products/maya-shirt-black-splash.png",
       tag: "ICONIC."
     },
     {
@@ -33,7 +33,7 @@ const App = () => {
       category: "Heritage Series",
       price: "₹849",
       description: "Geometric vector art inspired by traditional silhouettes. A nod to the origin.",
-      image: "https://images.unsplash.com/photo-1503342394128-c104d54dba01?auto=format&fit=crop&q=80&w=800",
+      image: "/products/maya-shirt-black-rounded.png",
     },
     {
       id: 4,
@@ -41,7 +41,7 @@ const App = () => {
       category: "Stadium Series",
       price: "₹749",
       description: "Subtle Canary Yellow tee with a crown-and-seven minimalist icon.",
-      image: "https://images.unsplash.com/photo-1554568218-0f1715e72254?auto=format&fit=crop&q=80&w=800",
+      image: "/products/maya-shirt-white-splash.png",
       tag: "FAN GEAR"
     },
     {
@@ -50,7 +50,7 @@ const App = () => {
       category: "Lyrical Anthems",
       price: "₹899",
       description: "High-density puff print honoring the ultimate classic. Vintage fit.",
-      image: "https://images.unsplash.com/photo-1583744946564-b52ac1c389c8?auto=format&fit=crop&q=80&w=800",
+      image: "/products/maya-shirt-white.png",
     },
     {
       id: 6,
@@ -58,7 +58,7 @@ const App = () => {
       category: "Stadium Series",
       price: "₹749",
       description: "Deep red and black accents for the true Bangalore loyalist.",
-      image: "https://images.unsplash.com/photo-1562157873-818bc0726f68?auto=format&fit=crop&q=80&w=800",
+      image: "/products/maya-shirt-black.png",
     }
   ];
 
