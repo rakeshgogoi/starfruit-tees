@@ -4,6 +4,7 @@ import {
   loadProductsFromStorage,
   saveProductsToStorage,
   loadProductsFromJSON,
+  loadProductsForSite,
   createEmptyProduct,
   normalizeProduct,
   DEFAULT_PRODUCTS,
@@ -79,8 +80,9 @@ export default function Admin() {
   }, []);
 
   useEffect(() => {
-    const stored = loadProductsFromStorage();
-    setProducts(stored || [...DEFAULT_PRODUCTS]);
+    loadProductsForSite().then((loaded) => {
+      setProducts(loaded && loaded.length > 0 ? loaded : loadProductsFromStorage() || [...DEFAULT_PRODUCTS]);
+    });
   }, []);
 
   const showMessage = (text, type = 'info') => {
