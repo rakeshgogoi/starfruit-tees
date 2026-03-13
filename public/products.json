@@ -34,7 +34,8 @@
       {
         "name": "Variant",
         "images": [
-          "/products/legend.png"
+          "/products/legend.png",
+          "/products/legend-white.png"
         ]
       }
     ]
