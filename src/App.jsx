@@ -210,11 +210,6 @@ const App = () => {
                         )}
                       </>
                     )}
-                    {product.tag && (
-                      <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-white px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded-full shadow-sm border border-gray-100 z-20">
-                        <span className="text-[8px] sm:text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-black">{product.tag}</span>
-                      </div>
-                    )}
                   </div>
                   {product.variants && product.variants.length > 1 && (
                     <div className="flex gap-1 sm:gap-2 mb-2 sm:mb-3 flex-wrap">
