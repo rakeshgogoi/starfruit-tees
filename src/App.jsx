@@ -68,7 +68,7 @@ const App = () => {
 
   const handleWhatsAppOrder = (productName) => {
     const message = `Hi Starfruit Tees! I'd love to order the ${productName}. What's the process?`;
-    window.open(`https://wa.me/910000000000?text=${encodeURIComponent(message)}`, '_blank');
+    window.open(`https://wa.me/918720951721?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   return (
@@ -97,7 +97,7 @@ const App = () => {
             <a href="#shop" className="hover:text-black transition-colors">DROPS</a>
             <a href="#about" className="hover:text-black transition-colors">THE HOUSE</a>
             <button 
-              onClick={() => window.open('https://wa.me/910000000000', '_blank')}
+              onClick={() => window.open('https://wa.me/918720951721', '_blank')}
               className="bg-black text-white px-7 py-3 rounded-full hover:bg-yellow-400 hover:text-black transition-all duration-300 flex items-center gap-2"
             >
               Contact
