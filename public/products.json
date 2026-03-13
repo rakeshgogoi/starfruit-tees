@@ -10,8 +10,8 @@
       {
         "name": "Black",
         "images": [
-          "/products/maya-shirt-black-rounded.png",
-          "/products/maya-shirt-black-splash.png"
+          "/products/maya-black-dissolved.png",
+          "/products/maya-black-rounded.png"
         ]
       }
     ]
@@ -27,8 +27,8 @@
       {
         "name": "White",
         "images": [
-          "/products/maya-shirt-white.png",
-          "/products/maya-shirt-white-splash.png"
+          "/products/maya-white-dissolved.png",
+          "/products/maya-white-rounded.png"
         ]
       }
     ]
@@ -61,7 +61,24 @@
       {
         "name": "Variant",
         "images": [
-          "/products/anamika-black-rounded.png",
+          "/products/anamika-black-dissolved.png",
+          "/products/anamika-black-rounded.png"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "4",
+    "name": "Anamika White",
+    "category": "Heritage Series",
+    "price": "₹799",
+    "description": "Premium 240 GSM organic cotton. Iconic design in Black. Limited batches.",
+    "tag": "",
+    "variants": [
+      {
+        "name": "Variant",
+        "images": [
+          "/products/anamika-white-dissolved.png",
           "/products/anamika-white-rounded.png"
         ]
       }
