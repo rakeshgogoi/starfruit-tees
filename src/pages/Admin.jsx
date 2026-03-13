@@ -8,14 +8,75 @@ import {
   normalizeProduct,
   DEFAULT_PRODUCTS,
 } from '../data/products';
+import { isAdminAuthenticated, setAdminAuthenticated, clearAdminSession, getAdminPassword } from '../auth';
 
 const CATEGORIES = ['Heritage Series', 'Lyrical Anthems', 'Stadium Series'];
 
+function AdminLogin({ onSuccess }) {
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const configured = getAdminPassword();
+  const devDefault = import.meta.env.DEV && !configured;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setError('');
+    const expected = configured || (devDefault ? 'admin' : '');
+    if (!expected) {
+      setError('Admin password not configured. Set VITE_ADMIN_PASSWORD in your environment.');
+      return;
+    }
+    if (password === expected) {
+      setAdminAuthenticated();
+      onSuccess();
+    } else {
+      setError('Incorrect password.');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-sm bg-white rounded-2xl shadow-lg border border-slate-200 p-8">
+        <h1 className="text-xl font-display font-black text-slate-900 mb-2">Admin sign in</h1>
+        <p className="text-slate-500 text-sm mb-6">Enter your password to manage products.</p>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="admin-password" className="block text-sm font-medium text-slate-700 mb-1">Password</label>
+            <input
+              id="admin-password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-400 focus:border-slate-400"
+              placeholder="Password"
+              autoFocus
+              autoComplete="current-password"
+            />
+          </div>
+          {error && <p className="text-sm text-red-600">{error}</p>}
+          <button type="submit" className="w-full py-2.5 rounded-lg bg-black text-white font-medium hover:bg-slate-800">
+            Sign in
+          </button>
+        </form>
+        {devDefault && (
+          <p className="mt-4 text-xs text-slate-400">Dev: no VITE_ADMIN_PASSWORD set, use “admin” to sign in.</p>
+        )}
+        <Link to="/" className="block mt-6 text-center text-sm text-slate-500 hover:text-slate-700">← Back to store</Link>
+      </div>
+    </div>
+  );
+}
+
 export default function Admin() {
+  const [authenticated, setAuthenticated] = useState(false);
   const [products, setProducts] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(createEmptyProduct());
   const [message, setMessage] = useState({ text: '', type: 'info' });
+
+  useEffect(() => {
+    setAuthenticated(isAdminAuthenticated());
+  }, []);
 
   useEffect(() => {
     const stored = loadProductsFromStorage();
@@ -160,6 +221,10 @@ export default function Admin() {
 
   const isEditing = editingId !== null;
 
+  if (!authenticated) {
+    return <AdminLogin onSuccess={() => setAuthenticated(true)} />;
+  }
+
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800 font-sans">
       <style>{`
@@ -175,6 +240,13 @@ export default function Admin() {
               <h1 className="text-lg font-display font-black">Product manager</h1>
             </div>
             <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => { clearAdminSession(); setAuthenticated(false); }}
+                className="px-4 py-2 rounded-lg border border-slate-300 text-slate-600 text-sm hover:bg-slate-100"
+              >
+                Sign out
+              </button>
               <button
                 type="button"
                 onClick={exportJSON}
