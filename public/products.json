@@ -83,5 +83,21 @@
         ]
       }
     ]
+  },
+  {
+    "id": "5",
+    "name": "Zubeen Garg \"Pakhi\" Album Tribute T-Shirt",
+    "category": "Heritage Series",
+    "price": "₹799",
+    "description": "Pay tribute to a milestone in Assamese music with our exclusive Zubeen Garg \"Pakhi\" Album T-Shirt. This isn't just a shirt; it's a wearable piece of music history, celebrating the album that captured hearts and defined a sound.",
+    "tag": "Crafted",
+    "variants": [
+      {
+        "name": "Variant",
+        "images": [
+          "/products/pakhi.png"
+        ]
+      }
+    ]
   }
 ]
