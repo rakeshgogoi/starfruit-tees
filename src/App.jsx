@@ -17,8 +17,22 @@ const App = () => {
     });
   }, []);
 
-  const categories = ['All', 'Heritage Series', 'Lyrical Anthems', 'Stadium Series'];
-  const categoryLabels = { 'All': 'ALL', 'Heritage Series': 'HERITAGE SERIES', 'Lyrical Anthems': 'LYRICAL ANTHEMS', 'Stadium Series': 'STADIUM SERIES' };
+  const categories = ['All', 'Heritage Series', 'Language Series', 'Legend Series', 'Stadium Series'];
+  const categoryLabels = {
+    'All': 'ALL',
+    'Heritage Series': 'HERITAGE SERIES',
+    'Language Series': 'LANGUAGE SERIES',
+    'Legend Series': 'LEGEND SERIES',
+    'Stadium Series': 'STADIUM SERIES',
+  };
+
+  const categorySectionList = ['Heritage Series', 'Language Series', 'Legend Series', 'Stadium Series'];
+  const getCategoryImage = (categoryName) => {
+    const product = products.find(p => p.category === categoryName);
+    if (!product) return null;
+    const imgs = product.variants?.[0]?.images ?? product.images ?? (product.image ? [product.image] : []);
+    return imgs[0] ?? null;
+  };
 
   const filteredProducts = activeCategory === 'All' 
     ? products 
@@ -56,18 +70,18 @@ const App = () => {
 
       {/* Navigation */}
       <nav className="fixed w-full bg-white/90 backdrop-blur-xl z-50 border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 md:h-20 flex items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center shadow-md flex-shrink-0" style={{ backgroundColor: '#E0A600' }}>
-              <Star size={16} className="md:w-[18px] md:h-[18px]" fill="#fff" stroke="#fff" />
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 md:h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center shadow-md flex-shrink-0" style={{ backgroundColor: '#E0A600' }}>
+              <Star size={14} className="md:w-4 md:h-4" fill="#fff" stroke="#fff" />
             </div>
             <div className="flex flex-col min-w-0">
-              <span className="text-lg sm:text-xl md:text-2xl font-display font-black leading-none tracking-tight text-black truncate">Starfruit Tees</span>
-              <span className="text-[8px] md:text-[9px] font-medium text-[#555] uppercase tracking-[0.2em] mt-0.5">House of Starfruit</span>
+              <span className="text-base sm:text-lg md:text-xl font-display font-black leading-none tracking-tight text-black truncate">Starfruit Tees</span>
+              <span className="text-[7px] md:text-[8px] font-medium text-[#555] uppercase tracking-[0.2em] mt-0.5">House of Starfruit</span>
             </div>
           </div>
           
-          <div className="hidden md:flex items-center gap-10 font-medium text-xs uppercase tracking-widest text-[#333]">
+          <div className="hidden md:flex items-center gap-8 font-medium text-[10px] uppercase tracking-widest text-[#333]">
             <a href="#shop" className="hover:text-black transition-colors">DROPS</a>
             <a href="#about" className="hover:text-black transition-colors">THE HOUSE</a>
             <Link to="/admin" className="hover:text-black transition-colors">ADMIN</Link>
@@ -95,60 +109,91 @@ const App = () => {
       </nav>
 
       {/* Hero Section */}
-      <header className="relative pt-28 sm:pt-32 md:pt-40 pb-16 md:pb-24 px-4 sm:px-6 overflow-hidden" style={{ background: 'radial-gradient(ellipse 80% 50% at 100% 100%, rgba(224,166,0,0.08), transparent), #ffffff' }}>
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+      <header className="relative pt-24 sm:pt-28 md:pt-32 pb-12 md:pb-16 px-4 sm:px-6 overflow-hidden" style={{ background: 'radial-gradient(ellipse 80% 50% at 100% 100%, rgba(224,166,0,0.06), transparent), #ffffff' }}>
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-12 gap-6 lg:gap-10 items-center">
           <div className="lg:col-span-7 z-10">
-            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-black leading-[0.9] mb-4 md:mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-black leading-[0.95] mb-3 md:mb-4">
               Culture <br />
               <span className="italic" style={{ color: '#E0A600' }}>Reimagined.</span>
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-[#555] mb-6 md:mb-10 max-w-xl leading-relaxed font-normal">
+            <p className="text-sm sm:text-base md:text-lg text-[#555] mb-4 md:mb-6 max-w-md leading-relaxed font-normal">
               Premium apparel for the modern tribe. Bridging ancestral motifs with the electric energy of the contemporary world.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-stretch sm:items-center">
-              <a href="#shop" className="w-full sm:w-auto bg-black text-white px-6 sm:px-10 py-4 sm:py-5 rounded-full font-semibold text-sm sm:text-base uppercase tracking-wide hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
-                Explore The Drop <ArrowRight size={16} className="sm:w-[18px] sm:h-[18px]" strokeWidth={2.5} />
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center">
+              <a href="#shop" className="w-full sm:w-auto bg-black text-white px-5 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-xs sm:text-sm uppercase tracking-wide hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+                Explore The Drop <ArrowRight size={14} className="sm:w-4 sm:h-4" strokeWidth={2.5} />
               </a>
-              <div className="flex items-center justify-center sm:justify-start gap-3">
-                <div className="flex -space-x-3">
+              <div className="flex items-center justify-center sm:justify-start gap-2">
+                <div className="flex -space-x-2">
                   {[1,2,3].map(i => (
-                    <img key={i} src={`https://i.pravatar.cc/100?img=${i+20}`} className="w-9 h-9 sm:w-12 sm:h-12 rounded-full border-2 sm:border-4 border-white object-cover" alt="Tribe member" />
+                    <img key={i} src={`https://i.pravatar.cc/100?img=${i+20}`} className="w-7 h-7 sm:w-9 sm:h-9 rounded-full border-2 border-white object-cover" alt="Tribe member" />
                   ))}
                 </div>
-                <div className="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-[#555]">
+                <div className="text-[9px] sm:text-[10px] font-medium uppercase tracking-wider text-[#555]">
                   <span className="text-black font-semibold block">Trusted by</span> 800+ of the Tribe
                 </div>
               </div>
             </div>
           </div>
           <div className="lg:col-span-5 relative hidden sm:block">
-            <div className="absolute -top-20 -right-20 w-48 sm:w-80 h-48 sm:h-80 bg-yellow-200/40 rounded-full blur-[100px]" />
+            <div className="absolute -top-16 -right-16 w-36 sm:w-56 h-36 sm:h-56 bg-yellow-200/30 rounded-full blur-[80px]" />
             <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-tr from-yellow-400 to-red-500 rounded-2xl sm:rounded-[2.5rem] blur opacity-20 group-hover:opacity-40 transition duration-1000" />
+              <div className="absolute -inset-0.5 bg-gradient-to-tr from-yellow-400/20 to-amber-500/20 rounded-xl sm:rounded-2xl blur-sm group-hover:opacity-60 transition duration-500" />
               <img 
                 src={landingImage} 
                 alt="Starfruit Collection"
-                className="relative rounded-2xl sm:rounded-[2rem] shadow-2xl z-10 w-full object-cover aspect-[4/5]"
+                className="relative rounded-xl sm:rounded-2xl shadow-xl z-10 w-full object-cover aspect-[4/5] max-h-[320px] md:max-h-[380px]"
               />
             </div>
           </div>
         </div>
       </header>
 
-      {/* Product Grid */}
-      <section id="shop" className="py-12 sm:py-16 md:py-24 px-4 sm:px-6">
+      {/* Category Section - one image per category */}
+      <section className="py-10 sm:py-14 md:py-16 px-4 sm:px-6 border-t border-slate-100">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-12 gap-4 md:gap-8">
+          <h2 className="text-lg sm:text-xl font-display font-black uppercase tracking-tight text-black mb-6 sm:mb-8">Collections</h2>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            {categorySectionList.map(cat => {
+              const img = getCategoryImage(cat);
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => { setActiveCategory(cat); document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' }); }}
+                  className="group relative aspect-[3/4] rounded-lg sm:rounded-xl overflow-hidden bg-slate-100 focus:outline-none focus:ring-2 focus:ring-black/20"
+                >
+                  {img && (
+                    <img src={img} alt="" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  )}
+                  {!img && (
+                    <div className="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400 text-[10px] font-medium uppercase tracking-widest">No image</div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                  <span className="absolute bottom-2 left-2 right-2 text-white text-[10px] sm:text-xs font-bold uppercase tracking-widest drop-shadow-md text-left">
+                    {categoryLabels[cat]}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Product Grid */}
+      <section id="shop" className="py-10 sm:py-14 md:py-20 px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 md:mb-10 gap-3 md:gap-6">
             <div>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display font-black mb-2 md:mb-4 uppercase text-black tracking-tight">Latest Releases</h2>
-              <p className="text-sm md:text-base text-[#555]">Limited batches. Iconic silhouettes.</p>
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-display font-black mb-1 md:mb-2 uppercase text-black tracking-tight">Latest Releases</h2>
+              <p className="text-xs md:text-sm text-[#555]">Limited batches. Iconic silhouettes.</p>
             </div>
-            <div className="flex flex-wrap gap-1.5 sm:gap-2">
+            <div className="flex flex-wrap gap-1 sm:gap-1.5">
               {categories.map(cat => (
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 rounded-full text-[10px] sm:text-xs font-semibold uppercase tracking-widest transition-all ${
+                  className={`px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-full text-[9px] sm:text-[10px] font-semibold uppercase tracking-widest transition-all ${
                     activeCategory === cat 
                       ? 'bg-black text-white' 
                       : 'bg-[#E0E0E0] text-[#333] hover:bg-[#d0d0d0]'
@@ -160,7 +205,7 @@ const App = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {filteredProducts.map(product => {
               const images = getProductImages(product);
               const currentIndex = images.length ? ((sliderIndex[product.id] ?? 0) % images.length) : 0;
@@ -168,7 +213,7 @@ const App = () => {
 
               return (
                 <div key={product.id} className="relative">
-                  <div className="relative aspect-[3/4] rounded-xl sm:rounded-2xl overflow-hidden bg-[#F5F5F5] mb-2 sm:mb-4 shadow-sm">
+                  <div className="relative aspect-[3/4] rounded-lg sm:rounded-xl overflow-hidden bg-[#F5F5F5] mb-1.5 sm:mb-2 shadow-sm">
                     {images.length > 0 && (
                       <>
                         <img
@@ -182,26 +227,26 @@ const App = () => {
                             <button
                               type="button"
                               onClick={(e) => { e.stopPropagation(); setProductSliderIndex(product.id, -1, images.length); }}
-                              className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors z-20"
+                              className="absolute left-1 sm:left-1.5 top-1/2 -translate-y-1/2 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors z-20"
                               aria-label="Previous image"
                             >
-                              <ChevronLeft size={18} className="sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                              <ChevronLeft size={14} className="sm:w-4 sm:h-4" />
                             </button>
                             <button
                               type="button"
                               onClick={(e) => { e.stopPropagation(); setProductSliderIndex(product.id, 1, images.length); }}
-                              className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors z-20"
+                              className="absolute right-1 sm:right-1.5 top-1/2 -translate-y-1/2 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors z-20"
                               aria-label="Next image"
                             >
-                              <ChevronRight size={18} className="sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                              <ChevronRight size={14} className="sm:w-4 sm:h-4" />
                             </button>
-                            <div className="absolute bottom-2 sm:bottom-3 left-0 right-0 flex justify-center gap-1 z-20">
+                            <div className="absolute bottom-1.5 sm:bottom-2 left-0 right-0 flex justify-center gap-0.5 z-20">
                               {images.map((_, i) => (
                                 <button
                                   key={i}
                                   type="button"
                                   onClick={(e) => { e.stopPropagation(); setSliderIndex(prev => ({ ...prev, [product.id]: i })); }}
-                                  className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-colors ${i === currentIndex ? 'bg-white' : 'bg-white/50 hover:bg-white/80'}`}
+                                  className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full transition-colors ${i === currentIndex ? 'bg-white' : 'bg-white/50 hover:bg-white/80'}`}
                                   aria-label={`Go to image ${i + 1}`}
                                 />
                               ))}
@@ -212,7 +257,7 @@ const App = () => {
                     )}
                   </div>
                   {product.variants && product.variants.length > 1 && (
-                    <div className="flex gap-1 sm:gap-2 mb-2 sm:mb-3 flex-wrap">
+                    <div className="flex gap-1 mb-1.5 sm:mb-2 flex-wrap">
                       {product.variants.map((v, i) => (
                         <button
                           key={v.name}
@@ -221,7 +266,7 @@ const App = () => {
                             setSelectedVariant(prev => ({ ...prev, [product.id]: i }));
                             setSliderIndex(prev => ({ ...prev, [product.id]: 0 }));
                           }}
-                          className={`px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs font-semibold uppercase tracking-wide border-2 transition-colors ${
+                          className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide border transition-colors ${
                             (selectedVariant[product.id] ?? 0) === i
                               ? 'border-black bg-black text-white'
                               : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
@@ -232,19 +277,19 @@ const App = () => {
                       ))}
                     </div>
                   )}
-                  <div className="px-0.5 sm:px-2">
-                    <h3 className="text-xs sm:text-sm md:text-base font-display font-black leading-tight mb-0.5 sm:mb-1 line-clamp-3">{product.name}</h3>
-                    <p className="text-xs sm:text-sm font-bold text-slate-400 mb-1 sm:mb-2">{product.price}</p>
-                    <p className="text-slate-500 text-[10px] sm:text-xs md:text-sm leading-relaxed mb-2 sm:mb-3 line-clamp-2 md:line-clamp-none">{product.description}</p>
+                  <div className="px-0.5 sm:px-1">
+                    <h3 className="text-[11px] sm:text-xs font-display font-black leading-tight mb-0.5 line-clamp-3">{product.name}</h3>
+                    <p className="text-[10px] sm:text-xs font-bold text-slate-400 mb-0.5 sm:mb-1">{product.price}</p>
+                    <p className="text-slate-500 text-[9px] sm:text-[10px] leading-relaxed mb-1 sm:mb-2 line-clamp-2">{product.description}</p>
                     <button
                       type="button"
                       onClick={() => handleWhatsAppOrder(product.name, currentVariant?.name)}
-                      className="w-full bg-black text-white py-2 sm:py-3 md:py-3.5 rounded-full font-semibold text-[10px] sm:text-xs md:text-sm uppercase tracking-wide flex items-center justify-center gap-1 sm:gap-2 hover:opacity-90 transition-opacity mb-2 sm:mb-3"
+                      className="w-full bg-black text-white py-1.5 sm:py-2 rounded-full font-semibold text-[9px] sm:text-[10px] uppercase tracking-wide flex items-center justify-center gap-1 hover:opacity-90 transition-opacity mb-1.5 sm:mb-2"
                     >
-                      <MessageCircle size={14} className="sm:w-4 sm:h-4 md:w-[18px] md:h-[18px]" /> Inquire Now
+                      <MessageCircle size={12} className="sm:w-3 sm:h-3" /> Inquire Now
                     </button>
-                    <div className="flex items-center gap-1 sm:gap-2 text-[8px] sm:text-[9px] md:text-[10px] font-black text-slate-300 uppercase tracking-widest">
-                      <MapPin size={8} className="sm:w-2.5 sm:h-2.5 md:w-[10px] md:h-[10px] text-yellow-500 flex-shrink-0" /> Bengaluru Hub
+                    <div className="flex items-center gap-1 text-[7px] sm:text-[8px] font-black text-slate-300 uppercase tracking-widest">
+                      <MapPin size={6} className="sm:w-2 sm:h-2 text-yellow-500 flex-shrink-0" /> Bengaluru Hub
                     </div>
                   </div>
                 </div>
@@ -255,39 +300,39 @@ const App = () => {
       </section>
 
       {/* About Section - House of Starfruit */}
-      <section id="about" className="py-16 sm:py-24 md:py-32 px-4 sm:px-6 bg-black text-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-yellow-500/10 rounded-full blur-[120px] -mr-24 sm:-mr-48 -mt-24 sm:-mt-48" />
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-10 sm:gap-16 lg:gap-20 items-center">
+      <section id="about" className="py-12 sm:py-16 md:py-24 px-4 sm:px-6 bg-black text-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-[240px] sm:w-[400px] h-[240px] sm:h-[400px] bg-yellow-500/10 rounded-full blur-[100px] -mr-20 sm:-mr-32 -mt-20 sm:-mt-32" />
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
           <div className="relative order-2 lg:order-1">
             <img 
               src="https://images.unsplash.com/photo-1523381235212-d73f803801f7?auto=format&fit=crop&q=80&w=1000" 
-              className="rounded-2xl sm:rounded-[3rem] shadow-2xl grayscale hover:grayscale-0 transition-all duration-1000 w-full object-cover max-h-[280px] sm:max-h-none" 
+              className="rounded-xl sm:rounded-2xl shadow-xl grayscale hover:grayscale-0 transition-all duration-700 w-full object-cover max-h-[220px] sm:max-h-[280px]" 
               alt="The House" 
             />
-            <div className="absolute -bottom-6 -right-6 sm:-bottom-10 sm:-right-10 bg-yellow-400 p-6 sm:p-12 rounded-2xl sm:rounded-[2.5rem] hidden md:block">
-              <Star size={32} className="sm:w-10 sm:h-10" fill="#000" />
+            <div className="absolute -bottom-4 -right-4 sm:-bottom-6 sm:-right-6 bg-yellow-400 p-4 sm:p-8 rounded-xl sm:rounded-2xl hidden md:block">
+              <Star size={24} className="sm:w-8 sm:h-8" fill="#000" />
             </div>
           </div>
           <div className="order-1 lg:order-2">
-            <span className="text-yellow-500 font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-[10px] sm:text-xs block mb-4 sm:mb-6">The Parent Entity</span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-display italic font-black mb-6 sm:mb-10 leading-none">
+            <span className="text-yellow-500 font-black uppercase tracking-[0.25em] text-[9px] sm:text-[10px] block mb-3 sm:mb-4">The Parent Entity</span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display italic font-black mb-4 sm:mb-6 leading-none">
               HOUSE OF <br /> <span className="text-yellow-500">STARFRUIT.</span>
             </h2>
-            <div className="space-y-4 sm:space-y-6 md:space-y-8 text-slate-400 text-sm sm:text-base md:text-lg font-medium leading-relaxed">
+            <div className="space-y-3 sm:space-y-4 text-slate-400 text-xs sm:text-sm md:text-base font-medium leading-relaxed">
               <p>
                 Based in the silicon valley of India but keeping the spirit of craftsmanship alive. We bridge the gap through high-quality apparel that speaks a global language.
               </p>
               <p>
                 Starfruit Tees is a creative collective for those who value heritage but live in the now. Every print is curated to represent an identity that transcends geography.
               </p>
-              <div className="pt-4 sm:pt-6 grid grid-cols-2 gap-4 sm:gap-8">
+              <div className="pt-3 sm:pt-4 grid grid-cols-2 gap-3 sm:gap-6">
                 <div>
-                  <div className="text-2xl sm:text-3xl font-display italic font-black text-white mb-1 sm:mb-2">240 GSM</div>
-                  <div className="text-[10px] sm:text-xs uppercase tracking-widest font-black text-slate-500">Premium Fabric</div>
+                  <div className="text-xl sm:text-2xl font-display italic font-black text-white mb-0.5 sm:mb-1">240 GSM</div>
+                  <div className="text-[9px] sm:text-[10px] uppercase tracking-widest font-black text-slate-500">Premium Fabric</div>
                 </div>
                 <div>
-                  <div className="text-2xl sm:text-3xl font-display italic font-black text-white mb-1 sm:mb-2">Eco-Inks</div>
-                  <div className="text-[10px] sm:text-xs uppercase tracking-widest font-black text-slate-500">Zero-fade print</div>
+                  <div className="text-xl sm:text-2xl font-display italic font-black text-white mb-0.5 sm:mb-1">Eco-Inks</div>
+                  <div className="text-[9px] sm:text-[10px] uppercase tracking-widest font-black text-slate-500">Zero-fade print</div>
                 </div>
               </div>
             </div>
@@ -296,60 +341,61 @@ const App = () => {
       </section>
 
       {/* Footer */}
-      <footer id="contact" className="py-12 sm:py-16 md:py-24 px-4 sm:px-6 border-t border-slate-100 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-16 mb-12 sm:mb-20">
+      <footer id="contact" className="py-10 sm:py-12 md:py-16 px-4 sm:px-6 border-t border-slate-100 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 mb-8 sm:mb-12">
             <div className="lg:col-span-5">
-               <div className="flex items-center gap-3 mb-4 sm:mb-8">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shadow-md flex-shrink-0" style={{ backgroundColor: '#E0A600' }}>
-                    <Star size={18} className="sm:w-5 sm:h-5" fill="#fff" stroke="#fff" />
+               <div className="flex items-center gap-2.5 mb-3 sm:mb-6">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-md flex-shrink-0" style={{ backgroundColor: '#E0A600' }}>
+                    <Star size={16} className="sm:w-4 sm:h-4" fill="#fff" stroke="#fff" />
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-2xl sm:text-3xl font-display font-black leading-none tracking-tight text-black">Starfruit Tees</span>
-                    <span className="text-[9px] sm:text-[10px] font-medium text-[#555] uppercase tracking-[0.2em] mt-1">House of Starfruit</span>
+                    <span className="text-xl sm:text-2xl font-display font-black leading-none tracking-tight text-black">Starfruit Tees</span>
+                    <span className="text-[8px] sm:text-[9px] font-medium text-[#555] uppercase tracking-[0.2em] mt-0.5">House of Starfruit</span>
                   </div>
                </div>
-               <p className="text-slate-500 text-sm sm:text-lg mb-6 sm:mb-8 leading-relaxed max-w-sm">
+               <p className="text-slate-500 text-xs sm:text-sm mb-4 sm:mb-6 leading-relaxed max-w-sm">
                  Connecting people through stories, art, and the finest cotton. Made for the tribe.
                </p>
-               <div className="flex gap-3 sm:gap-4">
-                  <a href="#" className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-slate-50 flex items-center justify-center hover:bg-black hover:text-white transition-all" aria-label="Instagram">
-                    <Instagram size={20} className="sm:w-6 sm:h-6" />
+               <div className="flex gap-2 sm:gap-3">
+                  <a href="#" className="w-10 h-10 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-slate-50 flex items-center justify-center hover:bg-black hover:text-white transition-all" aria-label="Instagram">
+                    <Instagram size={18} className="sm:w-5 sm:h-5" />
                   </a>
-                  <a href="#" className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-slate-50 flex items-center justify-center hover:bg-black hover:text-white transition-all" aria-label="Message">
-                    <MessageCircle size={20} className="sm:w-6 sm:h-6" />
+                  <a href="#" className="w-10 h-10 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-slate-50 flex items-center justify-center hover:bg-black hover:text-white transition-all" aria-label="Message">
+                    <MessageCircle size={18} className="sm:w-5 sm:h-5" />
                   </a>
                </div>
             </div>
             
-            <div className="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-8 sm:gap-12">
+            <div className="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
               <div>
-                <h4 className="font-black uppercase text-[9px] sm:text-[10px] tracking-[0.3em] text-slate-300 mb-4 sm:mb-8">Drops</h4>
-                <ul className="space-y-3 sm:space-y-4 text-xs sm:text-sm font-bold text-slate-600">
+                <h4 className="font-black uppercase text-[8px] sm:text-[9px] tracking-[0.25em] text-slate-300 mb-3 sm:mb-6">Drops</h4>
+                <ul className="space-y-2 sm:space-y-3 text-[11px] sm:text-xs font-bold text-slate-600">
                   <li><a href="#shop" className="hover:text-yellow-600">Heritage</a></li>
-                  <li><a href="#shop" className="hover:text-yellow-600">Lyrical</a></li>
+                  <li><a href="#shop" className="hover:text-yellow-600">Language</a></li>
+                  <li><a href="#shop" className="hover:text-yellow-600">Legend</a></li>
                   <li><a href="#shop" className="hover:text-yellow-600">Stadium</a></li>
                 </ul>
               </div>
               <div>
-                <h4 className="font-black uppercase text-[9px] sm:text-[10px] tracking-[0.3em] text-slate-300 mb-4 sm:mb-8">The House</h4>
-                <ul className="space-y-3 sm:space-y-4 text-xs sm:text-sm font-bold text-slate-600">
+                <h4 className="font-black uppercase text-[8px] sm:text-[9px] tracking-[0.25em] text-slate-300 mb-3 sm:mb-6">The House</h4>
+                <ul className="space-y-2 sm:space-y-3 text-[11px] sm:text-xs font-bold text-slate-600">
                   <li><a href="#about" className="hover:text-yellow-600">About Us</a></li>
                   <li><a href="#contact" className="hover:text-yellow-600">Custom Orders</a></li>
                   <li><a href="#contact" className="hover:text-yellow-600">Bulk Inquiries</a></li>
                 </ul>
               </div>
               <div>
-                <h4 className="font-black uppercase text-[9px] sm:text-[10px] tracking-[0.3em] text-slate-300 mb-4 sm:mb-8">Identity</h4>
-                <ul className="space-y-3 sm:space-y-4 text-xs sm:text-sm font-bold text-slate-600 text-right md:text-left">
+                <h4 className="font-black uppercase text-[8px] sm:text-[9px] tracking-[0.25em] text-slate-300 mb-3 sm:mb-6">Identity</h4>
+                <ul className="space-y-2 sm:space-y-3 text-[11px] sm:text-xs font-bold text-slate-600 text-right md:text-left">
                   <li>Global ✈️ Local</li>
                 </ul>
               </div>
             </div>
           </div>
-          <div className="pt-8 sm:pt-12 border-t border-slate-50 flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6 text-center md:text-left">
-            <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] text-slate-300">© 2024 HOUSE OF STARFRUIT — ALL RIGHTS RESERVED.</p>
-            <div className="flex gap-6 sm:gap-8 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-300">
+          <div className="pt-6 sm:pt-8 border-t border-slate-50 flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4 text-center md:text-left">
+            <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.25em] text-slate-300">© 2024 HOUSE OF STARFRUIT — ALL RIGHTS RESERVED.</p>
+            <div className="flex gap-4 sm:gap-6 text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-slate-300">
               <span className="flex items-center gap-2"><MapPin size={10} className="sm:w-3 sm:h-3 text-yellow-400 flex-shrink-0" /> HQ: Bengaluru, IN</span>
             </div>
           </div>
