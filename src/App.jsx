@@ -109,40 +109,40 @@ const App = () => {
       </nav>
 
       {/* Hero Section */}
-      <header className="relative pt-24 sm:pt-28 md:pt-32 pb-12 md:pb-16 px-4 sm:px-6 overflow-hidden" style={{ background: 'radial-gradient(ellipse 80% 50% at 100% 100%, rgba(224,166,0,0.06), transparent), #ffffff' }}>
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-12 gap-6 lg:gap-10 items-center">
+      <header className="relative pt-28 sm:pt-32 md:pt-40 pb-16 md:pb-24 px-4 sm:px-6 overflow-hidden" style={{ background: 'radial-gradient(ellipse 80% 50% at 100% 100%, rgba(224,166,0,0.08), transparent), #ffffff' }}>
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           <div className="lg:col-span-7 z-10">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-black leading-[0.95] mb-3 md:mb-4">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-black leading-[0.9] mb-4 md:mb-6">
               Culture <br />
               <span className="italic" style={{ color: '#E0A600' }}>Reimagined.</span>
             </h1>
-            <p className="text-sm sm:text-base md:text-lg text-[#555] mb-4 md:mb-6 max-w-md leading-relaxed font-normal">
+            <p className="text-base sm:text-lg md:text-xl text-[#555] mb-6 md:mb-10 max-w-xl leading-relaxed font-normal">
               Premium apparel for the modern tribe. Bridging ancestral motifs with the electric energy of the contemporary world.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center">
-              <a href="#shop" className="w-full sm:w-auto bg-black text-white px-5 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-xs sm:text-sm uppercase tracking-wide hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
-                Explore The Drop <ArrowRight size={14} className="sm:w-4 sm:h-4" strokeWidth={2.5} />
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-stretch sm:items-center">
+              <a href="#shop" className="w-full sm:w-auto bg-black text-white px-6 sm:px-10 py-4 sm:py-5 rounded-full font-semibold text-sm sm:text-base uppercase tracking-wide hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+                Explore The Drop <ArrowRight size={16} className="sm:w-[18px] sm:h-[18px]" strokeWidth={2.5} />
               </a>
-              <div className="flex items-center justify-center sm:justify-start gap-2">
-                <div className="flex -space-x-2">
+              <div className="flex items-center justify-center sm:justify-start gap-3">
+                <div className="flex -space-x-3">
                   {[1,2,3].map(i => (
-                    <img key={i} src={`https://i.pravatar.cc/100?img=${i+20}`} className="w-7 h-7 sm:w-9 sm:h-9 rounded-full border-2 border-white object-cover" alt="Tribe member" />
+                    <img key={i} src={`https://i.pravatar.cc/100?img=${i+20}`} className="w-9 h-9 sm:w-12 sm:h-12 rounded-full border-2 sm:border-4 border-white object-cover" alt="Tribe member" />
                   ))}
                 </div>
-                <div className="text-[9px] sm:text-[10px] font-medium uppercase tracking-wider text-[#555]">
+                <div className="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-[#555]">
                   <span className="text-black font-semibold block">Trusted by</span> 800+ of the Tribe
                 </div>
               </div>
             </div>
           </div>
           <div className="lg:col-span-5 relative hidden sm:block">
-            <div className="absolute -top-16 -right-16 w-36 sm:w-56 h-36 sm:h-56 bg-yellow-200/30 rounded-full blur-[80px]" />
+            <div className="absolute -top-20 -right-20 w-48 sm:w-80 h-48 sm:h-80 bg-yellow-200/40 rounded-full blur-[100px]" />
             <div className="relative group">
-              <div className="absolute -inset-0.5 bg-gradient-to-tr from-yellow-400/20 to-amber-500/20 rounded-xl sm:rounded-2xl blur-sm group-hover:opacity-60 transition duration-500" />
+              <div className="absolute -inset-1 bg-gradient-to-tr from-yellow-400 to-red-500 rounded-2xl sm:rounded-[2.5rem] blur opacity-20 group-hover:opacity-40 transition duration-1000" />
               <img 
                 src={landingImage} 
                 alt="Starfruit Collection"
-                className="relative rounded-xl sm:rounded-2xl shadow-xl z-10 w-full object-cover aspect-[4/5] max-h-[320px] md:max-h-[380px]"
+                className="relative rounded-2xl sm:rounded-[2rem] shadow-2xl z-10 w-full object-cover aspect-[4/5]"
               />
             </div>
           </div>
