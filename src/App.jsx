@@ -70,7 +70,7 @@ const App = () => {
           <div className="lg:col-span-7 z-10">
             <h1 className="font-hero text-5xl sm:text-6xl md:text-8xl lg:text-9xl leading-[0.9] mb-4 md:mb-6">
               Wear Your <br />
-              <span style={{ color: '#E0A600' }}>Team.</span>
+              <span className="italic" style={{ color: '#E0A600' }}>Team.</span>
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-[#555] mb-6 md:mb-10 max-w-xl leading-relaxed font-normal">
               Official-style IPL 2026 jerseys for every die-hard fan. Premium 220 GSM quality, fully customisable. Delivered across India.
