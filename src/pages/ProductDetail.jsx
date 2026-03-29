@@ -6,6 +6,7 @@ import { useCart } from '../context/CartContext';
 import { useRazorpay } from '../hooks/useRazorpay';
 import Navbar from '../components/Navbar';
 import CartDrawer from '../components/CartDrawer';
+import OrderForm from '../components/OrderForm';
 
 const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
@@ -27,8 +28,10 @@ const ProductDetail = () => {
   const [selectedSize, setSelectedSize] = useState('M');
   const [added, setAdded] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
-  const [payStatus, setPayStatus] = useState(null); // null | 'loading' | 'success' | 'error'
-  const [payMessage, setPayMessage] = useState('');
+  const [payStatus, setPayStatus]     = useState(null); // null | 'loading' | 'success' | 'error'
+  const [payMessage, setPayMessage]   = useState('');
+  const [showOrderForm, setShowOrderForm] = useState(false);
+  const [formLoading, setFormLoading] = useState(false);
 
   useEffect(() => {
     loadProductsForSite().then(loaded => {
@@ -46,35 +49,62 @@ const ProductDetail = () => {
     setTimeout(() => setAdded(false), 2000);
   };
 
-  const handleBuyNow = async () => {
+  const handleBuyNow = () => {
     if (!product || !scriptLoaded) return;
-    const priceNum = getOfferPrice(product.category, product.price);
-    setPayStatus('loading');
-    setPayMessage('');
+    setShowOrderForm(true);
+  };
 
+  const handleOrderFormSubmit = async (customer) => {
+    if (!product) return;
+    const priceNum = getOfferPrice(product.category, product.price);
     const variantName = product.variants?.[selectedVariant]?.name;
     const label = variantName && variantName !== 'Variant' && variantName !== 'Default'
       ? `${product.name} (${variantName}) — Size ${selectedSize}`
       : `${product.name} — Size ${selectedSize}`;
 
+    setFormLoading(true);
+
     await pay({
       amount: priceNum,
       productName: label,
       receipt: `prod_${product.id}_${Date.now()}`,
-      onSuccess: (response) => {
+      customer,
+      onSuccess: async (response) => {
+        setShowOrderForm(false);
+        setFormLoading(false);
         setPayStatus('success');
         setPayMessage(`Payment successful! ID: ${response.razorpay_payment_id}`);
-        const msg = `Hi! I've completed payment for:\n${label}\nPayment ID: ${response.razorpay_payment_id}\n\nPlease confirm and process my order!`;
+
+        // Send notifications
+        try {
+          await fetch('/api/notify-customer', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              customer,
+              order: {
+                product: label,
+                amount: priceNum,
+                paymentId: response.razorpay_payment_id,
+              },
+            }),
+          });
+        } catch (e) {
+          console.error('Notify failed:', e);
+        }
+
+        // WhatsApp confirmation to store
+        const msg = `Hi! I've completed payment for:\n${label}\nPayment ID: ${response.razorpay_payment_id}\nName: ${customer.name}\nPhone: +91${customer.phone}\nAddress: ${customer.address}, ${customer.pincode}${customer.jerseyName ? `\nJersey: ${customer.jerseyName} #${customer.jerseyNumber}` : ''}\n\nPlease confirm and process my order!`;
         setTimeout(() => {
           window.open(`https://wa.me/918720951721?text=${encodeURIComponent(msg)}`, '_blank');
         }, 1500);
       },
       onError: (msg) => {
+        setFormLoading(false);
         if (msg !== 'Payment cancelled.') {
+          setShowOrderForm(false);
           setPayStatus('error');
           setPayMessage(msg);
-        } else {
-          setPayStatus(null);
         }
       },
     });
@@ -308,6 +338,20 @@ const ProductDetail = () => {
       </div>
 
       <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
+
+      <OrderForm
+        isOpen={showOrderForm}
+        onClose={() => { setShowOrderForm(false); setFormLoading(false); }}
+        productName={(() => {
+          const v = product?.variants?.[selectedVariant]?.name;
+          return v && v !== 'Variant' && v !== 'Default'
+            ? `${product?.name} (${v}) — Size ${selectedSize}`
+            : `${product?.name} — Size ${selectedSize}`;
+        })()}
+        category={product?.category}
+        onSubmit={handleOrderFormSubmit}
+        loading={formLoading}
+      />
     </div>
   );
 };

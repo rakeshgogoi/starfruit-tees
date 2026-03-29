@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ShoppingBag, X, Minus, Plus, CreditCard, MessageCircle, AlertCircle, CheckCircle } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useRazorpay } from '../hooks/useRazorpay';
+import OrderForm from './OrderForm';
 
 // Discounted price per item — calculated from the product's actual price
 const DISCOUNT_RATE = { 'Stadium Series': 0.40, 'Legend Series': 0.10 };
@@ -14,8 +15,10 @@ const getItemPrice = (item) => {
 const CartDrawer = ({ isOpen, onClose }) => {
   const { cart, cartCount, removeFromCart, updateQuantity, clearCart } = useCart();
   const { pay, scriptLoaded } = useRazorpay();
-  const [payStatus, setPayStatus] = useState(null); // null | 'loading' | 'success' | 'error'
-  const [payMessage, setPayMessage] = useState('');
+  const [payStatus, setPayStatus]       = useState(null);
+  const [payMessage, setPayMessage]     = useState('');
+  const [showOrderForm, setShowOrderForm] = useState(false);
+  const [formLoading, setFormLoading]   = useState(false);
 
   const cartTotal = cart.reduce((sum, item) => sum + getItemPrice(item) * item.quantity, 0);
 
@@ -28,38 +31,66 @@ const CartDrawer = ({ isOpen, onClose }) => {
     window.open(`https://wa.me/918720951721?text=${encodeURIComponent(message)}`, '_blank');
   };
 
-  const handlePay = async () => {
+  const handlePay = () => {
     if (cart.length === 0 || !scriptLoaded) return;
-    setPayStatus('loading');
-    setPayMessage('');
+    setShowOrderForm(true);
+  };
 
+  const hasStadiumItem = cart.some(item => item.category === 'Stadium Series');
+
+  const handleOrderFormSubmit = async (customer) => {
     const productLabel = cart.length === 1
       ? cart[0].name
       : `${cart.length} items from Starfruit Tees`;
+
+    setFormLoading(true);
+
+    const itemsSummary = cart.map(item =>
+      `• ${item.name}${item.variant && item.variant !== 'Variant' && item.variant !== 'Default' ? ` (${item.variant})` : ''} x${item.quantity}`
+    ).join('\n');
 
     await pay({
       amount: cartTotal,
       productName: productLabel,
       receipt: `cart_${Date.now()}`,
-      onSuccess: (response) => {
+      customer,
+      onSuccess: async (response) => {
+        setShowOrderForm(false);
+        setFormLoading(false);
         setPayStatus('success');
         setPayMessage(`Payment successful! ID: ${response.razorpay_payment_id}`);
-        // Notify store via WhatsApp after payment
-        const items = cart.map(item =>
-          `• ${item.name}${item.variant && item.variant !== 'Variant' && item.variant !== 'Default' ? ` (${item.variant})` : ''} x${item.quantity}`
-        ).join('\n');
-        const msg = `Hi! I've completed payment for my order.\n\nOrder:\n${items}\n\nTotal: ₹${cartTotal}\nPayment ID: ${response.razorpay_payment_id}\n\nPlease confirm and process my order!`;
+
+        // Send notifications
+        try {
+          await fetch('/api/notify-customer', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              customer,
+              order: {
+                product: itemsSummary,
+                amount: cartTotal,
+                paymentId: response.razorpay_payment_id,
+              },
+            }),
+          });
+        } catch (e) {
+          console.error('Notify failed:', e);
+        }
+
+        // WhatsApp message to store
+        const msg = `Hi! I've completed payment for my order.\n\nOrder:\n${itemsSummary}\n\nTotal: ₹${cartTotal}\nPayment ID: ${response.razorpay_payment_id}\nName: ${customer.name}\nPhone: +91${customer.phone}\nAddress: ${customer.address}, ${customer.pincode}${customer.jerseyName ? `\nJersey: ${customer.jerseyName} #${customer.jerseyNumber}` : ''}\n\nPlease confirm and process my order!`;
         setTimeout(() => {
           window.open(`https://wa.me/918720951721?text=${encodeURIComponent(msg)}`, '_blank');
           clearCart();
         }, 1500);
       },
       onError: (msg) => {
+        setFormLoading(false);
         if (msg !== 'Payment cancelled.') {
+          setShowOrderForm(false);
           setPayStatus('error');
           setPayMessage(msg);
-        } else {
-          setPayStatus(null);
         }
       },
     });
@@ -200,6 +231,15 @@ const CartDrawer = ({ isOpen, onClose }) => {
           </div>
         )}
       </div>
+
+      <OrderForm
+        isOpen={showOrderForm}
+        onClose={() => { setShowOrderForm(false); setFormLoading(false); }}
+        productName={cart.length === 1 ? cart[0].name : `${cart.length} items from Starfruit Tees`}
+        category={hasStadiumItem ? 'Stadium Series' : ''}
+        onSubmit={handleOrderFormSubmit}
+        loading={formLoading}
+      />
     </div>
   );
 };

@@ -40,7 +40,7 @@ export function useRazorpay() {
    * @param {Function} [params.onSuccess]  - Called with Razorpay payment response on success
    * @param {Function} [params.onError]    - Called with error message on failure
    */
-  const pay = async ({ amount, productName, receipt, onSuccess, onError }) => {
+  const pay = async ({ amount, productName, receipt, customer, onSuccess, onError }) => {
     if (!scriptLoaded) {
       onError?.('Payment system not ready. Please try again.');
       return;
@@ -78,8 +78,18 @@ export function useRazorpay() {
         handler: (response) => {
           onSuccess?.(response);
         },
-        prefill: {},
-        notes: { product: productName },
+        prefill: {
+          name:    customer?.name    || '',
+          contact: customer?.phone   ? `+91${customer.phone}` : '',
+          email:   customer?.email   || '',
+        },
+        notes: {
+          product:       productName,
+          address:       customer?.address      || '',
+          pincode:       customer?.pincode      || '',
+          jersey_name:   customer?.jerseyName   || '',
+          jersey_number: customer?.jerseyNumber || '',
+        },
         theme: { color: '#E0A600' },
         modal: {
           ondismiss: () => {
