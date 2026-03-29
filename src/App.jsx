@@ -291,39 +291,27 @@ const App = () => {
       {/* About Section */}
       <section id="about" className="py-12 sm:py-16 md:py-24 px-4 sm:px-6 bg-black text-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-[240px] sm:w-[400px] h-[240px] sm:h-[400px] bg-yellow-500/10 rounded-full blur-[100px] -mr-20 sm:-mr-32 -mt-20 sm:-mt-32" />
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
-          <div className="relative order-2 lg:order-1">
-            <img
-              src="https://images.unsplash.com/photo-1523381235212-d73f803801f7?auto=format&fit=crop&q=80&w=1000"
-              className="rounded-xl sm:rounded-2xl shadow-xl grayscale hover:grayscale-0 transition-all duration-700 w-full object-cover max-h-[220px] sm:max-h-[280px]"
-              alt="Starfruit Tees"
-            />
-            <div className="absolute -bottom-4 -right-4 sm:-bottom-6 sm:-right-6 bg-yellow-400 p-4 sm:p-8 rounded-xl sm:rounded-2xl hidden md:block">
-              <Star size={24} fill="#000" />
-            </div>
-          </div>
-          <div className="order-1 lg:order-2">
-            <span className="text-yellow-500 font-black uppercase tracking-[0.25em] text-xs block mb-3 sm:mb-4">Our Story</span>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display italic font-black mb-4 sm:mb-6 leading-none">
-              HOUSE OF <br /> <span className="text-yellow-500">STARFRUIT.</span>
-            </h2>
-            <div className="space-y-3 sm:space-y-4 text-slate-400 text-xs sm:text-sm md:text-base font-medium leading-relaxed">
-              <p>Starfruit Tees is more than just an apparel brand — it's a creative expression born from passion, culture, and craftsmanship. A dream project of an Assamese couple based in Bangalore.</p>
-              <p>Living away from their roots, the founders wanted to bring a piece of their culture and stories into everyday fashion — blending Assamese essence with modern minimal aesthetics and everyday comfort.</p>
-              <p className="text-slate-300 font-semibold italic">"Starfruit Tees — Where every thread tells a story."</p>
-              <div className="pt-3 sm:pt-4 grid grid-cols-3 gap-3 sm:gap-4">
-                <div>
-                  <div className="text-lg sm:text-2xl font-display italic font-black text-white mb-0.5">220 GSM</div>
-                  <div className="text-[10px] sm:text-xs uppercase tracking-widest font-black text-slate-500">Premium Cotton</div>
-                </div>
-                <div>
-                  <div className="text-lg sm:text-2xl font-display italic font-black text-white mb-0.5">Eco-Inks</div>
-                  <div className="text-[10px] sm:text-xs uppercase tracking-widest font-black text-slate-500">Zero-fade print</div>
-                </div>
-                <div>
-                  <div className="text-lg sm:text-2xl font-display italic font-black text-white mb-0.5">PAN India</div>
-                  <div className="text-[10px] sm:text-xs uppercase tracking-widest font-black text-slate-500">Delivery</div>
-                </div>
+        <div className="max-w-3xl mx-auto text-center">
+          <span className="text-yellow-500 font-black uppercase tracking-[0.25em] text-xs block mb-3 sm:mb-4">Our Story</span>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display italic font-black mb-4 sm:mb-6 leading-none">
+            HOUSE OF <br /> <span className="text-yellow-500">STARFRUIT.</span>
+          </h2>
+          <div className="space-y-3 sm:space-y-4 text-slate-400 text-xs sm:text-sm md:text-base font-medium leading-relaxed">
+            <p>Starfruit Tees is more than just an apparel brand — it's a creative expression born from passion, culture, and craftsmanship. A dream project of an Assamese couple based in Bangalore.</p>
+            <p>Living away from their roots, the founders wanted to bring a piece of their culture and stories into everyday fashion — blending Assamese essence with modern minimal aesthetics and everyday comfort.</p>
+            <p className="text-slate-300 font-semibold italic">"Starfruit Tees — Where every thread tells a story."</p>
+            <div className="pt-3 sm:pt-4 grid grid-cols-3 gap-3 sm:gap-4">
+              <div>
+                <div className="text-lg sm:text-2xl font-display italic font-black text-white mb-0.5">220 GSM</div>
+                <div className="text-[10px] sm:text-xs uppercase tracking-widest font-black text-slate-500">Premium Cotton</div>
+              </div>
+              <div>
+                <div className="text-lg sm:text-2xl font-display italic font-black text-white mb-0.5">Eco-Inks</div>
+                <div className="text-[10px] sm:text-xs uppercase tracking-widest font-black text-slate-500">Zero-fade print</div>
+              </div>
+              <div>
+                <div className="text-lg sm:text-2xl font-display italic font-black text-white mb-0.5">PAN India</div>
+                <div className="text-[10px] sm:text-xs uppercase tracking-widest font-black text-slate-500">Delivery</div>
               </div>
             </div>
           </div>
