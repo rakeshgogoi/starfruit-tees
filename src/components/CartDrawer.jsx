@@ -1,0 +1,105 @@
+import React from 'react';
+import { ShoppingBag, X, Minus, Plus, Zap } from 'lucide-react';
+import { useCart } from '../context/CartContext';
+
+const CartDrawer = ({ isOpen, onClose }) => {
+  const { cart, cartCount, removeFromCart, updateQuantity, clearCart } = useCart();
+
+  const handleCheckout = () => {
+    if (cart.length === 0) return;
+    const items = cart.map(item =>
+      `• ${item.name}${item.variant && item.variant !== 'Variant' && item.variant !== 'Default' ? ` (${item.variant})` : ''} x${item.quantity}`
+    ).join('\n');
+    const message = `Hi Starfruit Tees! I'd like to order the following:\n\n${items}\n\nPlease let me know the process!`;
+    window.open(`https://wa.me/918720951721?text=${encodeURIComponent(message)}`, '_blank');
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end">
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="relative w-full max-w-sm bg-white h-full flex flex-col shadow-2xl">
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+          <div className="flex items-center gap-2">
+            <ShoppingBag size={18} />
+            <span className="font-black text-base uppercase tracking-wide">Your Cart</span>
+            {cartCount > 0 && (
+              <span className="bg-yellow-400 text-black text-[10px] font-black px-2 py-0.5 rounded-full">{cartCount}</span>
+            )}
+          </div>
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors">
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Items */}
+        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+          {cart.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-3 pt-16">
+              <ShoppingBag size={40} strokeWidth={1} />
+              <p className="text-sm font-medium">Your cart is empty</p>
+              <button onClick={onClose} className="text-xs text-yellow-600 font-bold underline">Continue Shopping</button>
+            </div>
+          ) : (
+            cart.map(item => (
+              <div key={item.key} className="flex gap-3 items-start">
+                {item.image && (
+                  <div className="w-16 h-20 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
+                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold leading-tight mb-0.5 line-clamp-2">{item.name}</p>
+                  {item.variant && item.variant !== 'Variant' && item.variant !== 'Default' && (
+                    <p className="text-[10px] text-slate-400">{item.variant}</p>
+                  )}
+                  <p className="text-xs font-black text-slate-600 mt-1">{item.price}</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <button
+                      onClick={() => updateQuantity(item.key, item.quantity - 1)}
+                      className="w-6 h-6 rounded-full border border-slate-200 flex items-center justify-center hover:border-black transition-colors"
+                    >
+                      <Minus size={10} />
+                    </button>
+                    <span className="text-xs font-bold w-4 text-center">{item.quantity}</span>
+                    <button
+                      onClick={() => updateQuantity(item.key, item.quantity + 1)}
+                      className="w-6 h-6 rounded-full border border-slate-200 flex items-center justify-center hover:border-black transition-colors"
+                    >
+                      <Plus size={10} />
+                    </button>
+                  </div>
+                </div>
+                <button onClick={() => removeFromCart(item.key)} className="text-slate-300 hover:text-black transition-colors mt-0.5">
+                  <X size={14} />
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Footer */}
+        {cart.length > 0 && (
+          <div className="px-5 py-4 border-t border-slate-100 space-y-3">
+            <button
+              onClick={handleCheckout}
+              className="w-full bg-black text-white py-4 rounded-full font-bold text-sm uppercase tracking-wide flex items-center justify-center gap-2 hover:bg-yellow-400 hover:text-black transition-all"
+            >
+              <Zap size={16} /> Order via WhatsApp
+            </button>
+            <button
+              onClick={clearCart}
+              className="w-full text-center text-[10px] font-bold text-slate-400 hover:text-black uppercase tracking-widest transition-colors"
+            >
+              Clear Cart
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default CartDrawer;
