@@ -11,9 +11,7 @@ export default async function handler(req, res) {
 
   const { amount, receipt } = req.body;
 
-  // 40% launch offer: ₹479 per item. Validate amount is a positive multiple of 479.
-  const OFFER_PRICE = 479;
-  if (!amount || typeof amount !== 'number' || amount <= 0 || Math.round(amount) % OFFER_PRICE !== 0) {
+  if (!amount || typeof amount !== 'number' || amount <= 0) {
     return res.status(400).json({ error: 'Invalid amount' });
   }
 

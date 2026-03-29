@@ -3,8 +3,9 @@ import { ShoppingBag, X, Minus, Plus, CreditCard, MessageCircle, AlertCircle, Ch
 import { useCart } from '../context/CartContext';
 import { useRazorpay } from '../hooks/useRazorpay';
 
-// 40% launch offer — discounted price per item
-const OFFER_PRICE = 479;
+// Discounted price per item by series
+const OFFER_PRICE = { 'Stadium Series': 479, 'Legend Series': 719 };
+const getItemPrice = (item) => OFFER_PRICE[item.category] ?? 479;
 
 const CartDrawer = ({ isOpen, onClose }) => {
   const { cart, cartCount, removeFromCart, updateQuantity, clearCart } = useCart();
@@ -12,8 +13,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
   const [payStatus, setPayStatus] = useState(null); // null | 'loading' | 'success' | 'error'
   const [payMessage, setPayMessage] = useState('');
 
-  const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const cartTotal = OFFER_PRICE * totalQuantity;
+  const cartTotal = cart.reduce((sum, item) => sum + getItemPrice(item) * item.quantity, 0);
 
   const handleWhatsApp = () => {
     if (cart.length === 0) return;
@@ -108,7 +108,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                     <p className="text-[10px] text-slate-400">{item.variant}</p>
                   )}
                   <div className="flex items-center gap-1.5 mt-1">
-                    <span className="text-xs font-black text-black">₹{OFFER_PRICE}</span>
+                    <span className="text-xs font-black text-black">₹{getItemPrice(item)}</span>
                     <span className="text-[10px] text-slate-400 line-through">{item.price}</span>
                   </div>
                   <div className="flex items-center gap-2 mt-2">

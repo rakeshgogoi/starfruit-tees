@@ -33,6 +33,7 @@ export const CartProvider = ({ children }) => {
         id: product.id,
         name: product.name,
         price: product.price,
+        category: product.category || '',
         variant: variant?.name || 'Default',
         image: variant?.images?.[0] || '',
         quantity,
