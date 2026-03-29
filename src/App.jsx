@@ -5,7 +5,7 @@ import { loadProductsForSite, DEFAULT_PRODUCTS } from './data/products';
 import { useCart } from './context/CartContext';
 import Navbar from './components/Navbar';
 import CartDrawer from './components/CartDrawer';
-import landingImage from './assets/landing.png';
+const RCB_HERO = '/products/RCB-Front.jpg';
 
 const TESTIMONIALS = [
   { quote: "I was honestly surprised by the quality. The fabric feels premium and the print hasn't faded even after multiple washes. You can tell this isn't mass-produced stuff.", name: "Ankit Sharma", city: "Bangalore" },
@@ -85,12 +85,7 @@ const App = () => {
               <a href="#shop" className="w-full sm:w-auto bg-black text-white px-6 sm:px-10 py-4 sm:py-5 rounded-full font-semibold text-sm sm:text-base uppercase tracking-wide hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
                 Shop IPL Jerseys <ArrowRight size={16} strokeWidth={2.5} />
               </a>
-              <div className="flex items-center justify-center sm:justify-start gap-3">
-                <div className="flex -space-x-3">
-                  {[1, 2, 3].map(i => (
-                    <img key={i} src={`https://i.pravatar.cc/100?img=${i + 20}`} className="w-9 h-9 sm:w-12 sm:h-12 rounded-full border-2 sm:border-4 border-white object-cover" alt="Customer" />
-                  ))}
-                </div>
+              <div className="flex items-center justify-center sm:justify-start">
                 <div className="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-[#555]">
                   <span className="text-black font-semibold block">500+ jerseys</span> delivered across India
                 </div>
@@ -102,8 +97,8 @@ const App = () => {
             <div className="relative group">
               <div className="absolute -inset-1 bg-gradient-to-tr from-yellow-400 to-red-500 rounded-2xl sm:rounded-[2.5rem] blur opacity-20 group-hover:opacity-40 transition duration-1000" />
               <img
-                src={landingImage}
-                alt="Starfruit Collection"
+                src={RCB_HERO}
+                alt="RCB IPL 2026 Jersey"
                 className="relative rounded-2xl sm:rounded-[2rem] shadow-2xl z-10 w-full object-cover aspect-[4/5]"
               />
             </div>
