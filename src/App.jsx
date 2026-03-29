@@ -7,9 +7,17 @@ import Navbar from './components/Navbar';
 import CartDrawer from './components/CartDrawer';
 import landingImage from './assets/landing.png';
 
+const TESTIMONIALS = [
+  { quote: "I was honestly surprised by the quality. The fabric feels premium and the print hasn't faded even after multiple washes. You can tell this isn't mass-produced stuff.", name: "Ankit Sharma", city: "Bangalore" },
+  { quote: "What I love most about Starfruit Tees is how unique the designs are. They feel personal and different from anything you find on typical online stores.", name: "Riya Das", city: "Guwahati" },
+  { quote: "The fit, the comfort, and the overall vibe of the t-shirt—everything just feels right. It's now one of my go-to outfits for everyday wear.", name: "Karthik Reddy", city: "Hyderabad" },
+  { quote: "You can really see the thought behind each design. It's not just a t-shirt, it feels like something meaningful.", name: "Sneha Bora", city: "Assam" },
+  { quote: "Ordered one just to try, ended up ordering three more. The quality and design consistency are impressive.", name: "Rahul Mehta", city: "Mumbai" },
+  { quote: "As someone from Assam living outside, these designs feel close to home. Subtle, classy, and rooted.", name: "Priyanka Saikia", city: "Delhi" },
+];
+
 const App = () => {
   const [products, setProducts] = useState(DEFAULT_PRODUCTS);
-  const [activeCategory, setActiveCategory] = useState('All');
   const [sliderIndex, setSliderIndex] = useState({});
   const [selectedVariant, setSelectedVariant] = useState({});
   const [cartOpen, setCartOpen] = useState(false);
@@ -20,13 +28,6 @@ const App = () => {
       if (loaded && loaded.length > 0) setProducts(loaded);
     });
   }, []);
-
-  const categories = ['All', 'Legend Series', 'Stadium Series'];
-  const categoryLabels = {
-    'All': 'ALL',
-    'Legend Series': 'LEGEND SERIES',
-    'Stadium Series': 'STADIUM SERIES',
-  };
 
   const categorySectionList = [
     { label: 'LEGEND SERIES', slug: 'legend', category: 'Legend Series' },
@@ -40,9 +41,8 @@ const App = () => {
     return imgs[0] ?? null;
   };
 
-  const filteredProducts = activeCategory === 'All'
-    ? products
-    : products.filter(p => p.category === activeCategory);
+  // Homepage shows only IPL jerseys (Stadium Series)
+  const stadiumProducts = products.filter(p => p.category === 'Stadium Series');
 
   const getProductImages = (product) => {
     if (product.variants) {
@@ -75,24 +75,24 @@ const App = () => {
         <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           <div className="lg:col-span-7 z-10">
             <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-black leading-[0.9] mb-4 md:mb-6">
-              Culture <br />
-              <span className="italic" style={{ color: '#E0A600' }}>Reimagined.</span>
+              Wear Your <br />
+              <span className="italic" style={{ color: '#E0A600' }}>Team.</span>
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-[#555] mb-6 md:mb-10 max-w-xl leading-relaxed font-normal">
-              Premium apparel for the modern tribe. Bridging ancestral motifs with the electric energy of the contemporary world.
+              Official-style IPL 2026 jerseys for every die-hard fan. Premium 220 GSM quality, fully customisable. Delivered across India.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-stretch sm:items-center">
               <a href="#shop" className="w-full sm:w-auto bg-black text-white px-6 sm:px-10 py-4 sm:py-5 rounded-full font-semibold text-sm sm:text-base uppercase tracking-wide hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
-                Explore The Drop <ArrowRight size={16} className="sm:w-[18px] sm:h-[18px]" strokeWidth={2.5} />
+                Shop IPL Jerseys <ArrowRight size={16} strokeWidth={2.5} />
               </a>
               <div className="flex items-center justify-center sm:justify-start gap-3">
                 <div className="flex -space-x-3">
                   {[1, 2, 3].map(i => (
-                    <img key={i} src={`https://i.pravatar.cc/100?img=${i + 20}`} className="w-9 h-9 sm:w-12 sm:h-12 rounded-full border-2 sm:border-4 border-white object-cover" alt="Tribe member" />
+                    <img key={i} src={`https://i.pravatar.cc/100?img=${i + 20}`} className="w-9 h-9 sm:w-12 sm:h-12 rounded-full border-2 sm:border-4 border-white object-cover" alt="Customer" />
                   ))}
                 </div>
                 <div className="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-[#555]">
-                  <span className="text-black font-semibold block">Trusted by</span> 800+ of the Tribe
+                  <span className="text-black font-semibold block">500+ jerseys</span> delivered across India
                 </div>
               </div>
             </div>
@@ -111,8 +111,28 @@ const App = () => {
         </div>
       </header>
 
+      {/* Trust Badges */}
+      <section className="border-y border-slate-100 bg-slate-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-5 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          {[
+            { icon: '🔒', label: 'Secure Payment', sub: 'Razorpay Encrypted' },
+            { icon: '👕', label: '220 GSM Fabric', sub: 'Premium Cotton' },
+            { icon: '🚚', label: 'Pan-India Delivery', sub: '5–7 Business Days' },
+            { icon: '✍️', label: 'Free Customisation', sub: 'Name & Number on Back' },
+          ].map(({ icon, label, sub }) => (
+            <div key={label} className="flex items-center gap-2.5 sm:gap-3">
+              <span className="text-xl sm:text-2xl flex-shrink-0">{icon}</span>
+              <div>
+                <p className="text-[10px] sm:text-xs font-black uppercase tracking-wide text-black leading-tight">{label}</p>
+                <p className="text-[9px] sm:text-[10px] text-slate-400 font-medium">{sub}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Collections Section */}
-      <section className="py-10 sm:py-14 md:py-16 px-4 sm:px-6 border-t border-slate-100">
+      <section className="py-10 sm:py-14 md:py-16 px-4 sm:px-6 border-b border-slate-100">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-lg sm:text-xl font-display font-black uppercase tracking-tight text-black mb-6 sm:mb-8">Collections</h2>
           <div className="grid grid-cols-2 gap-3 sm:gap-4 max-w-xl">
@@ -141,32 +161,21 @@ const App = () => {
         </div>
       </section>
 
-      {/* Product Grid */}
+      {/* IPL Jersey Product Grid */}
       <section id="shop" className="py-10 sm:py-14 md:py-20 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 md:mb-10 gap-3 md:gap-6">
             <div>
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-display font-black mb-1 md:mb-2 uppercase text-black tracking-tight">Latest Releases</h2>
-              <p className="text-xs md:text-sm text-[#555]">Limited batches. Iconic silhouettes.</p>
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-display font-black mb-1 md:mb-2 uppercase text-black tracking-tight">IPL 2026 Jerseys</h2>
+              <p className="text-xs md:text-sm text-[#555]">All 10 teams. Fully customisable. Limited stock.</p>
             </div>
-            <div className="flex flex-wrap gap-1 sm:gap-1.5">
-              {categories.map(cat => (
-                <button
-                  key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  className={`px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-full text-[9px] sm:text-[10px] font-semibold uppercase tracking-widest transition-all ${activeCategory === cat
-                    ? 'bg-black text-white'
-                    : 'bg-[#E0E0E0] text-[#333] hover:bg-[#d0d0d0]'
-                    }`}
-                >
-                  {categoryLabels[cat]}
-                </button>
-              ))}
-            </div>
+            <Link to="/series/stadium" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-black transition-colors flex items-center gap-1 self-start md:self-auto">
+              View All <ArrowRight size={11} />
+            </Link>
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-            {filteredProducts.map(product => {
+            {stadiumProducts.map(product => {
               const images = getProductImages(product);
               const currentIndex = images.length ? ((sliderIndex[product.id] ?? 0) % images.length) : 0;
               const currentVariant = product.variants ? product.variants[selectedVariant[product.id] ?? 0] : null;
@@ -189,14 +198,14 @@ const App = () => {
                               onClick={(e) => { e.stopPropagation(); setProductSliderIndex(product.id, -1, images.length); }}
                               className="absolute left-1 sm:left-1.5 top-1/2 -translate-y-1/2 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors z-20"
                             >
-                              <ChevronLeft size={14} className="sm:w-4 sm:h-4" />
+                              <ChevronLeft size={14} />
                             </button>
                             <button
                               type="button"
                               onClick={(e) => { e.stopPropagation(); setProductSliderIndex(product.id, 1, images.length); }}
                               className="absolute right-1 sm:right-1.5 top-1/2 -translate-y-1/2 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-colors z-20"
                             >
-                              <ChevronRight size={14} className="sm:w-4 sm:h-4" />
+                              <ChevronRight size={14} />
                             </button>
                             <div className="absolute bottom-1.5 sm:bottom-2 left-0 right-0 flex justify-center gap-0.5 z-20">
                               {images.map((_, i) => (
@@ -228,10 +237,11 @@ const App = () => {
                             setSelectedVariant(prev => ({ ...prev, [product.id]: i }));
                             setSliderIndex(prev => ({ ...prev, [product.id]: 0 }));
                           }}
-                          className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide border transition-colors ${(selectedVariant[product.id] ?? 0) === i
-                            ? 'border-black bg-black text-white'
-                            : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
-                            }`}
+                          className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide border transition-colors ${
+                            (selectedVariant[product.id] ?? 0) === i
+                              ? 'border-black bg-black text-white'
+                              : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+                          }`}
                         >
                           {v.name}
                         </button>
@@ -239,22 +249,52 @@ const App = () => {
                     </div>
                   )}
                   <div className="px-0.5 sm:px-1">
-                    <h3 className="text-[11px] sm:text-xs font-display font-black leading-tight mb-0.5 line-clamp-3">{product.name}</h3>
-                    <p className="text-[10px] sm:text-xs font-bold text-slate-400 mb-0.5 sm:mb-1">{product.price}</p>
+                    <h3 className="text-[11px] sm:text-xs font-display font-black leading-tight mb-0.5 line-clamp-2">{product.name}</h3>
+                    <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                      <span className="text-[11px] sm:text-xs font-black text-black">₹479</span>
+                      <span className="text-[10px] text-slate-400 line-through">{product.price}</span>
+                      <span className="text-[8px] font-black uppercase bg-yellow-400 text-black px-1.5 py-0.5 rounded-full leading-none">40% OFF</span>
+                    </div>
                     <p className="text-slate-500 text-[9px] sm:text-[10px] leading-relaxed mb-1 sm:mb-2 line-clamp-2">{product.description}</p>
                     <Link
                       to={`/product/${product.id}`}
                       className="w-full bg-black text-white py-1.5 sm:py-2 rounded-full font-semibold text-[9px] sm:text-[10px] uppercase tracking-wide flex items-center justify-center gap-1 hover:bg-yellow-400 hover:text-black transition-all mb-1.5 sm:mb-2"
                     >
-                      <ArrowRight size={12} className="sm:w-3 sm:h-3" /> View Product Details
+                      <ArrowRight size={12} /> View Product Details
                     </Link>
                     <div className="flex items-center gap-1 text-[7px] sm:text-[8px] font-black text-slate-300 uppercase tracking-widest">
-                      <MapPin size={6} className="sm:w-2 sm:h-2 text-yellow-500 flex-shrink-0" /> Bengaluru Hub
+                      <MapPin size={6} className="text-yellow-500 flex-shrink-0" /> Bengaluru Hub
                     </div>
                   </div>
                 </div>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 bg-slate-50 border-t border-slate-100">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-8 sm:mb-12">
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-yellow-600 block mb-2">What Fans Are Saying</span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-black uppercase tracking-tight">Real Reviews</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+            {TESTIMONIALS.map(({ quote, name, city }) => (
+              <div key={name} className="bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-100 flex flex-col gap-3">
+                <div className="flex gap-0.5">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={13} fill="#E0A600" stroke="#E0A600" />
+                  ))}
+                </div>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed flex-1">"{quote}"</p>
+                <div>
+                  <p className="text-xs font-black text-black">{name}</p>
+                  <p className="text-[10px] text-slate-400 font-medium">{city}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -267,32 +307,54 @@ const App = () => {
             <img
               src="https://images.unsplash.com/photo-1523381235212-d73f803801f7?auto=format&fit=crop&q=80&w=1000"
               className="rounded-xl sm:rounded-2xl shadow-xl grayscale hover:grayscale-0 transition-all duration-700 w-full object-cover max-h-[220px] sm:max-h-[280px]"
-              alt="The House"
+              alt="Starfruit Tees"
             />
             <div className="absolute -bottom-4 -right-4 sm:-bottom-6 sm:-right-6 bg-yellow-400 p-4 sm:p-8 rounded-xl sm:rounded-2xl hidden md:block">
-              <Star size={24} className="sm:w-8 sm:h-8" fill="#000" />
+              <Star size={24} fill="#000" />
             </div>
           </div>
           <div className="order-1 lg:order-2">
-            <span className="text-yellow-500 font-black uppercase tracking-[0.25em] text-[9px] sm:text-[10px] block mb-3 sm:mb-4">The Parent Entity</span>
+            <span className="text-yellow-500 font-black uppercase tracking-[0.25em] text-[9px] sm:text-[10px] block mb-3 sm:mb-4">Our Story</span>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display italic font-black mb-4 sm:mb-6 leading-none">
               HOUSE OF <br /> <span className="text-yellow-500">STARFRUIT.</span>
             </h2>
             <div className="space-y-3 sm:space-y-4 text-slate-400 text-xs sm:text-sm md:text-base font-medium leading-relaxed">
-              <p>Based in the silicon valley of India but keeping the spirit of craftsmanship alive. We bridge the gap through high-quality apparel that speaks a global language.</p>
-              <p>Starfruit Tees is a creative collective for those who value heritage but live in the now. Every print is curated to represent an identity that transcends geography.</p>
-              <div className="pt-3 sm:pt-4 grid grid-cols-2 gap-3 sm:gap-6">
+              <p>Starfruit Tees is more than just an apparel brand — it's a creative expression born from passion, culture, and craftsmanship. A dream project of an Assamese couple based in Bangalore.</p>
+              <p>Living away from their roots, the founders wanted to bring a piece of their culture and stories into everyday fashion — blending Assamese essence with modern minimal aesthetics and everyday comfort.</p>
+              <p className="text-slate-300 font-semibold italic">"Starfruit Tees — Where every thread tells a story."</p>
+              <div className="pt-3 sm:pt-4 grid grid-cols-3 gap-3 sm:gap-4">
                 <div>
-                  <div className="text-xl sm:text-2xl font-display italic font-black text-white mb-0.5 sm:mb-1">240 GSM</div>
-                  <div className="text-[9px] sm:text-[10px] uppercase tracking-widest font-black text-slate-500">Premium Fabric</div>
+                  <div className="text-lg sm:text-2xl font-display italic font-black text-white mb-0.5">220 GSM</div>
+                  <div className="text-[9px] sm:text-[10px] uppercase tracking-widest font-black text-slate-500">Premium Cotton</div>
                 </div>
                 <div>
-                  <div className="text-xl sm:text-2xl font-display italic font-black text-white mb-0.5 sm:mb-1">Eco-Inks</div>
+                  <div className="text-lg sm:text-2xl font-display italic font-black text-white mb-0.5">Eco-Inks</div>
                   <div className="text-[9px] sm:text-[10px] uppercase tracking-widest font-black text-slate-500">Zero-fade print</div>
+                </div>
+                <div>
+                  <div className="text-lg sm:text-2xl font-display italic font-black text-white mb-0.5">PAN India</div>
+                  <div className="text-[9px] sm:text-[10px] uppercase tracking-widest font-black text-slate-500">Delivery</div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Instagram Section */}
+      <section className="py-10 sm:py-14 px-4 sm:px-6 border-t border-slate-100 bg-white">
+        <div className="max-w-6xl mx-auto text-center">
+          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 block mb-2">Community</span>
+          <h2 className="text-xl sm:text-2xl font-display font-black uppercase tracking-tight mb-2">Follow the Drop</h2>
+          <p className="text-xs sm:text-sm text-slate-500 mb-6 max-w-md mx-auto">See real orders, fan photos & new arrivals. Follow us on Instagram and be part of the tribe.</p>
+          <a
+            href="https://www.instagram.com/starfruit_tees/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-black text-white px-6 py-3 rounded-full font-bold text-sm uppercase tracking-wide hover:bg-yellow-400 hover:text-black transition-all"
+          >
+            <Instagram size={16} /> @starfruit_tees
+          </a>
         </div>
       </section>
 
@@ -303,7 +365,7 @@ const App = () => {
             <div className="lg:col-span-5">
               <div className="flex items-center gap-2.5 mb-3 sm:mb-6">
                 <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-md flex-shrink-0" style={{ backgroundColor: '#E0A600' }}>
-                  <Star size={16} className="sm:w-4 sm:h-4" fill="#fff" stroke="#fff" />
+                  <Star size={16} fill="#fff" stroke="#fff" />
                 </div>
                 <div className="flex flex-col min-w-0">
                   <span className="text-xl sm:text-2xl font-display font-black leading-none tracking-tight text-black">Starfruit Tees</span>
@@ -311,14 +373,14 @@ const App = () => {
                 </div>
               </div>
               <p className="text-slate-500 text-xs sm:text-sm mb-4 sm:mb-6 leading-relaxed max-w-sm">
-                Connecting people through stories, art, and the finest cotton. Made for the tribe.
+                Where every thread tells a story. Premium apparel crafted in Bangalore, delivered across India.
               </p>
               <div className="flex gap-2 sm:gap-3">
-                <a href="#" className="w-10 h-10 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-slate-50 flex items-center justify-center hover:bg-black hover:text-white transition-all" aria-label="Instagram">
-                  <Instagram size={18} className="sm:w-5 sm:h-5" />
+                <a href="https://www.instagram.com/starfruit_tees/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-slate-50 flex items-center justify-center hover:bg-black hover:text-white transition-all" aria-label="Instagram">
+                  <Instagram size={18} />
                 </a>
-                <a href="#" className="w-10 h-10 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-slate-50 flex items-center justify-center hover:bg-black hover:text-white transition-all" aria-label="Message">
-                  <MessageCircle size={18} className="sm:w-5 sm:h-5" />
+                <a href="https://wa.me/918720951721" target="_blank" rel="noopener noreferrer" className="w-10 h-10 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-slate-50 flex items-center justify-center hover:bg-black hover:text-white transition-all" aria-label="WhatsApp">
+                  <MessageCircle size={18} />
                 </a>
               </div>
             </div>
@@ -335,14 +397,15 @@ const App = () => {
                 <h4 className="font-black uppercase text-[8px] sm:text-[9px] tracking-[0.25em] text-slate-300 mb-3 sm:mb-6">The House</h4>
                 <ul className="space-y-2 sm:space-y-3 text-[11px] sm:text-xs font-bold text-slate-600">
                   <li><a href="#about" className="hover:text-yellow-600">About Us</a></li>
-                  <li><a href="#contact" className="hover:text-yellow-600">Custom Orders</a></li>
-                  <li><a href="#contact" className="hover:text-yellow-600">Bulk Inquiries</a></li>
+                  <li><a href="https://wa.me/918720951721" target="_blank" rel="noopener noreferrer" className="hover:text-yellow-600">Custom Orders</a></li>
+                  <li><a href="https://wa.me/918720951721" target="_blank" rel="noopener noreferrer" className="hover:text-yellow-600">Bulk Inquiries</a></li>
                 </ul>
               </div>
               <div>
-                <h4 className="font-black uppercase text-[8px] sm:text-[9px] tracking-[0.25em] text-slate-300 mb-3 sm:mb-6">Identity</h4>
-                <ul className="space-y-2 sm:space-y-3 text-[11px] sm:text-xs font-bold text-slate-600 text-right md:text-left">
-                  <li>Global ✈️ Local</li>
+                <h4 className="font-black uppercase text-[8px] sm:text-[9px] tracking-[0.25em] text-slate-300 mb-3 sm:mb-6">Policies</h4>
+                <ul className="space-y-2 sm:space-y-3 text-[11px] sm:text-xs font-bold text-slate-600">
+                  <li><Link to="/policies" className="hover:text-yellow-600">Shipping & Delivery</Link></li>
+                  <li><Link to="/policies" className="hover:text-yellow-600">Exchange Policy</Link></li>
                 </ul>
               </div>
             </div>
@@ -350,7 +413,7 @@ const App = () => {
           <div className="pt-6 sm:pt-8 border-t border-slate-50 flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4 text-center md:text-left">
             <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.25em] text-slate-300">© 2026 HOUSE OF STARFRUIT — ALL RIGHTS RESERVED.</p>
             <div className="flex gap-4 sm:gap-6 text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-slate-300">
-              <span className="flex items-center gap-2"><MapPin size={10} className="sm:w-3 sm:h-3 text-yellow-400 flex-shrink-0" /> HQ: Bengaluru, IN</span>
+              <span className="flex items-center gap-2"><MapPin size={10} className="text-yellow-400 flex-shrink-0" /> HQ: Bengaluru, IN</span>
             </div>
           </div>
         </div>

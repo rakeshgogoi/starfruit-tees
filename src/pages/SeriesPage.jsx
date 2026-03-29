@@ -12,7 +12,7 @@ const SERIES_CONFIG = {
     title: 'Legend Series',
     tagline: 'Icons. Culture. Legacy.',
     description:
-      'Celebrating the legends who shaped our cultural identity. Each design is a wearable tribute — crafted on premium 240 GSM cotton with zero-fade eco-inks.',
+      'Celebrating the legends who shaped our cultural identity. Each design is a wearable tribute — crafted on premium 220 GSM cotton with zero-fade eco-inks.',
     accentColor: '#E0A600',
     heroBg: 'linear-gradient(135deg, #0a0a0a 0%, #1a1200 100%)',
     badge: 'Heritage & Art',

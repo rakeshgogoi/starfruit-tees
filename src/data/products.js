@@ -6,7 +6,7 @@ export const DEFAULT_PRODUCTS = [
     name: 'Maya Black',
     category: 'Heritage Series',
     price: '₹799',
-    description: 'Premium 240 GSM organic cotton. Iconic design in Black. Limited batches.',
+    description: 'Premium 220 GSM organic cotton. Iconic design in Black. Limited batches.',
     tag: '',
     variants: [
       { name: 'Black', images: ['/products/maya-shirt-black.png', '/products/maya-shirt-black-splash.png'] },
@@ -17,7 +17,7 @@ export const DEFAULT_PRODUCTS = [
     name: 'Maya White',
     category: 'Heritage Series',
     price: '₹799',
-    description: 'Premium 240 GSM organic cotton. Iconic design in White. Limited batches.',
+    description: 'Premium 220 GSM organic cotton. Iconic design in White. Limited batches.',
     tag: '',
     variants: [
       { name: 'White', images: ['/products/maya-shirt-white.png', '/products/maya-shirt-white-splash.png'] },
