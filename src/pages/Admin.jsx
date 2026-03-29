@@ -9,7 +9,7 @@ import {
   normalizeProduct,
   DEFAULT_PRODUCTS,
 } from '../data/products';
-import { isAdminAuthenticated, setAdminAuthenticated, clearAdminSession, getAdminPassword } from '../auth';
+import { isAdminAuthenticated, setAdminAuthenticated, clearAdminSession, getAdminPassword, getSessionPassword } from '../auth';
 
 const CATEGORIES = ['Heritage Series', 'Lyrical Anthems', 'Stadium Series'];
 
@@ -28,7 +28,7 @@ function AdminLogin({ onSuccess }) {
       return;
     }
     if (password === expected) {
-      setAdminAuthenticated();
+      setAdminAuthenticated(password);
       onSuccess();
     } else {
       setError('Incorrect password.');
@@ -68,8 +68,231 @@ function AdminLogin({ onSuccess }) {
   );
 }
 
+// ─── Orders Tab ────────────────────────────────────────────────────────────────
+
+const STATUS_META = {
+  captured:   { label: 'Paid',      bg: 'bg-green-100',  text: 'text-green-800'  },
+  authorized: { label: 'Authorized',bg: 'bg-blue-100',   text: 'text-blue-800'   },
+  created:    { label: 'Pending',   bg: 'bg-yellow-100', text: 'text-yellow-800' },
+  failed:     { label: 'Failed',    bg: 'bg-red-100',    text: 'text-red-700'    },
+  refunded:   { label: 'Refunded',  bg: 'bg-slate-100',  text: 'text-slate-600'  },
+};
+
+function StatusBadge({ status }) {
+  const m = STATUS_META[status] || { label: status, bg: 'bg-slate-100', text: 'text-slate-600' };
+  return (
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${m.bg} ${m.text}`}>
+      {m.label}
+    </span>
+  );
+}
+
+function formatDate(unix) {
+  if (!unix) return '—';
+  return new Date(unix * 1000).toLocaleString('en-IN', {
+    day: '2-digit', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  });
+}
+
+function formatAmount(paise) {
+  if (!paise) return '₹0';
+  return `₹${(paise / 100).toLocaleString('en-IN')}`;
+}
+
+function OrdersTab() {
+  const [payments, setPayments] = useState([]);
+  const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState('');
+  const [search, setSearch]     = useState('');
+  const [filter, setFilter]     = useState('all'); // all | captured | failed
+
+  const fetchOrders = async () => {
+    setLoading(true);
+    setError('');
+    const pw = getSessionPassword();
+    try {
+      const res = await fetch('/api/admin-orders', {
+        headers: { 'x-admin-password': pw },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to load orders');
+      setPayments(data.items || []);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchOrders(); }, []);
+
+  const filtered = payments.filter((p) => {
+    const matchStatus = filter === 'all' || p.status === filter;
+    const q = search.toLowerCase();
+    const matchSearch = !q
+      || p.id?.toLowerCase().includes(q)
+      || p.email?.toLowerCase().includes(q)
+      || p.contact?.includes(q)
+      || p.description?.toLowerCase().includes(q)
+      || p.order?.receipt?.toLowerCase().includes(q)
+      || (p.notes?.product || '').toLowerCase().includes(q);
+    return matchStatus && matchSearch;
+  });
+
+  const captured   = payments.filter((p) => p.status === 'captured');
+  const totalRev   = captured.reduce((s, p) => s + (p.amount || 0), 0);
+  const failed     = payments.filter((p) => p.status === 'failed').length;
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 text-slate-400 gap-3">
+        <svg className="animate-spin w-8 h-8" viewBox="0 0 24 24" fill="none">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+        </svg>
+        <span className="text-sm font-medium">Loading orders from Razorpay…</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mt-4 rounded-xl bg-red-50 border border-red-200 p-6 text-center">
+        <p className="text-red-700 font-semibold mb-1">Could not load orders</p>
+        <p className="text-red-500 text-sm mb-4">{error}</p>
+        {error.includes('ADMIN_SECRET') && (
+          <p className="text-sm text-slate-500 mb-4">
+            Add <code className="bg-slate-100 px-1 rounded">ADMIN_SECRET</code> to your Vercel environment variables
+            with the same value as your admin password.
+          </p>
+        )}
+        <button onClick={fetchOrders} className="px-5 py-2 rounded-lg bg-black text-white text-sm font-semibold hover:bg-slate-800">
+          Try again
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        {[
+          { label: 'Total Revenue', value: formatAmount(totalRev), sub: 'from paid orders', accent: true },
+          { label: 'Total Orders',  value: payments.length,        sub: 'all attempts'   },
+          { label: 'Paid',          value: captured.length,        sub: 'captured'       },
+          { label: 'Failed',        value: failed,                  sub: 'failed payments'},
+        ].map((s) => (
+          <div key={s.label} className={`rounded-xl border p-4 ${s.accent ? 'bg-black border-black text-white' : 'bg-white border-slate-200'}`}>
+            <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${s.accent ? 'text-slate-400' : 'text-slate-400'}`}>{s.label}</p>
+            <p className={`text-2xl font-black ${s.accent ? 'text-white' : 'text-slate-900'}`}>{s.value}</p>
+            <p className={`text-xs font-medium mt-0.5 ${s.accent ? 'text-slate-400' : 'text-slate-400'}`}>{s.sub}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-3 mb-4">
+        <div className="relative flex-1 min-w-[180px]">
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+          </svg>
+          <input
+            type="text"
+            placeholder="Search by payment ID, email, phone…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-400"
+          />
+        </div>
+        <div className="flex gap-1">
+          {['all', 'captured', 'failed'].map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition-all ${
+                filter === f ? 'bg-black text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+            >
+              {f === 'all' ? 'All' : f === 'captured' ? '✅ Paid' : '❌ Failed'}
+            </button>
+          ))}
+        </div>
+        <button
+          onClick={fetchOrders}
+          className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-1.5"
+        >
+          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M21 2v6h-6M3 12a9 9 0 0115-6.7L21 8M3 22v-6h6M21 12a9 9 0 01-15 6.7L3 16"/>
+          </svg>
+          Refresh
+        </button>
+      </div>
+
+      {filtered.length === 0 ? (
+        <div className="text-center py-16 text-slate-400">
+          <p className="text-2xl mb-2">📦</p>
+          <p className="font-medium text-sm">{search || filter !== 'all' ? 'No orders match your filter.' : 'No orders yet.'}</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filtered.map((p) => {
+            const productLabel = p.notes?.product || p.description || '—';
+            const receipt = p.order?.receipt || '';
+            return (
+              <div key={p.id} className="bg-white rounded-xl border border-slate-200 p-4 hover:border-slate-300 hover:shadow-sm transition-all">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    {/* Top row */}
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                      <StatusBadge status={p.status} />
+                      <span className="text-xs font-mono text-slate-400">{p.id}</span>
+                      {receipt && (
+                        <span className="text-xs text-slate-300 font-mono hidden sm:inline">· {receipt}</span>
+                      )}
+                    </div>
+
+                    {/* Product */}
+                    <p className="text-sm font-bold text-slate-900 truncate mb-0.5">{productLabel}</p>
+
+                    {/* Customer contact */}
+                    <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-slate-500 font-medium">
+                      {p.contact && <span>📱 {p.contact}</span>}
+                      {p.email   && <span>✉️ {p.email}</span>}
+                      <span>🕐 {formatDate(p.created_at)}</span>
+                    </div>
+                  </div>
+
+                  {/* Amount */}
+                  <div className="text-right flex-shrink-0">
+                    <p className={`text-lg font-black ${p.status === 'captured' ? 'text-green-700' : 'text-slate-400'}`}>
+                      {formatAmount(p.amount)}
+                    </p>
+                    <p className="text-[10px] text-slate-400 uppercase tracking-wide font-bold">{p.method || ''}</p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <p className="mt-6 text-xs text-slate-400 text-center">
+        Showing last 100 payments · For complete history visit{' '}
+        <a href="https://dashboard.razorpay.com/" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-700">
+          Razorpay Dashboard ↗
+        </a>
+      </p>
+    </div>
+  );
+}
+
+// ─── Main Admin ────────────────────────────────────────────────────────────────
+
 export default function Admin() {
   const [authenticated, setAuthenticated] = useState(false);
+  const [tab, setTab]         = useState('products'); // 'products' | 'orders'
   const [products, setProducts] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(createEmptyProduct());
@@ -239,7 +462,22 @@ export default function Admin() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-4">
               <Link to="/" className="text-slate-500 hover:text-black text-sm font-medium">← Store</Link>
-              <h1 className="text-lg font-display font-black">Product manager</h1>
+              <h1 className="text-lg font-display font-black">Admin</h1>
+              {/* Tab switcher */}
+              <div className="flex bg-slate-100 rounded-lg p-1 gap-0.5">
+                {[{ id: 'products', label: '📦 Products' }, { id: 'orders', label: '💳 Orders' }].map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setTab(t.id)}
+                    className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+                      tab === t.id ? 'bg-white text-black shadow-sm' : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <button
@@ -249,24 +487,28 @@ export default function Admin() {
               >
                 Sign out
               </button>
-              <button
-                type="button"
-                onClick={exportJSON}
-                className="px-4 py-2 rounded-lg bg-black text-white text-sm font-medium hover:bg-slate-800"
-              >
-                Publish to site
-              </button>
-              <label className="px-4 py-2 rounded-lg bg-slate-200 text-slate-800 text-sm font-medium hover:bg-slate-300 cursor-pointer">
-                Import
-                <input type="file" accept=".json" className="hidden" onChange={handleImport} />
-              </label>
-              <button
-                type="button"
-                onClick={resetToDefault}
-                className="px-4 py-2 rounded-lg border border-slate-300 text-slate-600 text-sm hover:bg-slate-100"
-              >
-                Reset
-              </button>
+              {tab === 'products' && (
+                <>
+                  <button
+                    type="button"
+                    onClick={exportJSON}
+                    className="px-4 py-2 rounded-lg bg-black text-white text-sm font-medium hover:bg-slate-800"
+                  >
+                    Publish to site
+                  </button>
+                  <label className="px-4 py-2 rounded-lg bg-slate-200 text-slate-800 text-sm font-medium hover:bg-slate-300 cursor-pointer">
+                    Import
+                    <input type="file" accept=".json" className="hidden" onChange={handleImport} />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={resetToDefault}
+                    className="px-4 py-2 rounded-lg border border-slate-300 text-slate-600 text-sm hover:bg-slate-100"
+                  >
+                    Reset
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -280,7 +522,12 @@ export default function Admin() {
       </header>
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-        {!isEditing ? (
+
+        {/* Orders Tab */}
+        {tab === 'orders' && <OrdersTab />}
+
+        {/* Products Tab */}
+        {tab === 'products' && (!isEditing ? (
           /* Product list view */
           <>
             <div className="flex items-center justify-between mb-6">
@@ -472,9 +719,9 @@ export default function Admin() {
               </div>
             </form>
           </div>
-        )}
+        ) : null)}
 
-        {!isEditing && (
+        {tab === 'products' && !isEditing && (
           <p className="mt-8 text-slate-500 text-sm">
             After editing, click <strong>Publish to site</strong> to download <code className="bg-slate-200 px-1 rounded">products.json</code>. Save it as <code className="bg-slate-200 px-1 rounded">public/products.json</code> in your repo, then commit and deploy.
           </p>
