@@ -55,8 +55,14 @@ export function useRazorpay() {
       });
 
       if (!res.ok) {
-        const { error } = await res.json();
-        throw new Error(error || 'Order creation failed');
+        let errorMsg = 'Payment server error. Please use WhatsApp to order.';
+        try {
+          const data = await res.json();
+          errorMsg = data.error || errorMsg;
+        } catch {
+          // response was HTML, not JSON — likely a Vercel function crash
+        }
+        throw new Error(errorMsg);
       }
 
       const order = await res.json();
