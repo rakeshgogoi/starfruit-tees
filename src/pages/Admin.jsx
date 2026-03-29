@@ -526,8 +526,8 @@ export default function Admin() {
         {/* Orders Tab */}
         {tab === 'orders' && <OrdersTab />}
 
-        {/* Products Tab */}
-        {tab === 'products' && (!isEditing ? (
+        {/* Products Tab — list */}
+        {tab === 'products' && !isEditing && (
           /* Product list view */
           <>
             <div className="flex items-center justify-between mb-6">
@@ -578,8 +578,10 @@ export default function Admin() {
               ))}
             </div>
           </>
-        ) : (
-          /* Edit form */
+        )}
+
+        {/* Products Tab — edit form */}
+        {tab === 'products' && isEditing && (
           <div className="space-y-8">
             <div className="flex items-center gap-3">
               <button
@@ -719,7 +721,7 @@ export default function Admin() {
               </div>
             </form>
           </div>
-        ) : null)}
+        )}
 
         {tab === 'products' && !isEditing && (
           <p className="mt-8 text-slate-500 text-sm">
