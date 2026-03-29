@@ -38,7 +38,7 @@ function buildTextMessage(customer, order) {
     ``,
     `We'll process your order within 1–2 business days and share tracking details on this number.`,
     ``,
-    `For queries, WhatsApp us: +91 87209 51721`,
+    `For queries, WhatsApp us: +91 6362376160`,
     ``,
     `Thank you for shopping with us! 🏏`,
     `— Team Starfruit Tees`,
