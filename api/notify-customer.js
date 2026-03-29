@@ -125,7 +125,7 @@ function buildEmailHtml(customer, order) {
         <!-- CTA -->
         <tr>
           <td style="padding:24px;text-align:center;">
-            <a href="https://wa.me/918720951721" style="display:inline-block;background:#25D366;color:#fff;font-size:13px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;padding:14px 28px;border-radius:100px;text-decoration:none;">
+            <a href="https://wa.me/916362376160" style="display:inline-block;background:#25D366;color:#fff;font-size:13px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;padding:14px 28px;border-radius:100px;text-decoration:none;">
               💬 WhatsApp Us for Queries
             </a>
           </td>

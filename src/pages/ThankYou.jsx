@@ -81,7 +81,7 @@ const ThankYou = () => {
         {/* CTA */}
         <div className="space-y-3">
           <a
-            href={`https://wa.me/918720951721?text=${encodeURIComponent(`Hi! I just placed an order. Payment ID: ${paymentId || 'N/A'}. Please confirm.`)}`}
+            href={`https://wa.me/916362376160?text=${encodeURIComponent(`Hi! I just placed an order. Payment ID: ${paymentId || 'N/A'}. Please confirm.`)}`}
             target="_blank"
             rel="noreferrer"
             className="w-full flex items-center justify-center gap-2 py-3.5 rounded-full font-bold text-sm uppercase tracking-wide bg-black text-white hover:bg-yellow-400 hover:text-black transition-all"

@@ -30,7 +30,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
       `• ${item.name}${item.variant && item.variant !== 'Variant' && item.variant !== 'Default' ? ` (${item.variant})` : ''} x${item.quantity}`
     ).join('\n');
     const message = `Hi Starfruit Tees! I'd like to order the following:\n\n${items}\n\nTotal: ₹${cartTotal}\n\nPlease let me know the process!`;
-    window.open(`https://wa.me/918720951721?text=${encodeURIComponent(message)}`, '_blank');
+    window.open(`https://wa.me/916362376160?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   const handlePay = () => {

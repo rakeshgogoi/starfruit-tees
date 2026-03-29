@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "landing-mockup",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["--yes", "serve@14", "/Users/rakeshgogoi/Documents/My Projects/starfruit-tees", "-l", "5555"],
+      "port": 5555
+    },
+    {
+      "name": "vite-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 5173
+    }
+  ]
+}

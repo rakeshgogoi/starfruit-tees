@@ -26,7 +26,7 @@ const Navbar = ({ onCartOpen }) => {
           <Link to="/#about" className="hover:text-black transition-colors">The House</Link>
           <Link to="/admin" className="hover:text-black transition-colors">Admin</Link>
           <button
-            onClick={() => window.open('https://wa.me/918720951721', '_blank')}
+            onClick={() => window.open('https://wa.me/916362376160', '_blank')}
             className="bg-black text-white text-xs px-5 py-2.5 rounded-full hover:bg-yellow-400 hover:text-black transition-all duration-300 flex items-center gap-2"
           >
             Contact

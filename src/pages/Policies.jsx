@@ -53,7 +53,7 @@ const Policies = () => {
               <li>Manufacturing defect or print quality issue</li>
               <li>Wrong product delivered</li>
             </ul>
-            <p className="mt-3">To initiate an exchange, WhatsApp us at <a href="https://wa.me/918720951721" target="_blank" rel="noopener noreferrer" className="text-yellow-600 font-bold hover:underline">+91 87209 51721</a> with your order details and a photo of the issue within 7 days of delivery.</p>
+            <p className="mt-3">To initiate an exchange, WhatsApp us at <a href="https://wa.me/916362376160" target="_blank" rel="noopener noreferrer" className="text-yellow-600 font-bold hover:underline">+91 63623 76160</a> with your order details and a photo of the issue within 7 days of delivery.</p>
           </Section>
 
           {/* Customisation */}
@@ -79,7 +79,7 @@ const Policies = () => {
             <h3 className="text-xl font-display font-black mb-3">Talk to us on WhatsApp</h3>
             <p className="text-slate-400 text-sm mb-5">We're a small team and respond quickly. For any order queries, size help, or customisation questions — just message us.</p>
             <a
-              href="https://wa.me/918720951721"
+              href="https://wa.me/916362376160"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-yellow-400 text-black px-6 py-3 rounded-full font-bold text-sm uppercase tracking-wide hover:bg-yellow-300 transition-all"

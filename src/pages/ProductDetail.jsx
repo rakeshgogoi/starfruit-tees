@@ -119,7 +119,7 @@ const ProductDetail = () => {
       ? `${product.name} (${variantName})`
       : product.name;
     const message = `Hi Starfruit Tees! I'd like to discuss and order the ${orderText} in size ${selectedSize}. Can you help?`;
-    window.open(`https://wa.me/918720951721?text=${encodeURIComponent(message)}`, '_blank');
+    window.open(`https://wa.me/916362376160?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   if (!product && products.length > 1) {

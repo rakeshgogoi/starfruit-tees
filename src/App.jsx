@@ -356,7 +356,7 @@ const App = () => {
                 <a href="https://www.instagram.com/starfruit_tees/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-slate-50 flex items-center justify-center hover:bg-black hover:text-white transition-all" aria-label="Instagram">
                   <Instagram size={18} />
                 </a>
-                <a href="https://wa.me/918720951721" target="_blank" rel="noopener noreferrer" className="w-10 h-10 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-slate-50 flex items-center justify-center hover:bg-black hover:text-white transition-all" aria-label="WhatsApp">
+                <a href="https://wa.me/916362376160" target="_blank" rel="noopener noreferrer" className="w-10 h-10 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-slate-50 flex items-center justify-center hover:bg-black hover:text-white transition-all" aria-label="WhatsApp">
                   <MessageCircle size={18} />
                 </a>
               </div>
@@ -374,8 +374,8 @@ const App = () => {
                 <h4 className="font-black uppercase text-[10px] sm:text-xs tracking-[0.25em] text-slate-300 mb-3 sm:mb-6">The House</h4>
                 <ul className="space-y-2 sm:space-y-3 text-xs sm:text-sm font-bold text-slate-600">
                   <li><a href="#about" className="hover:text-yellow-600">About Us</a></li>
-                  <li><a href="https://wa.me/918720951721" target="_blank" rel="noopener noreferrer" className="hover:text-yellow-600">Custom Orders</a></li>
-                  <li><a href="https://wa.me/918720951721" target="_blank" rel="noopener noreferrer" className="hover:text-yellow-600">Bulk Inquiries</a></li>
+                  <li><a href="https://wa.me/916362376160" target="_blank" rel="noopener noreferrer" className="hover:text-yellow-600">Custom Orders</a></li>
+                  <li><a href="https://wa.me/916362376160" target="_blank" rel="noopener noreferrer" className="hover:text-yellow-600">Bulk Inquiries</a></li>
                 </ul>
               </div>
               <div>
