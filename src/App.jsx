@@ -68,9 +68,9 @@ const App = () => {
       <header className="relative pt-32 sm:pt-36 md:pt-44 pb-16 md:pb-24 px-4 sm:px-6 overflow-hidden" style={{ background: 'radial-gradient(ellipse 80% 50% at 100% 100%, rgba(224,166,0,0.08), transparent), #ffffff' }}>
         <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           <div className="lg:col-span-7 z-10">
-            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-black leading-[0.9] mb-4 md:mb-6">
+            <h1 className="font-hero text-5xl sm:text-6xl md:text-8xl lg:text-9xl leading-[0.9] mb-4 md:mb-6">
               Wear Your <br />
-              <span className="italic" style={{ color: '#E0A600' }}>Team.</span>
+              <span style={{ color: '#E0A600' }}>Team.</span>
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-[#555] mb-6 md:mb-10 max-w-xl leading-relaxed font-normal">
               Official-style IPL 2026 jerseys for every die-hard fan. Premium 220 GSM quality, fully customisable. Delivered across India.
@@ -155,7 +155,7 @@ const App = () => {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 md:mb-10 gap-3 md:gap-6">
             <div>
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-display font-black mb-1 md:mb-2 uppercase text-black tracking-tight">IPL 2026 Jerseys</h2>
+              <h2 className="font-hero text-3xl sm:text-4xl md:text-5xl mb-1 md:mb-2 text-black">IPL 2026 Jerseys</h2>
               <p className="text-xs md:text-sm text-[#555]">All 10 teams. Fully customisable. Limited stock.</p>
             </div>
             <Link to="/series/stadium" className="text-xs font-black uppercase tracking-widest text-slate-400 hover:text-black transition-colors flex items-center gap-1 self-start md:self-auto">
