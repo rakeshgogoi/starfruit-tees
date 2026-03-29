@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, MapPin, ShoppingBag, Zap, Check } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MapPin, ShoppingBag, CreditCard, MessageCircle, Check, AlertCircle, CheckCircle } from 'lucide-react';
 import { loadProductsForSite, DEFAULT_PRODUCTS } from '../data/products';
 import { useCart } from '../context/CartContext';
+import { useRazorpay } from '../hooks/useRazorpay';
 import Navbar from '../components/Navbar';
 import CartDrawer from '../components/CartDrawer';
 
@@ -11,6 +12,7 @@ const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 const ProductDetail = () => {
   const { id } = useParams();
   const { addToCart } = useCart();
+  const { pay, scriptLoaded } = useRazorpay();
 
   const [products, setProducts] = useState(DEFAULT_PRODUCTS);
   const [imageIndex, setImageIndex] = useState(0);
@@ -18,6 +20,8 @@ const ProductDetail = () => {
   const [selectedSize, setSelectedSize] = useState('M');
   const [added, setAdded] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [payStatus, setPayStatus] = useState(null); // null | 'loading' | 'success' | 'error'
+  const [payMessage, setPayMessage] = useState('');
 
   useEffect(() => {
     loadProductsForSite().then(loaded => {
@@ -35,13 +39,47 @@ const ProductDetail = () => {
     setTimeout(() => setAdded(false), 2000);
   };
 
-  const handleBuyNow = () => {
+  const handleBuyNow = async () => {
+    if (!product || !scriptLoaded) return;
+    const priceNum = parseInt(String(product.price).replace(/[^\d]/g, ''), 10) || 0;
+    setPayStatus('loading');
+    setPayMessage('');
+
+    const variantName = product.variants?.[selectedVariant]?.name;
+    const label = variantName && variantName !== 'Variant' && variantName !== 'Default'
+      ? `${product.name} (${variantName}) — Size ${selectedSize}`
+      : `${product.name} — Size ${selectedSize}`;
+
+    await pay({
+      amount: priceNum,
+      productName: label,
+      receipt: `prod_${product.id}_${Date.now()}`,
+      onSuccess: (response) => {
+        setPayStatus('success');
+        setPayMessage(`Payment successful! ID: ${response.razorpay_payment_id}`);
+        const msg = `Hi! I've completed payment for:\n${label}\nPayment ID: ${response.razorpay_payment_id}\n\nPlease confirm and process my order!`;
+        setTimeout(() => {
+          window.open(`https://wa.me/918720951721?text=${encodeURIComponent(msg)}`, '_blank');
+        }, 1500);
+      },
+      onError: (msg) => {
+        if (msg !== 'Payment cancelled.') {
+          setPayStatus('error');
+          setPayMessage(msg);
+        } else {
+          setPayStatus(null);
+        }
+      },
+    });
+  };
+
+  const handleWhatsApp = () => {
     if (!product) return;
     const variantName = product.variants?.[selectedVariant]?.name;
     const orderText = variantName && variantName !== 'Variant' && variantName !== 'Default'
       ? `${product.name} (${variantName})`
       : product.name;
-    const message = `Hi Starfruit Tees! I'd like to buy the ${orderText} in size ${selectedSize}. What's the process?`;
+    const message = `Hi Starfruit Tees! I'd like to discuss and order the ${orderText} in size ${selectedSize}. Can you help?`;
     window.open(`https://wa.me/918720951721?text=${encodeURIComponent(message)}`, '_blank');
   };
 
@@ -207,6 +245,20 @@ const ProductDetail = () => {
                 </div>
               )}
 
+              {/* Payment status */}
+              {payStatus === 'success' && (
+                <div className="flex items-start gap-2 bg-green-50 border border-green-200 rounded-xl px-3 py-2.5 mb-2">
+                  <CheckCircle size={15} className="text-green-500 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-green-700 font-semibold">{payMessage}</p>
+                </div>
+              )}
+              {payStatus === 'error' && (
+                <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-xl px-3 py-2.5 mb-2">
+                  <AlertCircle size={15} className="text-red-500 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-red-700 font-semibold">{payMessage}</p>
+                </div>
+              )}
+
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
@@ -216,15 +268,24 @@ const ProductDetail = () => {
                     : 'border-black bg-white text-black hover:bg-black hover:text-white'
                     }`}
                 >
-                  {added ? <><Check size={16} /> Added to Cart!</> : <><ShoppingBag size={16} /> Add to Cart</>}
+                  {added ? <><Check size={16} /> Added!</> : <><ShoppingBag size={16} /> Add to Cart</>}
                 </button>
                 <button
                   onClick={handleBuyNow}
-                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-full font-bold text-sm uppercase tracking-wide bg-black text-white hover:bg-yellow-400 hover:text-black transition-all duration-200"
+                  disabled={payStatus === 'loading' || !scriptLoaded}
+                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-full font-bold text-sm uppercase tracking-wide bg-black text-white hover:bg-yellow-400 hover:text-black transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Zap size={16} /> Buy Now
+                  <CreditCard size={16} /> {payStatus === 'loading' ? 'Opening...' : 'Buy Now'}
                 </button>
               </div>
+
+              {/* WhatsApp fallback */}
+              <button
+                onClick={handleWhatsApp}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full text-xs font-bold uppercase tracking-wide border border-slate-200 text-slate-500 hover:border-black hover:text-black transition-all mt-2"
+              >
+                <MessageCircle size={13} /> Prefer to discuss first? Chat on WhatsApp
+              </button>
 
               <div className="flex items-center gap-2 mt-4 text-[10px] font-bold text-slate-300 uppercase tracking-widest">
                 <MapPin size={10} className="text-yellow-500 flex-shrink-0" />
