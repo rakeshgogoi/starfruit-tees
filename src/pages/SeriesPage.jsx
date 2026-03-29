@@ -278,7 +278,7 @@ const SeriesPage = () => {
                       <p className="text-slate-500 text-xs sm:text-sm leading-relaxed mb-2 line-clamp-2">{product.description}</p>
                       <Link
                         to={`/product/${product.id}`}
-                        className="w-full bg-black text-white py-2 sm:py-2.5 rounded-full font-semibold text-xs sm:text-sm uppercase tracking-wide flex items-center justify-center gap-1.5 hover:bg-yellow-400 hover:text-black transition-all"
+                        className="w-full bg-black text-white py-2 sm:py-2.5 rounded-full font-semibold text-[10px] sm:text-xs uppercase tracking-wide flex items-center justify-center gap-1.5 hover:bg-yellow-400 hover:text-black transition-all"
                       >
                         <ArrowRight size={11} /> View Product Details
                       </Link>
