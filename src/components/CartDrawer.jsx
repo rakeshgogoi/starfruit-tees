@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ShoppingBag, X, Minus, Plus, CreditCard, MessageCircle, AlertCircle, CheckCircle } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useRazorpay } from '../hooks/useRazorpay';
@@ -13,6 +14,7 @@ const getItemPrice = (item) => {
 };
 
 const CartDrawer = ({ isOpen, onClose }) => {
+  const navigate = useNavigate();
   const { cart, cartCount, removeFromCart, updateQuantity, clearCart } = useCart();
   const { pay, scriptLoaded } = useRazorpay();
   const [payStatus, setPayStatus]       = useState(null);
@@ -78,12 +80,15 @@ const CartDrawer = ({ isOpen, onClose }) => {
           console.error('Notify failed:', e);
         }
 
-        // WhatsApp message to store
-        const msg = `Hi! I've completed payment for my order.\n\nOrder:\n${itemsSummary}\n\nTotal: ₹${cartTotal}\nPayment ID: ${response.razorpay_payment_id}\nName: ${customer.name}\nPhone: +91${customer.phone}\nAddress: ${customer.address}, ${customer.pincode}${customer.jerseyName ? `\nJersey: ${customer.jerseyName} #${customer.jerseyNumber}` : ''}\n\nPlease confirm and process my order!`;
-        setTimeout(() => {
-          window.open(`https://wa.me/918720951721?text=${encodeURIComponent(msg)}`, '_blank');
-          clearCart();
-        }, 1500);
+        clearCart();
+        navigate('/thank-you', {
+          state: {
+            paymentId: response.razorpay_payment_id,
+            customerName: customer.name,
+            product: productLabel,
+            amount: cartTotal,
+          },
+        });
       },
       onError: (msg) => {
         setFormLoading(false);

@@ -7,6 +7,7 @@ import Admin from './pages/Admin.jsx'
 import ProductDetail from './pages/ProductDetail.jsx'
 import SeriesPage from './pages/SeriesPage.jsx'
 import Policies from './pages/Policies.jsx'
+import ThankYou from './pages/ThankYou.jsx'
 import { CartProvider } from './context/CartContext.jsx'
 
 createRoot(document.getElementById('root')).render(
@@ -19,6 +20,7 @@ createRoot(document.getElementById('root')).render(
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/policies" element={<Policies />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/thank-you" element={<ThankYou />} />
         </Routes>
       </CartProvider>
     </BrowserRouter>

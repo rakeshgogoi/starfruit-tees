@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, MapPin, ShoppingBag, CreditCard, MessageCircle, Check, AlertCircle, CheckCircle } from 'lucide-react';
 import { loadProductsForSite, DEFAULT_PRODUCTS } from '../data/products';
 import { useCart } from '../context/CartContext';
@@ -19,6 +19,7 @@ const getDiscountLabel = (category) => DISCOUNT_LABEL[category] ?? '';
 
 const ProductDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { addToCart } = useCart();
   const { pay, scriptLoaded } = useRazorpay();
 
@@ -72,8 +73,6 @@ const ProductDetail = () => {
       onSuccess: async (response) => {
         setShowOrderForm(false);
         setFormLoading(false);
-        setPayStatus('success');
-        setPayMessage(`Payment successful! ID: ${response.razorpay_payment_id}`);
 
         // Send notifications
         try {
@@ -93,11 +92,14 @@ const ProductDetail = () => {
           console.error('Notify failed:', e);
         }
 
-        // WhatsApp confirmation to store
-        const msg = `Hi! I've completed payment for:\n${label}\nPayment ID: ${response.razorpay_payment_id}\nName: ${customer.name}\nPhone: +91${customer.phone}\nAddress: ${customer.address}, ${customer.pincode}${customer.jerseyName ? `\nJersey: ${customer.jerseyName} #${customer.jerseyNumber}` : ''}\n\nPlease confirm and process my order!`;
-        setTimeout(() => {
-          window.open(`https://wa.me/918720951721?text=${encodeURIComponent(msg)}`, '_blank');
-        }, 1500);
+        navigate('/thank-you', {
+          state: {
+            paymentId: response.razorpay_payment_id,
+            customerName: customer.name,
+            product: label,
+            amount: priceNum,
+          },
+        });
       },
       onError: (msg) => {
         setFormLoading(false);
