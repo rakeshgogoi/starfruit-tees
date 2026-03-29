@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Instagram, MessageCircle, MapPin, Star, ChevronRight, ChevronLeft, Menu, X, ArrowRight } from 'lucide-react';
+import { Instagram, MessageCircle, MapPin, Star, ChevronRight, ChevronLeft, Menu, X, ArrowRight, ShoppingBag, Minus, Plus, Zap } from 'lucide-react';
 import { loadProductsForSite, DEFAULT_PRODUCTS } from './data/products';
+import { useCart } from './context/CartContext';
 import landingImage from './assets/landing.png';
 
 const App = () => {
@@ -10,6 +11,8 @@ const App = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [sliderIndex, setSliderIndex] = useState({});
   const [selectedVariant, setSelectedVariant] = useState({});
+  const [cartOpen, setCartOpen] = useState(false);
+  const { cart, cartCount, removeFromCart, updateQuantity, clearCart } = useCart();
 
   useEffect(() => {
     loadProductsForSite().then((loaded) => {
@@ -17,16 +20,14 @@ const App = () => {
     });
   }, []);
 
-  const categories = ['All', 'Heritage Series', 'Language Series', 'Legend Series', 'Stadium Series'];
+  const categories = ['All', 'Legend Series', 'Stadium Series'];
   const categoryLabels = {
     'All': 'ALL',
-    'Heritage Series': 'HERITAGE SERIES',
-    'Language Series': 'LANGUAGE SERIES',
     'Legend Series': 'LEGEND SERIES',
     'Stadium Series': 'STADIUM SERIES',
   };
 
-  const categorySectionList = ['Heritage Series', 'Language Series', 'Legend Series', 'Stadium Series'];
+  const categorySectionList = ['Legend Series', 'Stadium Series'];
   const getCategoryImage = (categoryName) => {
     const product = products.find(p => p.category === categoryName);
     if (!product) return null;
@@ -53,9 +54,12 @@ const App = () => {
     });
   };
 
-  const handleWhatsAppOrder = (productName, variantName) => {
-    const orderText = variantName ? `${productName} (${variantName})` : productName;
-    const message = `Hi Starfruit Tees! I'd love to order the ${orderText}. What's the process?`;
+  const handleCheckoutCart = () => {
+    if (cart.length === 0) return;
+    const items = cart.map(item =>
+      `• ${item.name}${item.variant && item.variant !== 'Variant' && item.variant !== 'Default' ? ` (${item.variant})` : ''} x${item.quantity}`
+    ).join('\n');
+    const message = `Hi Starfruit Tees! I'd like to order the following:\n\n${items}\n\nPlease let me know the process!`;
     window.open(`https://wa.me/918720951721?text=${encodeURIComponent(message)}`, '_blank');
   };
 
@@ -81,15 +85,27 @@ const App = () => {
             </div>
           </div>
           
-          <div className="hidden md:flex items-center gap-8 font-medium text-[10px] uppercase tracking-widest text-[#333]">
+          <div className="hidden md:flex items-center gap-6 font-medium text-[10px] uppercase tracking-widest text-[#333]">
             <a href="#shop" className="hover:text-black transition-colors">DROPS</a>
             <a href="#about" className="hover:text-black transition-colors">THE HOUSE</a>
             <Link to="/admin" className="hover:text-black transition-colors">ADMIN</Link>
-            <button 
+            <button
               onClick={() => window.open('https://wa.me/918720951721', '_blank')}
-              className="bg-black text-white px-7 py-3 rounded-full hover:bg-yellow-400 hover:text-black transition-all duration-300 flex items-center gap-2"
+              className="bg-black text-white px-5 py-2.5 rounded-full hover:bg-yellow-400 hover:text-black transition-all duration-300 flex items-center gap-2"
             >
               Contact
+            </button>
+            <button
+              onClick={() => setCartOpen(true)}
+              className="relative flex items-center gap-1.5 border-2 border-black text-black px-4 py-2 rounded-full hover:bg-black hover:text-white transition-all duration-300"
+            >
+              <ShoppingBag size={14} />
+              <span>Cart</span>
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 w-4 h-4 bg-yellow-400 text-black rounded-full text-[9px] font-black flex items-center justify-center leading-none">
+                  {cartCount}
+                </span>
+              )}
             </button>
           </div>
 
@@ -281,13 +297,12 @@ const App = () => {
                     <h3 className="text-[11px] sm:text-xs font-display font-black leading-tight mb-0.5 line-clamp-3">{product.name}</h3>
                     <p className="text-[10px] sm:text-xs font-bold text-slate-400 mb-0.5 sm:mb-1">{product.price}</p>
                     <p className="text-slate-500 text-[9px] sm:text-[10px] leading-relaxed mb-1 sm:mb-2 line-clamp-2">{product.description}</p>
-                    <button
-                      type="button"
-                      onClick={() => handleWhatsAppOrder(product.name, currentVariant?.name)}
-                      className="w-full bg-black text-white py-1.5 sm:py-2 rounded-full font-semibold text-[9px] sm:text-[10px] uppercase tracking-wide flex items-center justify-center gap-1 hover:opacity-90 transition-opacity mb-1.5 sm:mb-2"
+                    <Link
+                      to={`/product/${product.id}`}
+                      className="w-full bg-black text-white py-1.5 sm:py-2 rounded-full font-semibold text-[9px] sm:text-[10px] uppercase tracking-wide flex items-center justify-center gap-1 hover:bg-yellow-400 hover:text-black transition-all mb-1.5 sm:mb-2"
                     >
-                      <MessageCircle size={12} className="sm:w-3 sm:h-3" /> Inquire Now
-                    </button>
+                      <ArrowRight size={12} className="sm:w-3 sm:h-3" /> View Product Details
+                    </Link>
                     <div className="flex items-center gap-1 text-[7px] sm:text-[8px] font-black text-slate-300 uppercase tracking-widest">
                       <MapPin size={6} className="sm:w-2 sm:h-2 text-yellow-500 flex-shrink-0" /> Bengaluru Hub
                     </div>
@@ -401,6 +416,82 @@ const App = () => {
           </div>
         </div>
       </footer>
+      {/* Cart Drawer */}
+      {cartOpen && (
+        <div className="fixed inset-0 z-50 flex justify-end">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setCartOpen(false)} />
+          <div className="relative w-full max-w-sm bg-white h-full flex flex-col shadow-2xl">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <ShoppingBag size={18} />
+                <span className="font-black text-base uppercase tracking-wide">Your Cart</span>
+                {cartCount > 0 && (
+                  <span className="bg-yellow-400 text-black text-[10px] font-black px-2 py-0.5 rounded-full">{cartCount}</span>
+                )}
+              </div>
+              <button onClick={() => setCartOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+              {cart.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-3 pt-16">
+                  <ShoppingBag size={40} strokeWidth={1} />
+                  <p className="text-sm font-medium">Your cart is empty</p>
+                  <button onClick={() => setCartOpen(false)} className="text-xs text-yellow-600 font-bold underline">Continue Shopping</button>
+                </div>
+              ) : (
+                cart.map(item => (
+                  <div key={item.key} className="flex gap-3 items-start">
+                    {item.image && (
+                      <div className="w-16 h-20 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
+                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold leading-tight mb-0.5 line-clamp-2">{item.name}</p>
+                      {item.variant && item.variant !== 'Variant' && item.variant !== 'Default' && (
+                        <p className="text-[10px] text-slate-400">{item.variant}</p>
+                      )}
+                      <p className="text-xs font-black text-slate-600 mt-1">{item.price}</p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <button onClick={() => updateQuantity(item.key, item.quantity - 1)} className="w-6 h-6 rounded-full border border-slate-200 flex items-center justify-center hover:border-black transition-colors">
+                          <Minus size={10} />
+                        </button>
+                        <span className="text-xs font-bold w-4 text-center">{item.quantity}</span>
+                        <button onClick={() => updateQuantity(item.key, item.quantity + 1)} className="w-6 h-6 rounded-full border border-slate-200 flex items-center justify-center hover:border-black transition-colors">
+                          <Plus size={10} />
+                        </button>
+                      </div>
+                    </div>
+                    <button onClick={() => removeFromCart(item.key)} className="text-slate-300 hover:text-black transition-colors mt-0.5">
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {cart.length > 0 && (
+              <div className="px-5 py-4 border-t border-slate-100 space-y-3">
+                <button
+                  onClick={handleCheckoutCart}
+                  className="w-full bg-black text-white py-4 rounded-full font-bold text-sm uppercase tracking-wide flex items-center justify-center gap-2 hover:bg-yellow-400 hover:text-black transition-all"
+                >
+                  <Zap size={16} /> Order via WhatsApp
+                </button>
+                <button
+                  onClick={clearCart}
+                  className="w-full text-center text-[10px] font-bold text-slate-400 hover:text-black uppercase tracking-widest transition-colors"
+                >
+                  Clear Cart
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
