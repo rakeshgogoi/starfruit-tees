@@ -41,7 +41,8 @@ const ProductDetail = () => {
 
   const handleBuyNow = async () => {
     if (!product || !scriptLoaded) return;
-    const priceNum = parseInt(String(product.price).replace(/[^\d]/g, ''), 10) || 0;
+    // 40% offer is live — charge the discounted price of ₹479
+    const priceNum = 479;
     setPayStatus('loading');
     setPayMessage('');
 
@@ -193,7 +194,9 @@ const ProductDetail = () => {
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-black leading-tight mb-3">{product.name}</h1>
 
               <div className="flex items-baseline gap-3 mb-1">
-                <span className="text-2xl font-black">{product.price}</span>
+                <span className="text-2xl font-black text-black">₹479</span>
+                <span className="text-lg text-slate-400 line-through font-medium">{product.price}</span>
+                <span className="text-xs font-black uppercase tracking-wider bg-yellow-400 text-black px-2 py-0.5 rounded-full">40% OFF</span>
               </div>
               {(product.price === '₹799' || product.tag === 'New') && (
                 <p className="text-xs text-green-600 font-semibold mb-4">
