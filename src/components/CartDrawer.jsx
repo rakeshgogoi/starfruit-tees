@@ -3,9 +3,13 @@ import { ShoppingBag, X, Minus, Plus, CreditCard, MessageCircle, AlertCircle, Ch
 import { useCart } from '../context/CartContext';
 import { useRazorpay } from '../hooks/useRazorpay';
 
-// Discounted price per item by series
-const OFFER_PRICE = { 'Stadium Series': 479, 'Legend Series': 719 };
-const getItemPrice = (item) => OFFER_PRICE[item.category] ?? 479;
+// Discounted price per item — calculated from the product's actual price
+const DISCOUNT_RATE = { 'Stadium Series': 0.40, 'Legend Series': 0.10 };
+const getItemPrice = (item) => {
+  const base = parseInt(String(item.price).replace(/[^\d]/g, ''), 10) || 0;
+  const rate = DISCOUNT_RATE[item.category] ?? 0;
+  return Math.round(base * (1 - rate));
+};
 
 const CartDrawer = ({ isOpen, onClose }) => {
   const { cart, cartCount, removeFromCart, updateQuantity, clearCart } = useCart();

@@ -71,7 +71,7 @@ const App = () => {
       <Navbar onCartOpen={() => setCartOpen(true)} />
 
       {/* Hero Section */}
-      <header className="relative pt-28 sm:pt-32 md:pt-40 pb-16 md:pb-24 px-4 sm:px-6 overflow-hidden" style={{ background: 'radial-gradient(ellipse 80% 50% at 100% 100%, rgba(224,166,0,0.08), transparent), #ffffff' }}>
+      <header className="relative pt-32 sm:pt-36 md:pt-44 pb-16 md:pb-24 px-4 sm:px-6 overflow-hidden" style={{ background: 'radial-gradient(ellipse 80% 50% at 100% 100%, rgba(224,166,0,0.08), transparent), #ffffff' }}>
         <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           <div className="lg:col-span-7 z-10">
             <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-black leading-[0.9] mb-4 md:mb-6">

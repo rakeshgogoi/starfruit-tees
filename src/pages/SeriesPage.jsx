@@ -266,13 +266,19 @@ const SeriesPage = () => {
                     <div className="px-0.5">
                       <h3 className="text-[11px] sm:text-xs font-display font-black leading-tight mb-0.5 line-clamp-2">{product.name}</h3>
                       <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-                        <span className="text-[11px] sm:text-xs font-black text-black">
-                          {product.category === 'Legend Series' ? '₹719' : '₹479'}
-                        </span>
-                        <span className="text-[10px] sm:text-[11px] text-slate-400 line-through font-medium">{product.price}</span>
-                        <span className="text-[8px] font-black uppercase tracking-wide bg-yellow-400 text-black px-1.5 py-0.5 rounded-full leading-none">
-                          {product.category === 'Legend Series' ? '10% OFF' : '40% OFF'}
-                        </span>
+                        {(() => {
+                          const rate = product.category === 'Legend Series' ? 0.10 : 0.40;
+                          const base = parseInt(String(product.price).replace(/[^\d]/g, ''), 10) || 0;
+                          const offer = Math.round(base * (1 - rate));
+                          const label = product.category === 'Legend Series' ? '10% OFF' : '40% OFF';
+                          return (
+                            <>
+                              <span className="text-[11px] sm:text-xs font-black text-black">₹{offer}</span>
+                              <span className="text-[10px] sm:text-[11px] text-slate-400 line-through font-medium">{product.price}</span>
+                              <span className="text-[8px] font-black uppercase tracking-wide bg-yellow-400 text-black px-1.5 py-0.5 rounded-full leading-none">{label}</span>
+                            </>
+                          );
+                        })()}
                       </div>
                       <p className="text-slate-500 text-[9px] sm:text-[10px] leading-relaxed mb-2 line-clamp-2">{product.description}</p>
                       <Link

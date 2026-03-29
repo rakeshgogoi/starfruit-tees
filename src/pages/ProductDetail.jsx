@@ -9,10 +9,12 @@ import CartDrawer from '../components/CartDrawer';
 
 const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
-const OFFER_PRICE = { 'Stadium Series': 479, 'Legend Series': 719 };
+const DISCOUNT_RATE = { 'Stadium Series': 0.40, 'Legend Series': 0.10 };
 const DISCOUNT_LABEL = { 'Stadium Series': '40% OFF', 'Legend Series': '10% OFF' };
-const getOfferPrice = (category) => OFFER_PRICE[category] ?? 479;
-const getDiscountLabel = (category) => DISCOUNT_LABEL[category] ?? '40% OFF';
+const parseBasePrice = (priceStr) => parseInt(String(priceStr).replace(/[^\d]/g, ''), 10) || 0;
+const getOfferPrice = (category, originalPrice) =>
+  Math.round(parseBasePrice(originalPrice) * (1 - (DISCOUNT_RATE[category] ?? 0)));
+const getDiscountLabel = (category) => DISCOUNT_LABEL[category] ?? '';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -46,7 +48,7 @@ const ProductDetail = () => {
 
   const handleBuyNow = async () => {
     if (!product || !scriptLoaded) return;
-    const priceNum = getOfferPrice(product.category);
+    const priceNum = getOfferPrice(product.category, product.price);
     setPayStatus('loading');
     setPayMessage('');
 
@@ -198,18 +200,20 @@ const ProductDetail = () => {
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-black leading-tight mb-3">{product.name}</h1>
 
               <div className="flex items-baseline gap-3 mb-1">
-                <span className="text-2xl font-black text-black">₹{getOfferPrice(product.category)}</span>
+                <span className="text-2xl font-black text-black">₹{getOfferPrice(product.category, product.price)}</span>
                 <span className="text-lg text-slate-400 line-through font-medium">{product.price}</span>
-                <span className="text-xs font-black uppercase tracking-wider bg-yellow-400 text-black px-2 py-0.5 rounded-full">{getDiscountLabel(product.category)}</span>
+                {getDiscountLabel(product.category) && (
+                  <span className="text-xs font-black uppercase tracking-wider bg-yellow-400 text-black px-2 py-0.5 rounded-full">{getDiscountLabel(product.category)}</span>
+                )}
               </div>
               {product.category === 'Stadium Series' && (
                 <p className="text-xs text-green-600 font-semibold mb-4">
-                  🔥 Limited Launch: First 100 orders get 40% OFF — only ₹479!
+                  🔥 Limited Launch: First 100 orders get 40% OFF — only ₹{getOfferPrice(product.category, product.price)}!
                 </p>
               )}
               {product.category === 'Legend Series' && (
                 <p className="text-xs text-green-600 font-semibold mb-4">
-                  🎉 Special offer: 10% OFF — only ₹719!
+                  🎉 Special offer: 10% OFF — only ₹{getOfferPrice(product.category, product.price)}!
                 </p>
               )}
 
