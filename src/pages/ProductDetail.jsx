@@ -115,7 +115,7 @@ const ProductDetail = () => {
       <div className="pt-14 md:pt-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-[11px] font-medium text-slate-400 mb-6 uppercase tracking-widest flex-wrap">
+          <nav className="flex items-center gap-2 text-xs font-medium text-slate-400 mb-6 uppercase tracking-widest flex-wrap">
             <Link to="/" className="hover:text-black transition-colors">Shop</Link>
             <span>/</span>
             {seriesSlug ? (
@@ -191,7 +191,7 @@ const ProductDetail = () => {
 
             {/* Product Info */}
             <div className="flex flex-col">
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-yellow-600 mb-2">{product.category}</span>
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-yellow-600 mb-2">{product.category}</span>
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-black leading-tight mb-3">{product.name}</h1>
 
               <div className="flex items-baseline gap-3 mb-1">
@@ -217,7 +217,7 @@ const ProductDetail = () => {
               {/* Variant selector */}
               {product.variants && product.variants.length > 1 && (
                 <div className="mb-5">
-                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400 mb-2">Style</p>
+                  <p className="text-xs font-black uppercase tracking-[0.25em] text-slate-400 mb-2">Style</p>
                   <div className="flex gap-2 flex-wrap">
                     {product.variants.map((v, i) => (
                       <button
@@ -234,7 +234,7 @@ const ProductDetail = () => {
 
               {/* Size selector */}
               <div className="mb-6">
-                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400 mb-2">Size</p>
+                <p className="text-xs font-black uppercase tracking-[0.25em] text-slate-400 mb-2">Size</p>
                 <div className="flex gap-2 flex-wrap">
                   {SIZES.map(size => (
                     <button
@@ -298,7 +298,7 @@ const ProductDetail = () => {
                 <MessageCircle size={13} /> Prefer to discuss first? Chat on WhatsApp
               </button>
 
-              <div className="flex items-center gap-2 mt-4 text-[10px] font-bold text-slate-300 uppercase tracking-widest">
+              <div className="flex items-center gap-2 mt-4 text-xs font-bold text-slate-300 uppercase tracking-widest">
                 <MapPin size={10} className="text-yellow-500 flex-shrink-0" />
                 Quick Delivery · Bengaluru & PAN India
               </div>

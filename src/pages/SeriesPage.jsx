@@ -138,20 +138,20 @@ const SeriesPage = () => {
       {/* Stats bar */}
       <div className="border-b border-slate-100 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap gap-6 sm:gap-10 items-center">
-          <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400">
+          <div className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-slate-400">
             <Star size={12} className="text-yellow-500" fill="#E0A600" />
             Premium Quality
           </div>
-          <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400">
+          <div className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-slate-400">
             <MapPin size={12} className="text-yellow-500" />
             Bengaluru & PAN India Delivery
           </div>
           {slug === 'stadium' && (
-            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400">
+            <div className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-slate-400">
               ✍️ Custom Name & Number
             </div>
           )}
-          <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400">
+          <div className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-slate-400">
             🔥 40% OFF · First 100 Orders
           </div>
         </div>
@@ -245,7 +245,7 @@ const SeriesPage = () => {
                               setSelectedVariant(prev => ({ ...prev, [product.id]: i }));
                               setSliderIndex(prev => ({ ...prev, [product.id]: 0 }));
                             }}
-                            className={`px-2 py-1 rounded-full text-[9px] font-semibold uppercase tracking-wide border transition-colors ${
+                            className={`px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold uppercase tracking-wide border transition-colors ${
                               (selectedVariant[product.id] ?? 0) === i
                                 ? 'border-black bg-black text-white'
                                 : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
@@ -259,7 +259,7 @@ const SeriesPage = () => {
 
                     {/* Info */}
                     <div className="px-0.5">
-                      <h3 className="text-[11px] sm:text-xs font-display font-black leading-tight mb-0.5 line-clamp-2">{product.name}</h3>
+                      <h3 className="text-sm sm:text-base font-display font-black leading-tight mb-1 line-clamp-2">{product.name}</h3>
                       <div className="flex items-center gap-1.5 mb-1 flex-wrap">
                         {(() => {
                           const rate = product.category === 'Legend Series' ? 0.10 : 0.40;
@@ -268,17 +268,17 @@ const SeriesPage = () => {
                           const label = product.category === 'Legend Series' ? '10% OFF' : '40% OFF';
                           return (
                             <>
-                              <span className="text-[11px] sm:text-xs font-black text-black">₹{offer}</span>
-                              <span className="text-[10px] sm:text-[11px] text-slate-400 line-through font-medium">{product.price}</span>
-                              <span className="text-[8px] font-black uppercase tracking-wide bg-yellow-400 text-black px-1.5 py-0.5 rounded-full leading-none">{label}</span>
+                              <span className="text-sm font-black text-black">₹{offer}</span>
+                              <span className="text-xs text-slate-400 line-through font-medium">{product.price}</span>
+                              <span className="text-[10px] font-black uppercase tracking-wide bg-yellow-400 text-black px-1.5 py-0.5 rounded-full leading-none">{label}</span>
                             </>
                           );
                         })()}
                       </div>
-                      <p className="text-slate-500 text-[9px] sm:text-[10px] leading-relaxed mb-2 line-clamp-2">{product.description}</p>
+                      <p className="text-slate-500 text-xs sm:text-sm leading-relaxed mb-2 line-clamp-2">{product.description}</p>
                       <Link
                         to={`/product/${product.id}`}
-                        className="w-full bg-black text-white py-1.5 sm:py-2 rounded-full font-semibold text-[9px] sm:text-[10px] uppercase tracking-wide flex items-center justify-center gap-1 hover:bg-yellow-400 hover:text-black transition-all"
+                        className="w-full bg-black text-white py-2 sm:py-2.5 rounded-full font-semibold text-xs sm:text-sm uppercase tracking-wide flex items-center justify-center gap-1.5 hover:bg-yellow-400 hover:text-black transition-all"
                       >
                         <ArrowRight size={11} /> View Product Details
                       </Link>

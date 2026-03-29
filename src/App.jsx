@@ -80,7 +80,7 @@ const App = () => {
                 Shop IPL Jerseys <ArrowRight size={16} strokeWidth={2.5} />
               </a>
               <div className="flex items-center justify-center sm:justify-start">
-                <div className="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-[#555]">
+                <div className="text-xs sm:text-sm font-medium uppercase tracking-wider text-[#555]">
                   <span className="text-black font-semibold block">500+ jerseys</span> delivered across India
                 </div>
               </div>
@@ -112,8 +112,8 @@ const App = () => {
             <div key={label} className="flex items-center gap-2.5 sm:gap-3">
               <span className="text-xl sm:text-2xl flex-shrink-0">{icon}</span>
               <div>
-                <p className="text-[10px] sm:text-xs font-black uppercase tracking-wide text-black leading-tight">{label}</p>
-                <p className="text-[9px] sm:text-[10px] text-slate-400 font-medium">{sub}</p>
+                <p className="text-xs sm:text-sm font-black uppercase tracking-wide text-black leading-tight">{label}</p>
+                <p className="text-[10px] sm:text-xs text-slate-400 font-medium">{sub}</p>
               </div>
             </div>
           ))}
@@ -140,7 +140,7 @@ const App = () => {
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                   <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
-                    <span className="text-white text-[10px] sm:text-xs font-bold uppercase tracking-widest drop-shadow-md">{label}</span>
+                    <span className="text-white text-xs sm:text-sm font-bold uppercase tracking-widest drop-shadow-md">{label}</span>
                     <ArrowRight size={12} className="text-white opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
                   </div>
                 </Link>
@@ -158,7 +158,7 @@ const App = () => {
               <h2 className="text-xl sm:text-2xl md:text-3xl font-display font-black mb-1 md:mb-2 uppercase text-black tracking-tight">IPL 2026 Jerseys</h2>
               <p className="text-xs md:text-sm text-[#555]">All 10 teams. Fully customisable. Limited stock.</p>
             </div>
-            <Link to="/series/stadium" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-black transition-colors flex items-center gap-1 self-start md:self-auto">
+            <Link to="/series/stadium" className="text-xs font-black uppercase tracking-widest text-slate-400 hover:text-black transition-colors flex items-center gap-1 self-start md:self-auto">
               View All <ArrowRight size={11} />
             </Link>
           </div>
@@ -226,7 +226,7 @@ const App = () => {
                             setSelectedVariant(prev => ({ ...prev, [product.id]: i }));
                             setSliderIndex(prev => ({ ...prev, [product.id]: 0 }));
                           }}
-                          className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide border transition-colors ${
+                          className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold uppercase tracking-wide border transition-colors ${
                             (selectedVariant[product.id] ?? 0) === i
                               ? 'border-black bg-black text-white'
                               : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
@@ -238,21 +238,21 @@ const App = () => {
                     </div>
                   )}
                   <div className="px-0.5 sm:px-1">
-                    <h3 className="text-[11px] sm:text-xs font-display font-black leading-tight mb-0.5 line-clamp-2">{product.name}</h3>
-                    <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-                      <span className="text-[11px] sm:text-xs font-black text-black">₹479</span>
-                      <span className="text-[10px] text-slate-400 line-through">{product.price}</span>
-                      <span className="text-[8px] font-black uppercase bg-yellow-400 text-black px-1.5 py-0.5 rounded-full leading-none">40% OFF</span>
+                    <h3 className="text-sm sm:text-base font-display font-black leading-tight mb-1 line-clamp-2">{product.name}</h3>
+                    <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                      <span className="text-sm font-black text-black">₹479</span>
+                      <span className="text-xs text-slate-400 line-through">{product.price}</span>
+                      <span className="text-[10px] font-black uppercase bg-yellow-400 text-black px-1.5 py-0.5 rounded-full leading-none">40% OFF</span>
                     </div>
-                    <p className="text-slate-500 text-[9px] sm:text-[10px] leading-relaxed mb-1 sm:mb-2 line-clamp-2">{product.description}</p>
+                    <p className="text-slate-500 text-xs sm:text-sm leading-relaxed mb-2 line-clamp-2">{product.description}</p>
                     <Link
                       to={`/product/${product.id}`}
-                      className="w-full bg-black text-white py-1.5 sm:py-2 rounded-full font-semibold text-[9px] sm:text-[10px] uppercase tracking-wide flex items-center justify-center gap-1 hover:bg-yellow-400 hover:text-black transition-all mb-1.5 sm:mb-2"
+                      className="w-full bg-black text-white py-2 sm:py-2.5 rounded-full font-semibold text-xs sm:text-sm uppercase tracking-wide flex items-center justify-center gap-1.5 hover:bg-yellow-400 hover:text-black transition-all mb-2"
                     >
-                      <ArrowRight size={12} /> View Product Details
+                      <ArrowRight size={13} /> View Product Details
                     </Link>
-                    <div className="flex items-center gap-1 text-[7px] sm:text-[8px] font-black text-slate-300 uppercase tracking-widest">
-                      <MapPin size={6} className="text-yellow-500 flex-shrink-0" /> Bengaluru Hub
+                    <div className="flex items-center gap-1 text-[9px] sm:text-[10px] font-black text-slate-300 uppercase tracking-widest">
+                      <MapPin size={8} className="text-yellow-500 flex-shrink-0" /> Bengaluru Hub
                     </div>
                   </div>
                 </div>
@@ -266,7 +266,7 @@ const App = () => {
       <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 bg-slate-50 border-t border-slate-100">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8 sm:mb-12">
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-yellow-600 block mb-2">What Fans Are Saying</span>
+            <span className="text-xs font-black uppercase tracking-[0.3em] text-yellow-600 block mb-2">What Fans Are Saying</span>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-black uppercase tracking-tight">Real Reviews</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
@@ -280,7 +280,7 @@ const App = () => {
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed flex-1">"{quote}"</p>
                 <div>
                   <p className="text-xs font-black text-black">{name}</p>
-                  <p className="text-[10px] text-slate-400 font-medium">{city}</p>
+                  <p className="text-xs text-slate-400 font-medium">{city}</p>
                 </div>
               </div>
             ))}
@@ -303,7 +303,7 @@ const App = () => {
             </div>
           </div>
           <div className="order-1 lg:order-2">
-            <span className="text-yellow-500 font-black uppercase tracking-[0.25em] text-[9px] sm:text-[10px] block mb-3 sm:mb-4">Our Story</span>
+            <span className="text-yellow-500 font-black uppercase tracking-[0.25em] text-xs block mb-3 sm:mb-4">Our Story</span>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display italic font-black mb-4 sm:mb-6 leading-none">
               HOUSE OF <br /> <span className="text-yellow-500">STARFRUIT.</span>
             </h2>
@@ -314,15 +314,15 @@ const App = () => {
               <div className="pt-3 sm:pt-4 grid grid-cols-3 gap-3 sm:gap-4">
                 <div>
                   <div className="text-lg sm:text-2xl font-display italic font-black text-white mb-0.5">220 GSM</div>
-                  <div className="text-[9px] sm:text-[10px] uppercase tracking-widest font-black text-slate-500">Premium Cotton</div>
+                  <div className="text-[10px] sm:text-xs uppercase tracking-widest font-black text-slate-500">Premium Cotton</div>
                 </div>
                 <div>
                   <div className="text-lg sm:text-2xl font-display italic font-black text-white mb-0.5">Eco-Inks</div>
-                  <div className="text-[9px] sm:text-[10px] uppercase tracking-widest font-black text-slate-500">Zero-fade print</div>
+                  <div className="text-[10px] sm:text-xs uppercase tracking-widest font-black text-slate-500">Zero-fade print</div>
                 </div>
                 <div>
                   <div className="text-lg sm:text-2xl font-display italic font-black text-white mb-0.5">PAN India</div>
-                  <div className="text-[9px] sm:text-[10px] uppercase tracking-widest font-black text-slate-500">Delivery</div>
+                  <div className="text-[10px] sm:text-xs uppercase tracking-widest font-black text-slate-500">Delivery</div>
                 </div>
               </div>
             </div>
@@ -333,7 +333,7 @@ const App = () => {
       {/* Instagram Section */}
       <section className="py-10 sm:py-14 px-4 sm:px-6 border-t border-slate-100 bg-white">
         <div className="max-w-6xl mx-auto text-center">
-          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 block mb-2">Community</span>
+          <span className="text-xs font-black uppercase tracking-[0.3em] text-slate-400 block mb-2">Community</span>
           <h2 className="text-xl sm:text-2xl font-display font-black uppercase tracking-tight mb-2">Follow the Drop</h2>
           <p className="text-xs sm:text-sm text-slate-500 mb-6 max-w-md mx-auto">See real orders, fan photos & new arrivals. Follow us on Instagram and be part of the tribe.</p>
           <a
@@ -358,7 +358,7 @@ const App = () => {
                 </div>
                 <div className="flex flex-col min-w-0">
                   <span className="text-xl sm:text-2xl font-display font-black leading-none tracking-tight text-black">Starfruit Tees</span>
-                  <span className="text-[8px] sm:text-[9px] font-medium text-[#555] uppercase tracking-[0.2em] mt-0.5">House of Starfruit</span>
+                  <span className="text-[10px] sm:text-xs font-medium text-[#555] uppercase tracking-[0.2em] mt-0.5">House of Starfruit</span>
                 </div>
               </div>
               <p className="text-slate-500 text-xs sm:text-sm mb-4 sm:mb-6 leading-relaxed max-w-sm">
@@ -376,23 +376,23 @@ const App = () => {
 
             <div className="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
               <div>
-                <h4 className="font-black uppercase text-[8px] sm:text-[9px] tracking-[0.25em] text-slate-300 mb-3 sm:mb-6">Collections</h4>
-                <ul className="space-y-2 sm:space-y-3 text-[11px] sm:text-xs font-bold text-slate-600">
+                <h4 className="font-black uppercase text-[10px] sm:text-xs tracking-[0.25em] text-slate-300 mb-3 sm:mb-6">Collections</h4>
+                <ul className="space-y-2 sm:space-y-3 text-xs sm:text-sm font-bold text-slate-600">
                   <li><Link to="/series/legend" className="hover:text-yellow-600">Legend Series</Link></li>
                   <li><Link to="/series/stadium" className="hover:text-yellow-600">Stadium Series</Link></li>
                 </ul>
               </div>
               <div>
-                <h4 className="font-black uppercase text-[8px] sm:text-[9px] tracking-[0.25em] text-slate-300 mb-3 sm:mb-6">The House</h4>
-                <ul className="space-y-2 sm:space-y-3 text-[11px] sm:text-xs font-bold text-slate-600">
+                <h4 className="font-black uppercase text-[10px] sm:text-xs tracking-[0.25em] text-slate-300 mb-3 sm:mb-6">The House</h4>
+                <ul className="space-y-2 sm:space-y-3 text-xs sm:text-sm font-bold text-slate-600">
                   <li><a href="#about" className="hover:text-yellow-600">About Us</a></li>
                   <li><a href="https://wa.me/918720951721" target="_blank" rel="noopener noreferrer" className="hover:text-yellow-600">Custom Orders</a></li>
                   <li><a href="https://wa.me/918720951721" target="_blank" rel="noopener noreferrer" className="hover:text-yellow-600">Bulk Inquiries</a></li>
                 </ul>
               </div>
               <div>
-                <h4 className="font-black uppercase text-[8px] sm:text-[9px] tracking-[0.25em] text-slate-300 mb-3 sm:mb-6">Policies</h4>
-                <ul className="space-y-2 sm:space-y-3 text-[11px] sm:text-xs font-bold text-slate-600">
+                <h4 className="font-black uppercase text-[10px] sm:text-xs tracking-[0.25em] text-slate-300 mb-3 sm:mb-6">Policies</h4>
+                <ul className="space-y-2 sm:space-y-3 text-xs sm:text-sm font-bold text-slate-600">
                   <li><Link to="/policies" className="hover:text-yellow-600">Shipping & Delivery</Link></li>
                   <li><Link to="/policies" className="hover:text-yellow-600">Exchange Policy</Link></li>
                 </ul>
@@ -400,8 +400,8 @@ const App = () => {
             </div>
           </div>
           <div className="pt-6 sm:pt-8 border-t border-slate-50 flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4 text-center md:text-left">
-            <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.25em] text-slate-300">© 2026 HOUSE OF STARFRUIT — ALL RIGHTS RESERVED.</p>
-            <div className="flex gap-4 sm:gap-6 text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-slate-300">
+            <p className="text-[10px] sm:text-xs font-black uppercase tracking-[0.25em] text-slate-300">© 2026 HOUSE OF STARFRUIT — ALL RIGHTS RESERVED.</p>
+            <div className="flex gap-4 sm:gap-6 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-300">
               <span className="flex items-center gap-2"><MapPin size={10} className="text-yellow-400 flex-shrink-0" /> HQ: Bengaluru, IN</span>
             </div>
           </div>
