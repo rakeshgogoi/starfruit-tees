@@ -17,11 +17,6 @@ const Section = ({ title, children }) => (
 const Policies = () => {
   return (
     <div className="min-h-screen bg-white text-[#1A1A1A]">
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,900;1,900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-        .font-display { font-family: 'Playfair Display', serif; }
-        .font-sans { font-family: 'Plus Jakarta Sans', sans-serif; }
-      `}</style>
 
       <Navbar />
 
