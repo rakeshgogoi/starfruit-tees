@@ -348,7 +348,7 @@ const App = () => {
             </div>
           </div>
           <div className="pt-6 sm:pt-8 border-t border-slate-50 flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4 text-center md:text-left">
-            <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.25em] text-slate-300">© 2024 HOUSE OF STARFRUIT — ALL RIGHTS RESERVED.</p>
+            <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.25em] text-slate-300">© 2026 HOUSE OF STARFRUIT — ALL RIGHTS RESERVED.</p>
             <div className="flex gap-4 sm:gap-6 text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-slate-300">
               <span className="flex items-center gap-2"><MapPin size={10} className="sm:w-3 sm:h-3 text-yellow-400 flex-shrink-0" /> HQ: Bengaluru, IN</span>
             </div>

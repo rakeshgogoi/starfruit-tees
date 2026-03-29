@@ -297,7 +297,7 @@ const SeriesPage = () => {
             <Link to="/series/stadium" className="hover:text-black transition-colors">Stadium</Link>
           </div>
           <p className="text-[9px] font-black uppercase tracking-[0.25em] text-slate-300">
-            © 2024 House of Starfruit
+            © 2026 House of Starfruit
           </p>
         </div>
       </footer>

@@ -73,7 +73,7 @@ export function useRazorpay() {
         currency: order.currency,
         name: 'Starfruit Tees',
         description: productName,
-        image: '/starfruit-logo.jpg',
+        image: '/SC_Logo_Colored.png',
         order_id: order.id,
         handler: (response) => {
           onSuccess?.(response);

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
-import logoSrc from '../assets/starfruit-logo.jpg';
+import logoSrc from '../assets/SC_Logo_Colored.png';
 
 const Navbar = ({ onCartOpen }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,7 +12,7 @@ const Navbar = ({ onCartOpen }) => {
     <nav className="fixed w-full bg-white/90 backdrop-blur-xl z-50 border-b border-slate-100">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 md:h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2.5">
-          <img src={logoSrc} alt="Starfruit Tees" className="h-10 md:h-12 w-auto object-contain flex-shrink-0" />
+          <img src={logoSrc} alt="Starfruit Tees" className="h-12 md:h-14 w-auto object-contain flex-shrink-0" />
           <div className="flex flex-col min-w-0">
             <span className="text-base sm:text-lg md:text-xl font-display font-black leading-none tracking-tight text-black truncate">Starfruit Tees</span>
             <span className="text-[7px] md:text-[8px] font-medium text-[#555] uppercase tracking-[0.2em] mt-0.5">House of Starfruit</span>
