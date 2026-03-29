@@ -25,19 +25,21 @@ export default async function handler(req, res) {
       `${process.env.RAZORPAY_KEY_ID}:${process.env.RAZORPAY_KEY_SECRET}`
     ).toString('base64');
 
-    // Fetch latest 100 payments from Razorpay, expanding the order object
+    // Fetch latest 100 payments from Razorpay
     const rzRes = await fetch(
-      'https://api.razorpay.com/v1/payments?count=100&expand[]=order',
+      'https://api.razorpay.com/v1/payments?count=100',
       { headers: { Authorization: `Basic ${auth}` } }
     );
 
+    const data = await rzRes.json();
+
     if (!rzRes.ok) {
-      const errText = await rzRes.text();
-      console.error('Razorpay API error:', rzRes.status, errText);
-      return res.status(502).json({ error: 'Failed to fetch payments from Razorpay.' });
+      console.error('Razorpay API error:', rzRes.status, data);
+      return res.status(502).json({
+        error: `Razorpay error ${rzRes.status}: ${data?.error?.description || data?.error?.code || JSON.stringify(data)}`,
+      });
     }
 
-    const data = await rzRes.json();
     return res.status(200).json(data);
   } catch (err) {
     console.error('admin-orders error:', err);
