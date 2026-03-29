@@ -9,10 +9,13 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Payment gateway not configured. Please order via WhatsApp.' });
   }
 
-  const { receipt } = req.body;
+  const { amount, receipt } = req.body;
 
-  // 40% launch offer is active — always charge ₹479 regardless of client payload
-  const OFFER_PRICE_PAISE = 47900; // ₹479 × 100
+  // 40% launch offer: ₹479 per item. Validate amount is a positive multiple of 479.
+  const OFFER_PRICE = 479;
+  if (!amount || typeof amount !== 'number' || amount <= 0 || Math.round(amount) % OFFER_PRICE !== 0) {
+    return res.status(400).json({ error: 'Invalid amount' });
+  }
 
   try {
     const Razorpay = (await import('razorpay')).default;
@@ -22,7 +25,7 @@ export default async function handler(req, res) {
     });
 
     const order = await razorpay.orders.create({
-      amount: OFFER_PRICE_PAISE,
+      amount: Math.round(amount * 100),
       currency: 'INR',
       receipt: receipt || `rcpt_${Date.now()}`,
     });

@@ -3,10 +3,8 @@ import { ShoppingBag, X, Minus, Plus, CreditCard, MessageCircle, AlertCircle, Ch
 import { useCart } from '../context/CartContext';
 import { useRazorpay } from '../hooks/useRazorpay';
 
-const parsePrice = (priceStr) => {
-  const num = parseInt(String(priceStr).replace(/[^\d]/g, ''), 10);
-  return isNaN(num) ? 0 : num;
-};
+// 40% launch offer — discounted price per item
+const OFFER_PRICE = 479;
 
 const CartDrawer = ({ isOpen, onClose }) => {
   const { cart, cartCount, removeFromCart, updateQuantity, clearCart } = useCart();
@@ -14,7 +12,8 @@ const CartDrawer = ({ isOpen, onClose }) => {
   const [payStatus, setPayStatus] = useState(null); // null | 'loading' | 'success' | 'error'
   const [payMessage, setPayMessage] = useState('');
 
-  const cartTotal = cart.reduce((sum, item) => sum + parsePrice(item.price) * item.quantity, 0);
+  const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const cartTotal = OFFER_PRICE * totalQuantity;
 
   const handleWhatsApp = () => {
     if (cart.length === 0) return;
@@ -108,7 +107,10 @@ const CartDrawer = ({ isOpen, onClose }) => {
                   {item.variant && item.variant !== 'Variant' && item.variant !== 'Default' && (
                     <p className="text-[10px] text-slate-400">{item.variant}</p>
                   )}
-                  <p className="text-xs font-black text-slate-700 mt-1">{item.price}</p>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <span className="text-xs font-black text-black">₹{OFFER_PRICE}</span>
+                    <span className="text-[10px] text-slate-400 line-through">{item.price}</span>
+                  </div>
                   <div className="flex items-center gap-2 mt-2">
                     <button
                       onClick={() => updateQuantity(item.key, item.quantity - 1)}
@@ -138,7 +140,10 @@ const CartDrawer = ({ isOpen, onClose }) => {
           <div className="px-5 py-5 border-t border-slate-100 space-y-3">
             {/* Total */}
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-black uppercase tracking-widest text-slate-400">Total</span>
+              <div>
+                <span className="text-xs font-black uppercase tracking-widest text-slate-400">Total</span>
+                <span className="ml-2 text-[9px] font-black bg-yellow-400 text-black px-1.5 py-0.5 rounded-full uppercase tracking-wide">40% OFF</span>
+              </div>
               <span className="text-lg font-black">₹{cartTotal}</span>
             </div>
 
