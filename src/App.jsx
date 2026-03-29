@@ -5,7 +5,7 @@ import { loadProductsForSite, DEFAULT_PRODUCTS } from './data/products';
 import { useCart } from './context/CartContext';
 import Navbar from './components/Navbar';
 import CartDrawer from './components/CartDrawer';
-const RCB_HERO = '/products/RCB-Front.jpg';
+import landingImage from './assets/landing-updated.jpg';
 
 const TESTIMONIALS = [
   { quote: "I was honestly surprised by the quality. The fabric feels premium and the print hasn't faded even after multiple washes. You can tell this isn't mass-produced stuff.", name: "Ankit Sharma", city: "Bangalore" },
@@ -97,8 +97,8 @@ const App = () => {
             <div className="relative group">
               <div className="absolute -inset-1 bg-gradient-to-tr from-yellow-400 to-red-500 rounded-2xl sm:rounded-[2.5rem] blur opacity-20 group-hover:opacity-40 transition duration-1000" />
               <img
-                src={RCB_HERO}
-                alt="RCB IPL 2026 Jersey"
+                src={landingImage}
+                alt="Starfruit Tees — RCB Jersey"
                 className="relative rounded-2xl sm:rounded-[2rem] shadow-2xl z-10 w-full object-cover aspect-[4/5]"
               />
             </div>
