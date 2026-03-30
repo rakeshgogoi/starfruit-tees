@@ -7,6 +7,7 @@ import { useRazorpay } from '../hooks/useRazorpay';
 import Navbar from '../components/Navbar';
 import CartDrawer from '../components/CartDrawer';
 import OrderForm from '../components/OrderForm';
+import logoSrc from '../assets/SC_Logo_Colored.png';
 
 const SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
 
@@ -440,6 +441,24 @@ const ProductDetail = () => {
           )}
         </div>
       </div>
+
+      {/* Footer strip */}
+      <footer className="py-8 px-4 sm:px-6 border-t border-slate-100 bg-white">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <img src={logoSrc} alt="Starfruit Tees" className="h-10 w-auto object-contain flex-shrink-0" />
+            <span className="font-display font-black text-base tracking-tight">Starfruit Tees</span>
+          </div>
+          <div className="flex gap-5 text-[10px] font-black uppercase tracking-widest text-slate-400">
+            <Link to="/" className="hover:text-black transition-colors">Home</Link>
+            <Link to="/series/legend" className="hover:text-black transition-colors">Legend</Link>
+            <Link to="/series/stadium" className="hover:text-black transition-colors">Stadium</Link>
+          </div>
+          <p className="text-[9px] font-black uppercase tracking-[0.25em] text-slate-300">
+            © 2026 House of Starfruit
+          </p>
+        </div>
+      </footer>
 
       <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
 

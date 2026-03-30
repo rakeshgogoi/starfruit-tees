@@ -74,7 +74,7 @@ const App = () => {
               <span className="italic" style={{ color: '#E0A600' }}>Team.</span>
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-[#555] mb-6 md:mb-10 max-w-xl leading-relaxed font-normal">
-              Official-style IPL 2026 jerseys for every die-hard fan. Premium 220 GSM quality, fully customisable. Delivered across India.
+              Official-style IPL 2026 jerseys for every die-hard fan. Premium lightweight and breathable fabric for summer wear, fully customisable. Delivered across India.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-stretch sm:items-center">
               <a href="#shop" className="w-full sm:w-auto bg-black text-white px-6 sm:px-10 py-4 sm:py-5 rounded-full font-semibold text-sm sm:text-base uppercase tracking-wide hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
@@ -106,7 +106,7 @@ const App = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-5 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           {[
             { icon: '🔒', label: 'Secure Payment', sub: 'Razorpay Encrypted' },
-            { icon: '👕', label: '220 GSM Fabric', sub: 'Premium Cotton' },
+            { icon: '👕', label: '180/220 GSM Fabric', sub: 'Premium Cotton' },
             { icon: '🚚', label: 'Pan-India Delivery', sub: '5–7 Business Days' },
             { icon: '✍️', label: 'Free Customisation', sub: 'Name & Number on Back' },
           ].map(({ icon, label, sub }) => (
