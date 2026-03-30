@@ -14,7 +14,6 @@ const RCB_CAPS = [
   { id: 'rcb-cap-red',       name: 'RCB Red Cap',         image: '/products/RCB-Cap4.png' },
   { id: 'rcb-cap-black',     name: 'RCB Black Cap',       image: '/products/RCB-Cap3.png' },
   { id: 'rcb-cap-redblack',  name: 'RCB Red & Black Cap', image: '/products/RCB-Cap5.png' },
-  { id: 'rcb-cap-plain-red', name: 'Plain Red Cap',       image: '/products/RCB-Cap2.png' },
 ];
 
 const SIZE_CHART = {
