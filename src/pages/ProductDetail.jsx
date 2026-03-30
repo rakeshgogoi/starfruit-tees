@@ -13,11 +13,11 @@ const SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
 const SIZE_CHART = {
   headers: ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'],
   rows: [
-    { label: 'Length (A)',       values: [27, 28, 29, 30, 31, 32, 33] },
-    { label: 'Shoulder (B)',     values: [15.75, 16.75, 17.75, 18.75, 19.75, 20.75, 21.75] },
-    { label: 'Sleeve Length (C)', values: [7.75, 8.25, 8.75, 9.25, 9.75, 10.25, 10.75] },
-    { label: 'Sleeve Loose (D)', values: [11.5, 12, 12.5, 13, 13.5, 14, 14.5] },
-    { label: 'Chest (E)',        values: [18.5, 19.5, 20.5, 21.5, 22.5, 23.5, 24.5] },
+    { label: 'Length',       values: [27, 28, 29, 30, 31, 32, 33] },
+    { label: 'Shoulder',     values: [15.75, 16.75, 17.75, 18.75, 19.75, 20.75, 21.75] },
+    { label: 'Sleeve Length', values: [7.75, 8.25, 8.75, 9.25, 9.75, 10.25, 10.75] },
+    { label: 'Sleeve Loose', values: [11.5, 12, 12.5, 13, 13.5, 14, 14.5] },
+    { label: 'Chest',        values: [36, 38, 40, 42, 44, 46, 48] },
   ],
 };
 
