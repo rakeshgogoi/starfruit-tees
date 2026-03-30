@@ -10,8 +10,8 @@ import OrderForm from '../components/OrderForm';
 
 const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
-const DISCOUNT_RATE = { 'Legend Series': 0.10 };
-const DISCOUNT_LABEL = { 'Legend Series': '10% OFF' };
+const DISCOUNT_RATE = { 'Stadium Series': 0.10, 'Legend Series': 0.10 };
+const DISCOUNT_LABEL = { 'Stadium Series': '10% OFF', 'Legend Series': '10% OFF' };
 const parseBasePrice = (priceStr) => parseInt(String(priceStr).replace(/[^\d]/g, ''), 10) || 0;
 const getOfferPrice = (category, originalPrice) =>
   Math.round(parseBasePrice(originalPrice) * (1 - (DISCOUNT_RATE[category] ?? 0)));
@@ -233,11 +233,6 @@ const ProductDetail = () => {
                   <span className="text-xs font-black uppercase tracking-wider bg-yellow-400 text-black px-2 py-0.5 rounded-full">{getDiscountLabel(product.category)}</span>
                 )}
               </div>
-              {product.category === 'Stadium Series' && (
-                <p className="text-xs text-green-600 font-semibold mb-4">
-                  🔥 Limited Launch: First 100 orders get 40% OFF — only ₹{getOfferPrice(product.category, product.price)}!
-                </p>
-              )}
               {product.category === 'Legend Series' && (
                 <p className="text-xs text-green-600 font-semibold mb-4">
                   🎉 Special offer: 10% OFF — only ₹{getOfferPrice(product.category, product.price)}!

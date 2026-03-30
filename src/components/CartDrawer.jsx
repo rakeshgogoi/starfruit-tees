@@ -6,7 +6,7 @@ import { useRazorpay } from '../hooks/useRazorpay';
 import OrderForm from './OrderForm';
 
 // Discounted price per item — calculated from the product's actual price
-const DISCOUNT_RATE = { 'Legend Series': 0.10 };
+const DISCOUNT_RATE = { 'Stadium Series': 0.10, 'Legend Series': 0.10 };
 const getItemPrice = (item) => {
   const base = parseInt(String(item.price).replace(/[^\d]/g, ''), 10) || 0;
   const rate = DISCOUNT_RATE[item.category] ?? 0;
@@ -182,7 +182,6 @@ const CartDrawer = ({ isOpen, onClose }) => {
             <div className="flex items-center justify-between mb-1">
               <div>
                 <span className="text-xs font-black uppercase tracking-widest text-slate-400">Total</span>
-                <span className="ml-2 text-[9px] font-black bg-yellow-400 text-black px-1.5 py-0.5 rounded-full uppercase tracking-wide">40% OFF</span>
               </div>
               <span className="text-lg font-black">₹{cartTotal}</span>
             </div>
