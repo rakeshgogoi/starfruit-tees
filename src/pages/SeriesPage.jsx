@@ -261,17 +261,14 @@ const SeriesPage = () => {
                       <div className="flex items-center gap-1.5 mb-1 flex-wrap">
                         {(() => {
                           const base = parseInt(String(product.price).replace(/[^\d]/g, ''), 10) || 0;
-                          if (product.category === 'Legend Series') {
-                            const offer = Math.round(base * 0.90);
-                            return (
-                              <>
-                                <span className="text-sm font-black text-black">₹{offer}</span>
-                                <span className="text-xs text-slate-400 line-through font-medium">{product.price}</span>
-                                <span className="text-[10px] font-black uppercase tracking-wide bg-yellow-400 text-black px-1.5 py-0.5 rounded-full leading-none">10% OFF</span>
-                              </>
-                            );
-                          }
-                          return <span className="text-sm font-black text-black">₹{base}</span>;
+                          const offer = Math.round(base * 0.90);
+                          return (
+                            <>
+                              <span className="text-sm font-black text-black">₹{offer}</span>
+                              <span className="text-xs text-slate-400 line-through font-medium">{product.price}</span>
+                              <span className="text-[10px] font-black uppercase tracking-wide bg-yellow-400 text-black px-1.5 py-0.5 rounded-full leading-none">10% OFF</span>
+                            </>
+                          );
                         })()}
                       </div>
                       <p className="text-slate-500 text-xs sm:text-sm leading-relaxed mb-2 line-clamp-2">{product.description}</p>

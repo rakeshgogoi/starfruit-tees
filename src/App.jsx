@@ -241,15 +241,9 @@ const App = () => {
                   <div className="px-0.5 sm:px-1">
                     <h3 className="text-sm sm:text-base font-display font-black leading-tight mb-1 line-clamp-2">{product.name}</h3>
                     <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-                      {product.category === 'Legend Series' ? (
-                        <>
-                          <span className="text-sm font-black text-black">₹{Math.round(parseInt(String(product.price).replace(/[^\d]/g, ''), 10) * 0.90)}</span>
-                          <span className="text-xs text-slate-400 line-through">{product.price}</span>
-                          <span className="text-[10px] font-black uppercase bg-yellow-400 text-black px-1.5 py-0.5 rounded-full leading-none">10% OFF</span>
-                        </>
-                      ) : (
-                        <span className="text-sm font-black text-black">{product.price}</span>
-                      )}
+                      <span className="text-sm font-black text-black">₹{Math.round(parseInt(String(product.price).replace(/[^\d]/g, ''), 10) * 0.90)}</span>
+                      <span className="text-xs text-slate-400 line-through">{product.price}</span>
+                      <span className="text-[10px] font-black uppercase bg-yellow-400 text-black px-1.5 py-0.5 rounded-full leading-none">10% OFF</span>
                     </div>
                     <p className="text-slate-500 text-xs sm:text-sm leading-relaxed mb-2 line-clamp-2">{product.description}</p>
                     <Link
