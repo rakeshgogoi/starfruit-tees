@@ -10,6 +10,13 @@ import OrderForm from '../components/OrderForm';
 
 const SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
 
+const RCB_CAPS = [
+  { id: 'rcb-cap-red',       name: 'RCB Red Cap',         image: '/products/RCB-Cap4.png' },
+  { id: 'rcb-cap-black',     name: 'RCB Black Cap',       image: '/products/RCB-Cap3.png' },
+  { id: 'rcb-cap-redblack',  name: 'RCB Red & Black Cap', image: '/products/RCB-Cap5.png' },
+  { id: 'rcb-cap-plain-red', name: 'Plain Red Cap',       image: '/products/RCB-Cap2.png' },
+];
+
 const SIZE_CHART = {
   headers: ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'],
   rows: [
@@ -45,6 +52,7 @@ const ProductDetail = () => {
   const [showOrderForm, setShowOrderForm] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const [sizeChartOpen, setSizeChartOpen] = useState(false);
+  const [capAdded, setCapAdded] = useState(null);
 
   useEffect(() => {
     loadProductsForSite().then(loaded => {
@@ -380,6 +388,53 @@ const ProductDetail = () => {
               </div>
             </div>
           </div>
+
+          {/* Complete the Look — RCB Caps */}
+          {product.id === '6' && (
+            <div className="mt-12 pt-10 border-t border-gray-100">
+              <div className="mb-6">
+                <p className="text-xs font-black uppercase tracking-[0.3em] text-yellow-600 mb-1">Complete the Look</p>
+                <h2 className="text-xl sm:text-2xl font-display font-black">Add an RCB Cap</h2>
+                <p className="text-sm text-slate-400 mt-1">One size fits all · ₹199 per cap</p>
+              </div>
+              <div className="flex gap-4 overflow-x-auto pb-3 -mx-1 px-1 snap-x snap-mandatory">
+                {RCB_CAPS.map(cap => (
+                  <div
+                    key={cap.id}
+                    className="flex-shrink-0 snap-start w-44 sm:w-48 bg-[#F8F8F8] rounded-2xl overflow-hidden flex flex-col"
+                  >
+                    <div className="aspect-square overflow-hidden bg-white">
+                      <img src={cap.image} alt={cap.name} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="p-3 flex flex-col gap-2">
+                      <p className="text-xs font-bold text-slate-700 leading-tight">{cap.name}</p>
+                      <p className="text-sm font-black text-black">₹199</p>
+                      <button
+                        onClick={() => {
+                          addToCart({
+                            id: cap.id,
+                            name: cap.name,
+                            price: '₹199',
+                            category: 'Stadium Series',
+                            variants: [{ name: 'Default', images: [cap.image] }],
+                          }, 0);
+                          setCapAdded(cap.id);
+                          setTimeout(() => setCapAdded(null), 2000);
+                        }}
+                        className={`w-full flex items-center justify-center gap-1.5 py-2 rounded-full text-xs font-bold border-2 transition-all duration-200 ${
+                          capAdded === cap.id
+                            ? 'border-green-500 bg-green-500 text-white'
+                            : 'border-black bg-white text-black hover:bg-black hover:text-white'
+                        }`}
+                      >
+                        {capAdded === cap.id ? <><Check size={12} /> Added!</> : <><ShoppingBag size={12} /> Add to Cart</>}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
