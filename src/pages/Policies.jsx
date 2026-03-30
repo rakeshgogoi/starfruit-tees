@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Star, MessageCircle } from 'lucide-react';
 import Navbar from '../components/Navbar';
+import logoSrc from '../assets/SC_Logo_Colored.png';
 
 const Section = ({ title, children }) => (
   <div className="mb-10">
@@ -101,9 +102,7 @@ const Policies = () => {
       <footer className="py-8 px-4 sm:px-6 border-t border-slate-100 bg-white">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full flex items-center justify-center shadow-md" style={{ backgroundColor: '#E0A600' }}>
-              <Star size={13} fill="#fff" stroke="#fff" />
-            </div>
+            <img src={logoSrc} alt="Starfruit Tees" className="h-10 w-auto object-contain flex-shrink-0" />
             <span className="font-display font-black text-base tracking-tight">Starfruit Tees</span>
           </div>
           <div className="flex gap-5 text-[10px] font-black uppercase tracking-widest text-slate-400">
