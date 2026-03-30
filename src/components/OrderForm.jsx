@@ -1,33 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Package, User, Phone, Mail, MapPin, Hash } from 'lucide-react';
+
+/** Expand jerseyItems into one entry per physical jersey unit */
+const expandJerseys = (items = []) => {
+  const result = [];
+  for (const item of items) {
+    for (let i = 0; i < item.quantity; i++) {
+      result.push({
+        key: `${item.key}-${i}`,
+        label: item.quantity > 1 ? `${item.name} #${i + 1}` : item.name,
+        jerseyName: '',
+        jerseyNumber: '',
+      });
+    }
+  }
+  return result;
+};
 
 const INITIAL = {
   name: '', phone: '', email: '',
   address: '', pincode: '',
-  customise: false, jerseyName: '', jerseyNumber: '',
+  customise: false,
 };
 
-export default function OrderForm({ isOpen, onClose, productName, category, onSubmit, loading }) {
-  const [form, setForm]     = useState(INITIAL);
-  const [errors, setErrors] = useState({});
-  const isStadium = category === 'Stadium Series';
+export default function OrderForm({ isOpen, onClose, productName, jerseyItems = [], onSubmit, loading }) {
+  const [form, setForm]               = useState(INITIAL);
+  const [errors, setErrors]           = useState({});
+  const [customisations, setCustomisations] = useState(() => expandJerseys(jerseyItems));
+
+  const hasJerseys   = jerseyItems.length > 0;
+  const totalJerseys = jerseyItems.reduce((s, i) => s + i.quantity, 0);
+
+  // Re-initialise customisations each time the form opens
+  useEffect(() => {
+    if (isOpen) setCustomisations(expandJerseys(jerseyItems));
+  }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const update = (field, value) => {
     setForm(prev => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
   };
 
+  const updateCustomisation = (key, field, value) => {
+    setCustomisations(prev => prev.map(c => c.key === key ? { ...c, [field]: value } : c));
+    const errKey = `${key}_${field}`;
+    if (errors[errKey]) setErrors(prev => ({ ...prev, [errKey]: '' }));
+  };
+
   const validate = () => {
     const e = {};
-    if (!form.name.trim())                                 e.name        = 'Name is required';
-    if (!/^[6-9]\d{9}$/.test(form.phone))                 e.phone       = 'Enter a valid 10-digit Indian mobile number';
+    if (!form.name.trim())                                   e.name    = 'Name is required';
+    if (!/^[6-9]\d{9}$/.test(form.phone))                   e.phone   = 'Enter a valid 10-digit Indian mobile number';
     if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-                                                           e.email       = 'Enter a valid email address';
-    if (!form.address.trim())                              e.address     = 'Delivery address is required';
-    if (!/^\d{6}$/.test(form.pincode))                     e.pincode     = 'Enter a valid 6-digit pincode';
-    if (isStadium && form.customise) {
-      if (!form.jerseyName.trim())                         e.jerseyName   = 'Jersey name is required';
-      if (!form.jerseyNumber.trim())                       e.jerseyNumber = 'Jersey number is required';
+                                                             e.email   = 'Enter a valid email address';
+    if (!form.address.trim())                                e.address = 'Delivery address is required';
+    if (!/^\d{6}$/.test(form.pincode))                       e.pincode = 'Enter a valid 6-digit pincode';
+    if (hasJerseys && form.customise) {
+      customisations.forEach(c => {
+        if (!c.jerseyName.trim())   e[`${c.key}_jerseyName`]   = 'Name is required';
+        if (!c.jerseyNumber.trim()) e[`${c.key}_jerseyNumber`] = 'Number is required';
+      });
     }
     return e;
   };
@@ -36,11 +68,12 @@ export default function OrderForm({ isOpen, onClose, productName, category, onSu
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
-    onSubmit(form);
+    onSubmit({ ...form, customisations: form.customise ? customisations : [] });
   };
 
   const handleClose = () => {
     setForm(INITIAL);
+    setCustomisations(expandJerseys(jerseyItems));
     setErrors({});
     onClose();
   };
@@ -160,8 +193,8 @@ export default function OrderForm({ isOpen, onClose, productName, category, onSu
             {errors.pincode && <p className="text-red-500 text-xs mt-1 font-medium">{errors.pincode}</p>}
           </div>
 
-          {/* Customisation — Stadium Series only */}
-          {isStadium && (
+          {/* Customisation — jerseys only */}
+          {hasJerseys && (
             <div className={`rounded-xl border-2 p-4 transition-all ${form.customise ? 'border-yellow-400 bg-yellow-50' : 'border-slate-200 bg-slate-50'}`}>
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
@@ -171,41 +204,62 @@ export default function OrderForm({ isOpen, onClose, productName, category, onSu
                   className="mt-0.5 w-4 h-4 accent-yellow-500 flex-shrink-0"
                 />
                 <div>
-                  <span className="text-sm font-bold text-slate-800">✍️ Customise Jersey</span>
-                  <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">Add your name & number printed on the back of the jersey <span className="font-bold text-yellow-700">(+₹70)</span></p>
+                  <span className="text-sm font-bold text-slate-800">✍️ Customise {totalJerseys > 1 ? 'Jerseys' : 'Jersey'}</span>
+                  <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                    Add your name & number printed on the back{' '}
+                    <span className="font-bold text-yellow-700">
+                      (+₹70{totalJerseys > 1 ? ' per jersey' : ''})
+                    </span>
+                  </p>
                 </div>
               </label>
 
               {form.customise && (
-                <div className="mt-4 space-y-3 pt-3 border-t border-yellow-200">
-                  <div>
-                    <label className="block text-[10px] font-bold text-yellow-800 uppercase tracking-widest mb-1.5">
-                      Jersey Name <span className="text-red-400">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={form.jerseyName}
-                      onChange={e => update('jerseyName', e.target.value.toUpperCase())}
-                      placeholder="e.g. VIRAT"
-                      maxLength={15}
-                      className={`w-full px-4 py-2.5 border rounded-lg text-sm font-bold uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-yellow-400 ${errors.jerseyName ? 'border-red-400 bg-red-50' : 'border-yellow-300 bg-white'}`}
-                    />
-                    {errors.jerseyName && <p className="text-red-500 text-xs mt-1 font-medium">{errors.jerseyName}</p>}
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-yellow-800 uppercase tracking-widest mb-1.5">
-                      Jersey Number <span className="text-red-400">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={form.jerseyNumber}
-                      onChange={e => update('jerseyNumber', e.target.value.replace(/\D/g, '').slice(0, 2))}
-                      placeholder="e.g. 18"
-                      maxLength={2}
-                      className={`w-full px-4 py-2.5 border rounded-lg text-sm font-bold focus:outline-none focus:ring-2 focus:ring-yellow-400 ${errors.jerseyNumber ? 'border-red-400 bg-red-50' : 'border-yellow-300 bg-white'}`}
-                    />
-                    {errors.jerseyNumber && <p className="text-red-500 text-xs mt-1 font-medium">{errors.jerseyNumber}</p>}
-                  </div>
+                <div className="mt-4 space-y-5 pt-3 border-t border-yellow-200">
+                  {customisations.map((c, idx) => (
+                    <div key={c.key}>
+                      {/* Sub-header only when multiple jerseys */}
+                      {customisations.length > 1 && (
+                        <p className="text-[10px] font-black text-yellow-800 uppercase tracking-widest mb-3 truncate">
+                          {c.label}
+                        </p>
+                      )}
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-[10px] font-bold text-yellow-800 uppercase tracking-widest mb-1.5">
+                            Jersey Name <span className="text-red-400">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={c.jerseyName}
+                            onChange={e => updateCustomisation(c.key, 'jerseyName', e.target.value.toUpperCase())}
+                            placeholder="e.g. VIRAT"
+                            maxLength={15}
+                            className={`w-full px-4 py-2.5 border rounded-lg text-sm font-bold uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-yellow-400 ${errors[`${c.key}_jerseyName`] ? 'border-red-400 bg-red-50' : 'border-yellow-300 bg-white'}`}
+                          />
+                          {errors[`${c.key}_jerseyName`] && <p className="text-red-500 text-xs mt-1 font-medium">{errors[`${c.key}_jerseyName`]}</p>}
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-bold text-yellow-800 uppercase tracking-widest mb-1.5">
+                            Jersey Number <span className="text-red-400">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={c.jerseyNumber}
+                            onChange={e => updateCustomisation(c.key, 'jerseyNumber', e.target.value.replace(/\D/g, '').slice(0, 2))}
+                            placeholder="e.g. 18"
+                            maxLength={2}
+                            className={`w-full px-4 py-2.5 border rounded-lg text-sm font-bold focus:outline-none focus:ring-2 focus:ring-yellow-400 ${errors[`${c.key}_jerseyNumber`] ? 'border-red-400 bg-red-50' : 'border-yellow-300 bg-white'}`}
+                          />
+                          {errors[`${c.key}_jerseyNumber`] && <p className="text-red-500 text-xs mt-1 font-medium">{errors[`${c.key}_jerseyNumber`]}</p>}
+                        </div>
+                      </div>
+                      {/* Divider between jersey entries */}
+                      {idx < customisations.length - 1 && (
+                        <div className="mt-5 border-t border-yellow-200" />
+                      )}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

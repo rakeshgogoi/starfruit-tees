@@ -22,7 +22,11 @@ const CartDrawer = ({ isOpen, onClose }) => {
   const [showOrderForm, setShowOrderForm] = useState(false);
   const [formLoading, setFormLoading]   = useState(false);
 
-  const cartTotal = cart.reduce((sum, item) => sum + getItemPrice(item) * item.quantity, 0);
+  const cartTotal   = cart.reduce((sum, item) => sum + getItemPrice(item) * item.quantity, 0);
+  // Only actual jerseys (Stadium Series) — caps use 'Accessories' category
+  const jerseyItems = cart
+    .filter(i => i.category === 'Stadium Series')
+    .map(i => ({ key: i.key, name: i.name, quantity: i.quantity }));
 
   const handleWhatsApp = () => {
     if (cart.length === 0) return;
@@ -38,7 +42,6 @@ const CartDrawer = ({ isOpen, onClose }) => {
     setShowOrderForm(true);
   };
 
-  const hasStadiumItem = cart.some(item => item.category === 'Stadium Series');
 
   const handleOrderFormSubmit = async (customer) => {
     const productLabel = cart.length === 1
@@ -51,8 +54,8 @@ const CartDrawer = ({ isOpen, onClose }) => {
       `• ${item.name}${item.variant && item.variant !== 'Variant' && item.variant !== 'Default' ? ` (${item.variant})` : ''} x${item.quantity}`
     ).join('\n');
 
-    const stadiumQty = cart.filter(i => i.category === 'Stadium Series').reduce((s, i) => s + i.quantity, 0);
-    const totalAmount = cartTotal + (customer.customise ? stadiumQty * 70 : 0);
+    const jerseyQty   = jerseyItems.reduce((s, i) => s + i.quantity, 0);
+    const totalAmount = cartTotal + (customer.customise ? jerseyQty * 70 : 0);
 
     await pay({
       amount: totalAmount,
@@ -243,7 +246,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
         isOpen={showOrderForm}
         onClose={() => { setShowOrderForm(false); setFormLoading(false); }}
         productName={cart.length === 1 ? cart[0].name : `${cart.length} items from Starfruit Tees`}
-        category={hasStadiumItem ? 'Stadium Series' : ''}
+        jerseyItems={jerseyItems}
         onSubmit={handleOrderFormSubmit}
         loading={formLoading}
       />

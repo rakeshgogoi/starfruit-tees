@@ -24,10 +24,13 @@ function buildTextMessage(customer, order) {
     `• Payment ID: ${order.paymentId}`,
   ];
 
-  if (customer.customise && customer.jerseyName) {
+  if (customer.customise && customer.customisations?.length > 0) {
     lines.push(``, `✍️ *Jersey Customisation*`);
-    lines.push(`• Name: ${customer.jerseyName}`);
-    lines.push(`• Number: ${customer.jerseyNumber}`);
+    customer.customisations.forEach((c, i) => {
+      if (customer.customisations.length > 1) lines.push(``, `Jersey ${i + 1}: ${c.label}`);
+      lines.push(`• Name: ${c.jerseyName}`);
+      lines.push(`• Number: ${c.jerseyNumber}`);
+    });
   }
 
   lines.push(
@@ -48,12 +51,15 @@ function buildTextMessage(customer, order) {
 }
 
 function buildEmailHtml(customer, order) {
-  const customBlock = customer.customise && customer.jerseyName
+  const customBlock = customer.customise && customer.customisations?.length > 0
     ? `<tr>
         <td style="padding:16px 24px;border-bottom:1px solid #f0f0f0;">
-          <p style="margin:0 0 8px;font-size:11px;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;color:#888;">✍️ Jersey Customisation</p>
-          <p style="margin:0;font-size:14px;color:#333;">Name: <strong>${customer.jerseyName}</strong></p>
-          <p style="margin:4px 0 0;font-size:14px;color:#333;">Number: <strong>${customer.jerseyNumber}</strong></p>
+          <p style="margin:0 0 10px;font-size:11px;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;color:#888;">✍️ Jersey Customisation</p>
+          ${customer.customisations.map((c, i) => `
+            ${customer.customisations.length > 1 ? `<p style="margin:${i > 0 ? '12px' : '0'} 0 4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#aaa;">Jersey ${i + 1}: ${c.label}</p>` : ''}
+            <p style="margin:0;font-size:14px;color:#333;">Name: <strong>${c.jerseyName}</strong></p>
+            <p style="margin:4px 0 0;font-size:14px;color:#333;">Number: <strong>${c.jerseyNumber}</strong></p>
+          `).join('')}
         </td>
       </tr>`
     : '';

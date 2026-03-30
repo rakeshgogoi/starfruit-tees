@@ -11,9 +11,9 @@ import OrderForm from '../components/OrderForm';
 const SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
 
 const RCB_CAPS = [
-  { id: 'rcb-cap-red',       name: 'RCB Red Cap',         image: '/products/RCB-Cap4.png' },
-  { id: 'rcb-cap-black',     name: 'RCB Black Cap',       image: '/products/RCB-Cap3.png' },
-  { id: 'rcb-cap-redblack',  name: 'RCB Red & Black Cap', image: '/products/RCB-Cap5.png' },
+  { id: 'rcb-cap-red',      name: 'RCB Red Cap',         image: '/products/RCB-Cap4.png', category: 'Accessories' },
+  { id: 'rcb-cap-black',    name: 'RCB Black Cap',       image: '/products/RCB-Cap3.png', category: 'Accessories' },
+  { id: 'rcb-cap-redblack', name: 'RCB Red & Black Cap', image: '/products/RCB-Cap5.png', category: 'Accessories' },
 ];
 
 const SIZE_CHART = {
@@ -418,7 +418,7 @@ const ProductDetail = () => {
                             id: cap.id,
                             name: cap.name,
                             price: '₹269',
-                            category: 'Stadium Series',
+                            category: 'Accessories',
                             variants: [{ name: 'Default', images: [cap.image] }],
                           }, 0);
                           setCapAdded(cap.id);
@@ -452,7 +452,7 @@ const ProductDetail = () => {
             ? `${product?.name} (${v}) — Size ${selectedSize}`
             : `${product?.name} — Size ${selectedSize}`;
         })()}
-        category={product?.category}
+        jerseyItems={product?.category === 'Stadium Series' ? [{ key: String(product.id), name: product.name, quantity: 1 }] : []}
         onSubmit={handleOrderFormSubmit}
         loading={formLoading}
       />
