@@ -8,7 +8,18 @@ import Navbar from '../components/Navbar';
 import CartDrawer from '../components/CartDrawer';
 import OrderForm from '../components/OrderForm';
 
-const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+const SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
+
+const SIZE_CHART = {
+  headers: ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'],
+  rows: [
+    { label: 'Length (A)',       values: [27, 28, 29, 30, 31, 32, 33] },
+    { label: 'Shoulder (B)',     values: [15.75, 16.75, 17.75, 18.75, 19.75, 20.75, 21.75] },
+    { label: 'Sleeve Length (C)', values: [7.75, 8.25, 8.75, 9.25, 9.75, 10.25, 10.75] },
+    { label: 'Sleeve Loose (D)', values: [11.5, 12, 12.5, 13, 13.5, 14, 14.5] },
+    { label: 'Chest (E)',        values: [18.5, 19.5, 20.5, 21.5, 22.5, 23.5, 24.5] },
+  ],
+};
 
 const DISCOUNT_RATE = { 'Stadium Series': 0.10, 'Legend Series': 0.10 };
 const DISCOUNT_LABEL = { 'Stadium Series': '10% OFF', 'Legend Series': '10% OFF' };
@@ -33,6 +44,7 @@ const ProductDetail = () => {
   const [payMessage, setPayMessage]   = useState('');
   const [showOrderForm, setShowOrderForm] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
+  const [sizeChartOpen, setSizeChartOpen] = useState(false);
 
   useEffect(() => {
     loadProductsForSite().then(loaded => {
@@ -274,6 +286,43 @@ const ProductDetail = () => {
                   ))}
                 </div>
               </div>
+
+              {/* Size chart */}
+              {product.category === 'Stadium Series' && (
+                <div className="mb-6">
+                  <button
+                    onClick={() => setSizeChartOpen(o => !o)}
+                    className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.25em] text-slate-400 hover:text-black transition-colors"
+                  >
+                    Size Chart (inches)
+                    <span className="text-slate-300">{sizeChartOpen ? '▲' : '▼'}</span>
+                  </button>
+                  {sizeChartOpen && (
+                    <div className="mt-3 overflow-x-auto rounded-xl border border-gray-100">
+                      <table className="w-full text-xs border-collapse">
+                        <thead>
+                          <tr className="bg-gray-50">
+                            <th className="text-left px-3 py-2 font-bold text-slate-500 border-b border-gray-100 whitespace-nowrap">Measurement</th>
+                            {SIZE_CHART.headers.map(h => (
+                              <th key={h} className="px-3 py-2 font-bold text-slate-700 border-b border-gray-100 text-center">{h}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {SIZE_CHART.rows.map((row, i) => (
+                            <tr key={row.label} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                              <td className="px-3 py-2 font-semibold text-slate-600 whitespace-nowrap border-b border-gray-50">{row.label}</td>
+                              {row.values.map((v, j) => (
+                                <td key={j} className="px-3 py-2 text-center text-slate-700 border-b border-gray-50">{v}</td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Customization note */}
               {product.category === 'Stadium Series' && (
