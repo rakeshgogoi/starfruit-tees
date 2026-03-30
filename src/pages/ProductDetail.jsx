@@ -394,7 +394,7 @@ const ProductDetail = () => {
               <div className="mb-6">
                 <p className="text-xs font-black uppercase tracking-[0.3em] text-yellow-600 mb-1">Complete the Look</p>
                 <h2 className="text-xl sm:text-2xl font-display font-black">Add an RCB Cap</h2>
-                <p className="text-sm text-slate-400 mt-1">One size fits all · ₹299 per cap</p>
+                <p className="text-sm text-slate-400 mt-1">One size fits all</p>
               </div>
               <div className="flex gap-4 overflow-x-auto pb-3 -mx-1 px-1 snap-x snap-mandatory">
                 {RCB_CAPS.map(cap => (
@@ -407,13 +407,17 @@ const ProductDetail = () => {
                     </div>
                     <div className="p-3 flex flex-col gap-2">
                       <p className="text-xs font-bold text-slate-700 leading-tight">{cap.name}</p>
-                      <p className="text-sm font-black text-black">₹299</p>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-sm font-black text-black">₹269</span>
+                        <span className="text-xs text-slate-400 line-through font-medium">₹299</span>
+                        <span className="text-[10px] font-black uppercase tracking-wide bg-yellow-400 text-black px-1.5 py-0.5 rounded-full">10% OFF</span>
+                      </div>
                       <button
                         onClick={() => {
                           addToCart({
                             id: cap.id,
                             name: cap.name,
-                            price: '₹299',
+                            price: '₹269',
                             category: 'Stadium Series',
                             variants: [{ name: 'Default', images: [cap.image] }],
                           }, 0);
