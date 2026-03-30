@@ -10,8 +10,8 @@ import OrderForm from '../components/OrderForm';
 
 const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
-const DISCOUNT_RATE = { 'Stadium Series': 0.40, 'Legend Series': 0.10 };
-const DISCOUNT_LABEL = { 'Stadium Series': '40% OFF', 'Legend Series': '10% OFF' };
+const DISCOUNT_RATE = { 'Legend Series': 0.10 };
+const DISCOUNT_LABEL = { 'Legend Series': '10% OFF' };
 const parseBasePrice = (priceStr) => parseInt(String(priceStr).replace(/[^\d]/g, ''), 10) || 0;
 const getOfferPrice = (category, originalPrice) =>
   Math.round(parseBasePrice(originalPrice) * (1 - (DISCOUNT_RATE[category] ?? 0)));

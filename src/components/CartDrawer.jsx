@@ -6,7 +6,7 @@ import { useRazorpay } from '../hooks/useRazorpay';
 import OrderForm from './OrderForm';
 
 // Discounted price per item — calculated from the product's actual price
-const DISCOUNT_RATE = { 'Stadium Series': 0.40, 'Legend Series': 0.10 };
+const DISCOUNT_RATE = { 'Legend Series': 0.10 };
 const getItemPrice = (item) => {
   const base = parseInt(String(item.price).replace(/[^\d]/g, ''), 10) || 0;
   const rate = DISCOUNT_RATE[item.category] ?? 0;
