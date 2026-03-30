@@ -187,7 +187,7 @@ const SeriesPage = () => {
                 return (
                   <div key={product.id} className="group relative">
                     {/* Image */}
-                    <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-[#F5F5F5] mb-2 shadow-sm">
+                    <Link to={`/product/${product.id}`} className="block relative aspect-[3/4] rounded-xl overflow-hidden bg-[#F5F5F5] mb-2 shadow-sm cursor-pointer">
                       {images.length > 0 && (
                         <>
                           <img
@@ -230,7 +230,7 @@ const SeriesPage = () => {
                           {product.tag}
                         </span>
                       )}
-                    </div>
+                    </Link>
 
                     {/* Variant selector */}
                     {product.variants && product.variants.length > 1 && (

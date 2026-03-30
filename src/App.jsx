@@ -172,7 +172,7 @@ const App = () => {
 
               return (
                 <div key={product.id} className="relative group">
-                  <div className="relative aspect-[3/4] rounded-lg sm:rounded-xl overflow-hidden bg-[#F5F5F5] mb-1.5 sm:mb-2 shadow-sm">
+                  <Link to={`/product/${product.id}`} className="block relative aspect-[3/4] rounded-lg sm:rounded-xl overflow-hidden bg-[#F5F5F5] mb-1.5 sm:mb-2 shadow-sm cursor-pointer">
                     {images.length > 0 && (
                       <>
                         <img
@@ -216,7 +216,7 @@ const App = () => {
                         {product.tag}
                       </span>
                     )}
-                  </div>
+                  </Link>
                   {product.variants && product.variants.length > 1 && (
                     <div className="flex gap-1 mb-1.5 sm:mb-2 flex-wrap">
                       {product.variants.map((v, i) => (
