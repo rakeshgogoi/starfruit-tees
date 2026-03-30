@@ -172,7 +172,7 @@ export default function OrderForm({ isOpen, onClose, productName, category, onSu
                 />
                 <div>
                   <span className="text-sm font-bold text-slate-800">✍️ Customise Jersey</span>
-                  <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">Add your name & number printed on the back of the jersey</p>
+                  <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">Add your name & number printed on the back of the jersey <span className="font-bold text-yellow-700">(+₹70)</span></p>
                 </div>
               </label>
 

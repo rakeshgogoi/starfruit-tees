@@ -51,8 +51,11 @@ const CartDrawer = ({ isOpen, onClose }) => {
       `• ${item.name}${item.variant && item.variant !== 'Variant' && item.variant !== 'Default' ? ` (${item.variant})` : ''} x${item.quantity}`
     ).join('\n');
 
+    const stadiumQty = cart.filter(i => i.category === 'Stadium Series').reduce((s, i) => s + i.quantity, 0);
+    const totalAmount = cartTotal + (customer.customise ? stadiumQty * 70 : 0);
+
     await pay({
-      amount: cartTotal,
+      amount: totalAmount,
       productName: productLabel,
       receipt: `cart_${Date.now()}`,
       customer,
@@ -71,7 +74,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
               customer,
               order: {
                 product: itemsSummary,
-                amount: cartTotal,
+                amount: totalAmount,
                 paymentId: response.razorpay_payment_id,
               },
             }),
@@ -86,7 +89,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
             paymentId: response.razorpay_payment_id,
             customerName: customer.name,
             product: productLabel,
-            amount: cartTotal,
+            amount: totalAmount,
           },
         });
       },

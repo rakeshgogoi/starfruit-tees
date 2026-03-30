@@ -57,7 +57,7 @@ const ProductDetail = () => {
 
   const handleOrderFormSubmit = async (customer) => {
     if (!product) return;
-    const priceNum = getOfferPrice(product.category, product.price);
+    const priceNum = getOfferPrice(product.category, product.price) + (customer.customise ? 70 : 0);
     const variantName = product.variants?.[selectedVariant]?.name;
     const label = variantName && variantName !== 'Variant' && variantName !== 'Default'
       ? `${product.name} (${variantName}) — Size ${selectedSize}`
@@ -239,7 +239,7 @@ const ProductDetail = () => {
                 </p>
               )}
 
-              <p className="text-sm text-slate-600 leading-relaxed mb-6">{product.description}</p>
+              <p className="text-sm text-slate-600 leading-relaxed mb-6 whitespace-pre-line">{product.description}</p>
 
               {/* Variant selector */}
               {product.variants && product.variants.length > 1 && (
