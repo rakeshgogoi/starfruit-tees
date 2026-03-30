@@ -6,6 +6,7 @@ import { useCart } from './context/CartContext';
 import Navbar from './components/Navbar';
 import CartDrawer from './components/CartDrawer';
 import landingImage from './assets/landing-updated.jpg';
+import logoSrc from './assets/SC_Logo_Colored.png';
 
 const TESTIMONIALS = [
   { quote: "I was honestly surprised by the quality. The fabric feels premium and the print hasn't faded even after multiple washes. You can tell this isn't mass-produced stuff.", name: "Ankit Sharma", city: "Bangalore" },
@@ -340,10 +341,8 @@ const App = () => {
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 mb-8 sm:mb-12">
             <div className="lg:col-span-5">
-              <div className="flex items-center gap-2.5 mb-3 sm:mb-6">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-md flex-shrink-0" style={{ backgroundColor: '#E0A600' }}>
-                  <Star size={16} fill="#fff" stroke="#fff" />
-                </div>
+              <div className="flex items-center gap-3 mb-3 sm:mb-6">
+                <img src={logoSrc} alt="Starfruit Tees" className="h-12 sm:h-14 w-auto object-contain flex-shrink-0" />
                 <div className="flex flex-col min-w-0">
                   <span className="text-xl sm:text-2xl font-display font-black leading-none tracking-tight text-black">Starfruit Tees</span>
                   <span className="text-[10px] sm:text-xs font-medium text-[#555] uppercase tracking-[0.2em] mt-0.5">House of Starfruit</span>
