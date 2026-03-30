@@ -328,7 +328,7 @@ const ProductDetail = () => {
               {product.category === 'Stadium Series' && (
                 <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
                   <p className="font-bold text-yellow-800 text-sm mb-1">✍️ Want your name & number on the back?</p>
-                  <p className="text-yellow-700 text-xs leading-relaxed">Full back customization available. Mention your preferred name & number when you place the order via WhatsApp.</p>
+                  <p className="text-yellow-700 text-xs leading-relaxed">Full back customization available. Mention your preferred name & number when you place the order.</p>
                 </div>
               )}
 
