@@ -21,8 +21,8 @@ const SIZE_CHART = {
   ],
 };
 
-const DISCOUNT_RATE = { 'Stadium Series': 0.20, 'Legend Series': 0.10 };
-const DISCOUNT_LABEL = { 'Stadium Series': '20% OFF', 'Legend Series': '10% OFF' };
+const DISCOUNT_RATE = { 'Stadium Series': 0.10, 'Legend Series': 0.10 };
+const DISCOUNT_LABEL = { 'Stadium Series': '10% OFF', 'Legend Series': '10% OFF' };
 const parseBasePrice = (priceStr) => parseInt(String(priceStr).replace(/[^\d]/g, ''), 10) || 0;
 const getOfferPrice = (category, originalPrice, customRate) =>
   Math.round(parseBasePrice(originalPrice) * (1 - (customRate ?? DISCOUNT_RATE[category] ?? 0)));
