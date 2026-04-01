@@ -9,7 +9,7 @@ import CartDrawer from '../components/CartDrawer';
 import OrderForm from '../components/OrderForm';
 import logoSrc from '../assets/SC_Logo_Colored.png';
 
-const SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
+const SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL'];
 
 const RCB_CAPS = [
   { id: 'rcb-cap-red',      name: 'RCB Red Cap',         image: '/products/RCB-Cap4.png', category: 'Accessories' },
@@ -18,13 +18,9 @@ const RCB_CAPS = [
 ];
 
 const SIZE_CHART = {
-  headers: ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'],
+  headers: ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL'],
   rows: [
-    { label: 'Length',       values: [27, 28, 29, 30, 31, 32, 33] },
-    { label: 'Shoulder',     values: [15.75, 16.75, 17.75, 18.75, 19.75, 20.75, 21.75] },
-    { label: 'Sleeve Length', values: [7.75, 8.25, 8.75, 9.25, 9.75, 10.25, 10.75] },
-    { label: 'Sleeve Loose', values: [11.5, 12, 12.5, 13, 13.5, 14, 14.5] },
-    { label: 'Chest',        values: [36, 38, 40, 42, 44, 46, 48] },
+    { label: 'Chest', values: [36, 38, 40, 42, 44, 46, 48] },
   ],
 };
 
