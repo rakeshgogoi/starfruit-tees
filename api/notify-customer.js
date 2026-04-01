@@ -233,8 +233,8 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  // Persist order details to database (fire-and-forget, won't block notifications)
-  saveOrderToDb(customer, order);
+  // Persist order details to database before sending notifications
+  await saveOrderToDb(customer, order);
 
   const results = {};
   const phone   = `+91${customer.phone.replace(/^\+91/, '')}`;

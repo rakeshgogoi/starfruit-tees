@@ -25,9 +25,9 @@ export default async function handler(req, res) {
       `${process.env.RAZORPAY_KEY_ID}:${process.env.RAZORPAY_KEY_SECRET}`
     ).toString('base64');
 
-    // Fetch latest 100 payments from Razorpay
+    // Fetch latest 100 payments, expanding linked order to get order-level notes
     const rzRes = await fetch(
-      'https://api.razorpay.com/v1/payments?count=100',
+      'https://api.razorpay.com/v1/payments?count=100&expand[]=order',
       { headers: { Authorization: `Basic ${auth}` } }
     );
 
@@ -40,7 +40,8 @@ export default async function handler(req, res) {
       });
     }
 
-    // Merge with stored order details from our database
+    // Merge order notes + DB data into every payment's notes field
+    let storedMap = {};
     if (process.env.DATABASE_URL && data.items?.length) {
       try {
         const { neon } = await import('@neondatabase/serverless');
@@ -49,29 +50,32 @@ export default async function handler(req, res) {
         const stored = await sql`
           SELECT * FROM orders WHERE payment_id = ANY(${paymentIds})
         `;
-        const storedMap = Object.fromEntries(stored.map(r => [r.payment_id, r]));
-
-        data.items = data.items.map(p => {
-          const db = storedMap[p.id];
-          if (!db) return p;
-          // Merge DB data into notes, preferring DB values over existing notes
-          return {
-            ...p,
-            notes: {
-              product:       db.product        || p.notes?.product       || '',
-              customer_name: db.customer_name  || p.notes?.customer_name || '',
-              size:          db.size           || p.notes?.size          || '',
-              address:       db.address        || p.notes?.address       || '',
-              pincode:       db.pincode        || p.notes?.pincode       || '',
-              customisation: db.customisation  || p.notes?.customisation || '',
-              jersey_name:   p.notes?.jersey_name   || '',
-              jersey_number: p.notes?.jersey_number || '',
-            },
-          };
-        });
+        storedMap = Object.fromEntries(stored.map(r => [r.payment_id, r]));
       } catch (dbErr) {
-        console.error('DB merge failed (non-fatal):', dbErr.message);
+        console.error('DB lookup failed (non-fatal):', dbErr.message);
       }
+    }
+
+    // Apply merge to all payments: DB > order notes > payment notes
+    if (data.items?.length) {
+      data.items = data.items.map(p => {
+        const db = storedMap[p.id];
+        const on = p.order?.notes || {};  // order-level notes (expand[]=order)
+        const pn = p.notes || {};         // payment-level notes
+        return {
+          ...p,
+          notes: {
+            product:       db?.product        || on.product        || pn.product        || '',
+            customer_name: db?.customer_name  || on.customer_name  || pn.customer_name  || '',
+            size:          db?.size           || on.size           || pn.size           || '',
+            address:       db?.address        || on.address        || pn.address        || '',
+            pincode:       db?.pincode        || on.pincode        || pn.pincode        || '',
+            customisation: db?.customisation  || on.customisation  || pn.customisation  || '',
+            jersey_name:   on.jersey_name     || pn.jersey_name    || '',
+            jersey_number: on.jersey_number   || pn.jersey_number  || '',
+          },
+        };
+      });
     }
 
     return res.status(200).json(data);
