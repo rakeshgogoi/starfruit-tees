@@ -25,9 +25,9 @@ export default async function handler(req, res) {
       `${process.env.RAZORPAY_KEY_ID}:${process.env.RAZORPAY_KEY_SECRET}`
     ).toString('base64');
 
-    // Fetch latest 100 payments, expanding linked order to get order-level notes
+    // Fetch latest 100 payments from Razorpay
     const rzRes = await fetch(
-      'https://api.razorpay.com/v1/payments?count=100&expand[]=order',
+      'https://api.razorpay.com/v1/payments?count=100',
       { headers: { Authorization: `Basic ${auth}` } }
     );
 
@@ -56,23 +56,23 @@ export default async function handler(req, res) {
       }
     }
 
-    // Apply merge to all payments: DB > order notes > payment notes
+    // Merge DB data into every payment's notes (DB values take priority over Razorpay notes)
     if (data.items?.length) {
       data.items = data.items.map(p => {
         const db = storedMap[p.id];
-        const on = p.order?.notes || {};  // order-level notes (expand[]=order)
-        const pn = p.notes || {};         // payment-level notes
+        if (!db) return p;
+        const pn = p.notes || {};
         return {
           ...p,
           notes: {
-            product:       db?.product        || on.product        || pn.product        || '',
-            customer_name: db?.customer_name  || on.customer_name  || pn.customer_name  || '',
-            size:          db?.size           || on.size           || pn.size           || '',
-            address:       db?.address        || on.address        || pn.address        || '',
-            pincode:       db?.pincode        || on.pincode        || pn.pincode        || '',
-            customisation: db?.customisation  || on.customisation  || pn.customisation  || '',
-            jersey_name:   on.jersey_name     || pn.jersey_name    || '',
-            jersey_number: on.jersey_number   || pn.jersey_number  || '',
+            product:       db.product        || pn.product        || '',
+            customer_name: db.customer_name  || pn.customer_name  || '',
+            size:          db.size           || pn.size           || '',
+            address:       db.address        || pn.address        || '',
+            pincode:       db.pincode        || pn.pincode        || '',
+            customisation: db.customisation  || pn.customisation  || '',
+            jersey_name:   pn.jersey_name    || '',
+            jersey_number: pn.jersey_number  || '',
           },
         };
       });
