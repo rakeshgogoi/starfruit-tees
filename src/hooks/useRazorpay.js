@@ -83,13 +83,20 @@ export function useRazorpay() {
           contact: customer?.phone   ? `+91${customer.phone}` : '',
           email:   customer?.email   || '',
         },
-        notes: {
-          product:       productName,
-          address:       customer?.address      || '',
-          pincode:       customer?.pincode      || '',
-          jersey_name:   customer?.jerseyName   || '',
-          jersey_number: customer?.jerseyNumber || '',
-        },
+        notes: (() => {
+          const customs = customer?.customisations || [];
+          return {
+            product:       productName,
+            customer_name: customer?.name    || '',
+            address:       customer?.address || '',
+            pincode:       customer?.pincode || '',
+            customisation: customs.length > 0
+              ? customs.map(c => `${c.jerseyName} #${c.jerseyNumber}`).join(' | ')
+              : '',
+            jersey_name:   customs[0]?.jerseyName   || customer?.jerseyName   || '',
+            jersey_number: customs[0]?.jerseyNumber || customer?.jerseyNumber || '',
+          };
+        })(),
         theme: { color: '#E0A600' },
         modal: {
           ondismiss: () => {

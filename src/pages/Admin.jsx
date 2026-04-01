@@ -105,7 +105,6 @@ function OrdersTab() {
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState('');
   const [search, setSearch]     = useState('');
-  const [filter, setFilter]     = useState('all'); // all | captured | failed
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -127,22 +126,21 @@ function OrdersTab() {
 
   useEffect(() => { fetchOrders(); }, []);
 
-  const filtered = payments.filter((p) => {
-    const matchStatus = filter === 'all' || p.status === filter;
+  // Only show captured (paid) orders
+  const captured = payments.filter((p) => p.status === 'captured');
+  const totalRev = captured.reduce((s, p) => s + (p.amount || 0), 0);
+
+  const filtered = captured.filter((p) => {
     const q = search.toLowerCase();
-    const matchSearch = !q
+    return !q
       || p.id?.toLowerCase().includes(q)
       || p.email?.toLowerCase().includes(q)
       || p.contact?.includes(q)
-      || p.description?.toLowerCase().includes(q)
-      || p.order?.receipt?.toLowerCase().includes(q)
-      || (p.notes?.product || '').toLowerCase().includes(q);
-    return matchStatus && matchSearch;
+      || (p.notes?.customer_name || '').toLowerCase().includes(q)
+      || (p.notes?.product || p.description || '').toLowerCase().includes(q)
+      || (p.notes?.address || '').toLowerCase().includes(q)
+      || p.order?.receipt?.toLowerCase().includes(q);
   });
-
-  const captured   = payments.filter((p) => p.status === 'captured');
-  const totalRev   = captured.reduce((s, p) => s + (p.amount || 0), 0);
-  const failed     = payments.filter((p) => p.status === 'failed').length;
 
   if (loading) {
     return (
@@ -177,22 +175,20 @@ function OrdersTab() {
   return (
     <div>
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 gap-4 mb-6">
         {[
           { label: 'Total Revenue', value: formatAmount(totalRev), sub: 'from paid orders', accent: true },
-          { label: 'Total Orders',  value: payments.length,        sub: 'all attempts'   },
-          { label: 'Paid',          value: captured.length,        sub: 'captured'       },
-          { label: 'Failed',        value: failed,                  sub: 'failed payments'},
+          { label: 'Paid Orders',   value: captured.length,        sub: 'captured payments' },
         ].map((s) => (
           <div key={s.label} className={`rounded-xl border p-4 ${s.accent ? 'bg-black border-black text-white' : 'bg-white border-slate-200'}`}>
-            <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${s.accent ? 'text-slate-400' : 'text-slate-400'}`}>{s.label}</p>
+            <p className="text-xs font-bold uppercase tracking-wider mb-1 text-slate-400">{s.label}</p>
             <p className={`text-2xl font-black ${s.accent ? 'text-white' : 'text-slate-900'}`}>{s.value}</p>
-            <p className={`text-xs font-medium mt-0.5 ${s.accent ? 'text-slate-400' : 'text-slate-400'}`}>{s.sub}</p>
+            <p className="text-xs font-medium mt-0.5 text-slate-400">{s.sub}</p>
           </div>
         ))}
       </div>
 
-      {/* Filters */}
+      {/* Search + Refresh */}
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <div className="relative flex-1 min-w-[180px]">
           <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -200,24 +196,11 @@ function OrdersTab() {
           </svg>
           <input
             type="text"
-            placeholder="Search by payment ID, email, phone…"
+            placeholder="Search by name, phone, email, product…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-400"
           />
-        </div>
-        <div className="flex gap-1">
-          {['all', 'captured', 'failed'].map((f) => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition-all ${
-                filter === f ? 'bg-black text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-              }`}
-            >
-              {f === 'all' ? 'All' : f === 'captured' ? '✅ Paid' : '❌ Failed'}
-            </button>
-          ))}
         </div>
         <button
           onClick={fetchOrders}
@@ -233,44 +216,95 @@ function OrdersTab() {
       {filtered.length === 0 ? (
         <div className="text-center py-16 text-slate-400">
           <p className="text-2xl mb-2">📦</p>
-          <p className="font-medium text-sm">{search || filter !== 'all' ? 'No orders match your filter.' : 'No orders yet.'}</p>
+          <p className="font-medium text-sm">{search ? 'No orders match your search.' : 'No paid orders yet.'}</p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {filtered.map((p) => {
-            const productLabel = p.notes?.product || p.description || '—';
-            const receipt = p.order?.receipt || '';
+            const notes          = p.notes || {};
+            const productLabel   = notes.product    || p.description || '—';
+            const customerName   = notes.customer_name || '';
+            const address        = notes.address    || '';
+            const pincode        = notes.pincode    || '';
+            const customisation  = notes.customisation || '';
+            const jerseyName     = notes.jersey_name   || '';
+            const jerseyNumber   = notes.jersey_number || '';
+            const hasCustom      = customisation || jerseyName;
+
             return (
-              <div key={p.id} className="bg-white rounded-xl border border-slate-200 p-4 hover:border-slate-300 hover:shadow-sm transition-all">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="flex-1 min-w-0">
-                    {/* Top row */}
-                    <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <StatusBadge status={p.status} />
-                      <span className="text-xs font-mono text-slate-400">{p.id}</span>
-                      {receipt && (
-                        <span className="text-xs text-slate-300 font-mono hidden sm:inline">· {receipt}</span>
+              <div key={p.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:border-slate-300 hover:shadow-sm transition-all">
+
+                {/* Card Header */}
+                <div className="flex items-center justify-between px-4 py-3 bg-green-50 border-b border-green-100">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-xs font-bold text-green-700 bg-green-100 px-2.5 py-0.5 rounded-full flex-shrink-0">✅ Paid</span>
+                    <span className="text-xs font-mono text-slate-400 truncate">{p.id}</span>
+                  </div>
+                  <div className="text-right flex-shrink-0 ml-3">
+                    <p className="text-base font-black text-green-700">{formatAmount(p.amount)}</p>
+                    {p.method && <p className="text-[10px] text-slate-400 uppercase tracking-wide font-semibold">{p.method}</p>}
+                  </div>
+                </div>
+
+                {/* Card Body */}
+                <div className="p-4 space-y-4">
+
+                  {/* Product */}
+                  <div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Product</p>
+                    <p className="text-sm font-bold text-slate-900">{productLabel}</p>
+                  </div>
+
+                  {/* Customer Details */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 pt-3 border-t border-slate-100">
+                    {customerName && (
+                      <div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Name</p>
+                        <p className="text-sm text-slate-700 font-medium">👤 {customerName}</p>
+                      </div>
+                    )}
+                    {p.contact && (
+                      <div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Phone</p>
+                        <p className="text-sm text-slate-700 font-medium">📱 {p.contact}</p>
+                      </div>
+                    )}
+                    {p.email && (
+                      <div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Email</p>
+                        <p className="text-sm text-slate-700 font-medium">✉️ {p.email}</p>
+                      </div>
+                    )}
+                    <div>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Order Date</p>
+                      <p className="text-sm text-slate-700 font-medium">🕐 {formatDate(p.created_at)}</p>
+                    </div>
+                  </div>
+
+                  {/* Delivery Address */}
+                  {(address || pincode) && (
+                    <div className="pt-3 border-t border-slate-100">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Delivery Address</p>
+                      <p className="text-sm text-slate-700 font-medium leading-snug">
+                        📦 {[address, pincode].filter(Boolean).join(' — ')}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Jersey Customisation */}
+                  {hasCustom && (
+                    <div className="pt-3 border-t border-slate-100">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">✍️ Jersey Customisation</p>
+                      {customisation ? (
+                        <p className="text-sm text-slate-700 font-semibold">{customisation}</p>
+                      ) : (
+                        <p className="text-sm text-slate-700 font-semibold">
+                          {jerseyName} {jerseyNumber && `#${jerseyNumber}`}
+                        </p>
                       )}
                     </div>
+                  )}
 
-                    {/* Product */}
-                    <p className="text-sm font-bold text-slate-900 truncate mb-0.5">{productLabel}</p>
-
-                    {/* Customer contact */}
-                    <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-slate-500 font-medium">
-                      {p.contact && <span>📱 {p.contact}</span>}
-                      {p.email   && <span>✉️ {p.email}</span>}
-                      <span>🕐 {formatDate(p.created_at)}</span>
-                    </div>
-                  </div>
-
-                  {/* Amount */}
-                  <div className="text-right flex-shrink-0">
-                    <p className={`text-lg font-black ${p.status === 'captured' ? 'text-green-700' : 'text-slate-400'}`}>
-                      {formatAmount(p.amount)}
-                    </p>
-                    <p className="text-[10px] text-slate-400 uppercase tracking-wide font-bold">{p.method || ''}</p>
-                  </div>
                 </div>
               </div>
             );
@@ -279,7 +313,7 @@ function OrdersTab() {
       )}
 
       <p className="mt-6 text-xs text-slate-400 text-center">
-        Showing last 100 payments · For complete history visit{' '}
+        Showing last 100 paid orders · For complete history visit{' '}
         <a href="https://dashboard.razorpay.com/" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-700">
           Razorpay Dashboard ↗
         </a>
