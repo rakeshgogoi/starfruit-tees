@@ -192,6 +192,34 @@ async function sendResendEmail(customer, order) {
   return data;
 }
 
+async function saveOrderToDb(customer, order) {
+  const dbUrl = process.env.DATABASE_URL;
+  if (!dbUrl) return;
+  try {
+    const { neon } = await import('@neondatabase/serverless');
+    const sql = neon(dbUrl);
+    const customs = customer.customisations || [];
+    const customisation = customs.length > 0
+      ? customs.map(c => `${c.jerseyName} #${c.jerseyNumber}`).join(' | ')
+      : 'NONE';
+    // Extract size from product string if not set separately
+    const size = order.size || (order.product || '').match(/\bSize\s+(\S+)/i)?.[1] || '';
+    await sql`
+      INSERT INTO orders
+        (payment_id, order_id, customer_name, phone, email, address, pincode, product, size, amount, customisation)
+      VALUES
+        (${order.paymentId}, ${order.orderId || ''}, ${customer.name || ''},
+         ${customer.phone || ''}, ${customer.email || ''},
+         ${customer.address || ''}, ${customer.pincode || ''},
+         ${order.product || ''}, ${size},
+         ${order.amount || 0}, ${customisation})
+      ON CONFLICT (payment_id) DO NOTHING
+    `;
+  } catch (e) {
+    console.error('DB save failed:', e.message);
+  }
+}
+
 export default async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
 
@@ -204,6 +232,9 @@ export default async function handler(req, res) {
   if (!customer?.phone || !order?.paymentId) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
+
+  // Persist order details to database (fire-and-forget, won't block notifications)
+  saveOrderToDb(customer, order);
 
   const results = {};
   const phone   = `+91${customer.phone.replace(/^\+91/, '')}`;

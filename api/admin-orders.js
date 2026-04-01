@@ -40,6 +40,40 @@ export default async function handler(req, res) {
       });
     }
 
+    // Merge with stored order details from our database
+    if (process.env.DATABASE_URL && data.items?.length) {
+      try {
+        const { neon } = await import('@neondatabase/serverless');
+        const sql = neon(process.env.DATABASE_URL);
+        const paymentIds = data.items.map(p => p.id);
+        const stored = await sql`
+          SELECT * FROM orders WHERE payment_id = ANY(${paymentIds})
+        `;
+        const storedMap = Object.fromEntries(stored.map(r => [r.payment_id, r]));
+
+        data.items = data.items.map(p => {
+          const db = storedMap[p.id];
+          if (!db) return p;
+          // Merge DB data into notes, preferring DB values over existing notes
+          return {
+            ...p,
+            notes: {
+              product:       db.product        || p.notes?.product       || '',
+              customer_name: db.customer_name  || p.notes?.customer_name || '',
+              size:          db.size           || p.notes?.size          || '',
+              address:       db.address        || p.notes?.address       || '',
+              pincode:       db.pincode        || p.notes?.pincode       || '',
+              customisation: db.customisation  || p.notes?.customisation || '',
+              jersey_name:   p.notes?.jersey_name   || '',
+              jersey_number: p.notes?.jersey_number || '',
+            },
+          };
+        });
+      } catch (dbErr) {
+        console.error('DB merge failed (non-fatal):', dbErr.message);
+      }
+    }
+
     return res.status(200).json(data);
   } catch (err) {
     console.error('admin-orders error:', err);
