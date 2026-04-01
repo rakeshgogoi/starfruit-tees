@@ -105,6 +105,7 @@ function OrdersTab() {
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState('');
   const [search, setSearch]     = useState('');
+  const [orderView, setOrderView] = useState('paid'); // 'paid' | 'failed'
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -126,11 +127,16 @@ function OrdersTab() {
 
   useEffect(() => { fetchOrders(); }, []);
 
-  // Only show captured (paid) orders, exclude ₹1 test orders
+  // Paid: captured, exclude ₹1 test orders
   const captured = payments.filter((p) => p.status === 'captured' && (p.amount || 0) > 100);
   const totalRev = captured.reduce((s, p) => s + (p.amount || 0), 0);
 
-  const filtered = captured.filter((p) => {
+  // Failed: failed or created (abandoned) payments, exclude ₹1 test orders
+  const failed = payments.filter((p) => (p.status === 'failed' || p.status === 'created') && (p.amount || 0) > 100);
+
+  const activeList = orderView === 'paid' ? captured : failed;
+
+  const filtered = activeList.filter((p) => {
     const q = search.toLowerCase();
     return !q
       || p.id?.toLowerCase().includes(q)
@@ -188,6 +194,30 @@ function OrdersTab() {
         ))}
       </div>
 
+      {/* Paid / Failed tabs */}
+      <div className="flex gap-2 mb-4">
+        <button
+          onClick={() => { setOrderView('paid'); setSearch(''); }}
+          className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold border transition-colors ${
+            orderView === 'paid'
+              ? 'bg-green-600 border-green-600 text-white'
+              : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
+          }`}
+        >
+          ✅ Paid <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-black ${orderView === 'paid' ? 'bg-green-500 text-white' : 'bg-slate-100 text-slate-500'}`}>{captured.length}</span>
+        </button>
+        <button
+          onClick={() => { setOrderView('failed'); setSearch(''); }}
+          className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold border transition-colors ${
+            orderView === 'failed'
+              ? 'bg-red-600 border-red-600 text-white'
+              : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
+          }`}
+        >
+          ❌ Failed <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-black ${orderView === 'failed' ? 'bg-red-500 text-white' : 'bg-slate-100 text-slate-500'}`}>{failed.length}</span>
+        </button>
+      </div>
+
       {/* Search + Refresh */}
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <div className="relative flex-1 min-w-[180px]">
@@ -215,8 +245,12 @@ function OrdersTab() {
 
       {filtered.length === 0 ? (
         <div className="text-center py-16 text-slate-400">
-          <p className="text-2xl mb-2">📦</p>
-          <p className="font-medium text-sm">{search ? 'No orders match your search.' : 'No paid orders yet.'}</p>
+          <p className="text-2xl mb-2">{orderView === 'failed' ? '❌' : '📦'}</p>
+          <p className="font-medium text-sm">
+            {search
+              ? 'No orders match your search.'
+              : orderView === 'failed' ? 'No failed orders.' : 'No paid orders yet.'}
+          </p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -246,16 +280,31 @@ function OrdersTab() {
               <div key={p.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:border-slate-300 hover:shadow-sm transition-all">
 
                 {/* Card Header */}
-                <div className="flex items-center justify-between px-4 py-3 bg-green-50 border-b border-green-100">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-xs font-bold text-green-700 bg-green-100 px-2.5 py-0.5 rounded-full flex-shrink-0">✅ Paid</span>
-                    <span className="text-xs font-mono text-slate-400 truncate">{p.id}</span>
+                {p.status === 'captured' ? (
+                  <div className="flex items-center justify-between px-4 py-3 bg-green-50 border-b border-green-100">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-xs font-bold text-green-700 bg-green-100 px-2.5 py-0.5 rounded-full flex-shrink-0">✅ Paid</span>
+                      <span className="text-xs font-mono text-slate-400 truncate">{p.id}</span>
+                    </div>
+                    <div className="text-right flex-shrink-0 ml-3">
+                      <p className="text-base font-black text-green-700">{formatAmount(p.amount)}</p>
+                      {p.method && <p className="text-[10px] text-slate-400 uppercase tracking-wide font-semibold">{p.method}</p>}
+                    </div>
                   </div>
-                  <div className="text-right flex-shrink-0 ml-3">
-                    <p className="text-base font-black text-green-700">{formatAmount(p.amount)}</p>
-                    {p.method && <p className="text-[10px] text-slate-400 uppercase tracking-wide font-semibold">{p.method}</p>}
+                ) : (
+                  <div className="flex items-center justify-between px-4 py-3 bg-red-50 border-b border-red-100">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-xs font-bold text-red-700 bg-red-100 px-2.5 py-0.5 rounded-full flex-shrink-0">
+                        {p.status === 'failed' ? '❌ Failed' : '🕐 Abandoned'}
+                      </span>
+                      <span className="text-xs font-mono text-slate-400 truncate">{p.id}</span>
+                    </div>
+                    <div className="text-right flex-shrink-0 ml-3">
+                      <p className="text-base font-black text-red-600">{formatAmount(p.amount)}</p>
+                      {p.method && <p className="text-[10px] text-slate-400 uppercase tracking-wide font-semibold">{p.method}</p>}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Card Body */}
                 <div className="p-4 space-y-4">
@@ -342,7 +391,7 @@ function OrdersTab() {
       )}
 
       <p className="mt-6 text-xs text-slate-400 text-center">
-        Showing last 100 paid orders · For complete history visit{' '}
+        Showing last 100 orders · For complete history visit{' '}
         <a href="https://dashboard.razorpay.com/" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-700">
           Razorpay Dashboard ↗
         </a>
