@@ -47,11 +47,26 @@ export function useRazorpay() {
     }
 
     try {
-      // Create a server-side order
+      // Build notes once — stored on the Razorpay Order (guaranteed to appear on payment)
+      const customs = customer?.customisations || [];
+      const orderNotes = {
+        product:       productName,
+        customer_name: customer?.name    || '',
+        size:          size              || '',
+        address:       customer?.address || '',
+        pincode:       customer?.pincode || '',
+        customisation: customs.length > 0
+          ? customs.map(c => `${c.jerseyName} #${c.jerseyNumber}`).join(' | ')
+          : 'NONE',
+        jersey_name:   customs[0]?.jerseyName   || '',
+        jersey_number: customs[0]?.jerseyNumber || '',
+      };
+
+      // Create a server-side order (notes stored here are reliably returned by Razorpay API)
       const res = await fetch('/api/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, receipt }),
+        body: JSON.stringify({ amount, receipt, notes: orderNotes }),
       });
 
       if (!res.ok) {
@@ -83,21 +98,7 @@ export function useRazorpay() {
           contact: customer?.phone   ? `+91${customer.phone}` : '',
           email:   customer?.email   || '',
         },
-        notes: (() => {
-          const customs = customer?.customisations || [];
-          return {
-            product:       productName,
-            customer_name: customer?.name    || '',
-            size:          size              || '',
-            address:       customer?.address || '',
-            pincode:       customer?.pincode || '',
-            customisation: customs.length > 0
-              ? customs.map(c => `${c.jerseyName} #${c.jerseyNumber}`).join(' | ')
-              : '',
-            jersey_name:   customs[0]?.jerseyName   || customer?.jerseyName   || '',
-            jersey_number: customs[0]?.jerseyNumber || customer?.jerseyNumber || '',
-          };
-        })(),
+        notes: orderNotes,
         theme: { color: '#E0A600' },
         modal: {
           ondismiss: () => {

@@ -9,7 +9,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Payment gateway not configured. Please order via WhatsApp.' });
   }
 
-  const { amount, receipt } = req.body;
+  const { amount, receipt, notes } = req.body;
 
   if (!amount || typeof amount !== 'number' || amount <= 0) {
     return res.status(400).json({ error: 'Invalid amount' });
@@ -26,6 +26,7 @@ export default async function handler(req, res) {
       amount: Math.round(amount * 100),
       currency: 'INR',
       receipt: receipt || `rcpt_${Date.now()}`,
+      notes: notes || {},
     });
 
     res.status(200).json(order);

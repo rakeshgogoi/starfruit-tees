@@ -232,13 +232,15 @@ function OrdersTab() {
             const customisation  = notes.customisation || '';
             const jerseyName     = notes.jersey_name   || '';
             const jerseyNumber   = notes.jersey_number || '';
-            const customEntries  = customisation
+            const isNone         = customisation === 'NONE';
+            const customEntries  = !isNone && customisation
               ? customisation.split(' | ').map((entry) => {
                   const m = entry.match(/^(.+?)\s+#(\S+)$/);
                   return m ? { name: m[1], number: m[2] } : { name: entry, number: '' };
                 })
-              : jerseyName ? [{ name: jerseyName, number: jerseyNumber }] : [];
-            const hasCustom = customEntries.length > 0;
+              : !isNone && jerseyName ? [{ name: jerseyName, number: jerseyNumber }] : [];
+            // Show customisation section if we have data (either NONE or actual entries)
+            const hasCustom = isNone || customEntries.length > 0;
 
             return (
               <div key={p.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:border-slate-300 hover:shadow-sm transition-all">
@@ -312,19 +314,23 @@ function OrdersTab() {
                   {hasCustom && (
                     <div className="pt-3 border-t border-slate-100">
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">✍️ Jersey Customisation</p>
-                      <div className="flex flex-wrap gap-2">
-                        {customEntries.map((c, i) => (
-                          <div key={i} className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-1.5">
-                            <span className="text-xs font-black text-yellow-900 uppercase tracking-wider">{c.name}</span>
-                            {c.number && (
-                              <>
-                                <span className="text-yellow-300 font-bold">/</span>
-                                <span className="text-xs font-black text-yellow-800">#{c.number}</span>
-                              </>
-                            )}
-                          </div>
-                        ))}
-                      </div>
+                      {isNone ? (
+                        <span className="inline-block text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-lg">NONE</span>
+                      ) : (
+                        <div className="flex flex-wrap gap-2">
+                          {customEntries.map((c, i) => (
+                            <div key={i} className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-1.5">
+                              <span className="text-xs font-black text-yellow-900 uppercase tracking-wider">{c.name}</span>
+                              {c.number && (
+                                <>
+                                  <span className="text-yellow-300 font-bold">/</span>
+                                  <span className="text-xs font-black text-yellow-800">#{c.number}</span>
+                                </>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
 
