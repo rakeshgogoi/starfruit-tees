@@ -40,7 +40,7 @@ export function useRazorpay() {
    * @param {Function} [params.onSuccess]  - Called with Razorpay payment response on success
    * @param {Function} [params.onError]    - Called with error message on failure
    */
-  const pay = async ({ amount, productName, receipt, customer, onSuccess, onError }) => {
+  const pay = async ({ amount, productName, receipt, size, customer, onSuccess, onError }) => {
     if (!scriptLoaded) {
       onError?.('Payment system not ready. Please try again.');
       return;
@@ -88,6 +88,7 @@ export function useRazorpay() {
           return {
             product:       productName,
             customer_name: customer?.name    || '',
+            size:          size              || '',
             address:       customer?.address || '',
             pincode:       customer?.pincode || '',
             customisation: customs.length > 0

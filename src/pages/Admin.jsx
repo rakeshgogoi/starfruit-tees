@@ -126,8 +126,8 @@ function OrdersTab() {
 
   useEffect(() => { fetchOrders(); }, []);
 
-  // Only show captured (paid) orders
-  const captured = payments.filter((p) => p.status === 'captured');
+  // Only show captured (paid) orders, exclude ₹1 test orders
+  const captured = payments.filter((p) => p.status === 'captured' && (p.amount || 0) > 100);
   const totalRev = captured.reduce((s, p) => s + (p.amount || 0), 0);
 
   const filtered = captured.filter((p) => {
@@ -226,10 +226,19 @@ function OrdersTab() {
             const customerName   = notes.customer_name || '';
             const address        = notes.address    || '';
             const pincode        = notes.pincode    || '';
+            // Size: from dedicated note (new orders) or parsed from product name (old orders)
+            const size = notes.size || productLabel.match(/\bSize\s+(\S+)/i)?.[1] || '';
+            // Customisation: split multi-jersey entries for per-jersey display
             const customisation  = notes.customisation || '';
             const jerseyName     = notes.jersey_name   || '';
             const jerseyNumber   = notes.jersey_number || '';
-            const hasCustom      = customisation || jerseyName;
+            const customEntries  = customisation
+              ? customisation.split(' | ').map((entry) => {
+                  const m = entry.match(/^(.+?)\s+#(\S+)$/);
+                  return m ? { name: m[1], number: m[2] } : { name: entry, number: '' };
+                })
+              : jerseyName ? [{ name: jerseyName, number: jerseyNumber }] : [];
+            const hasCustom = customEntries.length > 0;
 
             return (
               <div key={p.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:border-slate-300 hover:shadow-sm transition-all">
@@ -249,10 +258,18 @@ function OrdersTab() {
                 {/* Card Body */}
                 <div className="p-4 space-y-4">
 
-                  {/* Product */}
-                  <div>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Product</p>
-                    <p className="text-sm font-bold text-slate-900">{productLabel}</p>
+                  {/* Product + Size */}
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Product</p>
+                      <p className="text-sm font-bold text-slate-900 leading-snug">{productLabel.replace(/\s*—\s*Size\s+\S+/i, '')}</p>
+                    </div>
+                    {size && (
+                      <div className="flex-shrink-0 text-right">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Size</p>
+                        <span className="inline-block text-sm font-black text-slate-900 bg-slate-100 px-3 py-0.5 rounded-lg">{size}</span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Customer Details */}
@@ -294,14 +311,20 @@ function OrdersTab() {
                   {/* Jersey Customisation */}
                   {hasCustom && (
                     <div className="pt-3 border-t border-slate-100">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">✍️ Jersey Customisation</p>
-                      {customisation ? (
-                        <p className="text-sm text-slate-700 font-semibold">{customisation}</p>
-                      ) : (
-                        <p className="text-sm text-slate-700 font-semibold">
-                          {jerseyName} {jerseyNumber && `#${jerseyNumber}`}
-                        </p>
-                      )}
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">✍️ Jersey Customisation</p>
+                      <div className="flex flex-wrap gap-2">
+                        {customEntries.map((c, i) => (
+                          <div key={i} className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-1.5">
+                            <span className="text-xs font-black text-yellow-900 uppercase tracking-wider">{c.name}</span>
+                            {c.number && (
+                              <>
+                                <span className="text-yellow-300 font-bold">/</span>
+                                <span className="text-xs font-black text-yellow-800">#{c.number}</span>
+                              </>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
 

@@ -85,6 +85,7 @@ const ProductDetail = () => {
       amount: priceNum,
       productName: label,
       receipt: `prod_${product.id}_${Date.now()}`,
+      size: selectedSize,
       customer,
       onSuccess: async (response) => {
         setShowOrderForm(false);
