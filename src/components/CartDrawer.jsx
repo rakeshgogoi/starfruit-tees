@@ -4,6 +4,7 @@ import { ShoppingBag, X, Minus, Plus, CreditCard, MessageCircle, AlertCircle, Ch
 import { useCart } from '../context/CartContext';
 import { useRazorpay } from '../hooks/useRazorpay';
 import OrderForm from './OrderForm';
+import { getDeliveryCharge, COD_CHARGE } from '../utils/delivery';
 
 // Discounted price per item — calculated from the product's actual price
 const DISCOUNT_RATE = { 'Stadium Series': 0.10, 'Legend Series': 0.10 };
@@ -54,9 +55,71 @@ const CartDrawer = ({ isOpen, onClose }) => {
       `• ${item.name}${item.variant && item.variant !== 'Variant' && item.variant !== 'Default' ? ` (${item.variant})` : ''} x${item.quantity}`
     ).join('\n');
 
-    const jerseyQty   = jerseyItems.reduce((s, i) => s + i.quantity, 0);
-    const totalAmount = cartTotal + (customer.customise ? jerseyQty * 70 : 0);
+    const jerseyQty        = jerseyItems.reduce((s, i) => s + i.quantity, 0);
+    const customisationCost = customer.customise ? jerseyQty * 70 : 0;
 
+    const isCOD           = customer.paymentMethod === 'cod';
+    const deliveryCharge  = isCOD ? 0 : (getDeliveryCharge(customer.pincode) ?? 60);
+    const jerseyTotal     = cartTotal + customisationCost; // what customer pays on delivery for COD
+    const totalAmount     = isCOD ? jerseyTotal : jerseyTotal + deliveryCharge;
+
+    // ── COD flow — ₹120 booking fee paid online, rest on delivery ────────
+    if (isCOD) {
+      await pay({
+        amount: COD_CHARGE,
+        productName: `COD Booking — ${productLabel}`,
+        receipt: `cod_${Date.now()}`,
+        customer,
+        onSuccess: async (response) => {
+          setShowOrderForm(false);
+          setFormLoading(false);
+          setPayStatus('success');
+          setPayMessage(`COD booking confirmed! ID: ${response.razorpay_payment_id}`);
+
+          try {
+            await fetch('/api/notify-customer', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                customer,
+                order: {
+                  product: itemsSummary,
+                  amount: jerseyTotal,
+                  paymentId: response.razorpay_payment_id,
+                  isCOD: true,
+                  codChargePaid: COD_CHARGE,
+                },
+              }),
+            });
+          } catch (e) {
+            console.error('Notify failed:', e);
+          }
+
+          clearCart();
+          navigate('/thank-you', {
+            state: {
+              paymentId: response.razorpay_payment_id,
+              customerName: customer.name,
+              product: productLabel,
+              amount: jerseyTotal,
+              isCOD: true,
+              codChargePaid: COD_CHARGE,
+            },
+          });
+        },
+        onError: (msg) => {
+          setFormLoading(false);
+          if (msg !== 'Payment cancelled.') {
+            setShowOrderForm(false);
+            setPayStatus('error');
+            setPayMessage(msg);
+          }
+        },
+      });
+      return;
+    }
+
+    // ── Online payment flow ───────────────────────────────────────────────
     await pay({
       amount: totalAmount,
       productName: productLabel,
@@ -68,7 +131,6 @@ const CartDrawer = ({ isOpen, onClose }) => {
         setPayStatus('success');
         setPayMessage(`Payment successful! ID: ${response.razorpay_payment_id}`);
 
-        // Send notifications
         try {
           await fetch('/api/notify-customer', {
             method: 'POST',
@@ -79,6 +141,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                 product: itemsSummary,
                 amount: totalAmount,
                 paymentId: response.razorpay_payment_id,
+                deliveryCharge,
               },
             }),
           });
@@ -187,7 +250,8 @@ const CartDrawer = ({ isOpen, onClose }) => {
             {/* Total */}
             <div className="flex items-center justify-between mb-1">
               <div>
-                <span className="text-xs font-black uppercase tracking-widest text-slate-400">Total</span>
+                <span className="text-xs font-black uppercase tracking-widest text-slate-400">Subtotal</span>
+                <p className="text-[10px] text-slate-400 font-medium mt-0.5">+ delivery at checkout</p>
               </div>
               <span className="text-lg font-black">₹{cartTotal}</span>
             </div>
@@ -249,6 +313,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
         jerseyItems={jerseyItems}
         onSubmit={handleOrderFormSubmit}
         loading={formLoading}
+        cartTotal={cartTotal}
       />
     </div>
   );

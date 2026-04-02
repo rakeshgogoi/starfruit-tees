@@ -20,8 +20,14 @@ function buildTextMessage(customer, order) {
     ``,
     `📦 *Order Details*`,
     `• Product: ${order.product}`,
-    `• Amount Paid: ₹${order.amount}`,
-    `• Payment ID: ${order.paymentId}`,
+    ...(order.isCOD ? [
+      `• COD Booking Paid (non-refundable): ₹${order.codChargePaid}`,
+      `• Booking Payment ID: ${order.paymentId}`,
+      `• Amount to Pay on Delivery: ₹${order.amount}`,
+    ] : [
+      `• Amount Paid: ₹${order.amount}`,
+      `• Payment ID: ${order.paymentId}`,
+    ]),
   ];
 
   if (customer.customise && customer.customisations?.length > 0) {
@@ -105,6 +111,25 @@ function buildEmailHtml(customer, order) {
                   <p style="margin:4px 0 0;font-size:13px;font-weight:700;color:#111;">${order.product}</p>
                 </td>
               </tr>
+              ${order.isCOD ? `
+              <tr>
+                <td style="padding:14px 16px;border-bottom:1px solid #f0f0f0;">
+                  <p style="margin:0;font-size:11px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;">COD Booking Paid (non-refundable)</p>
+                  <p style="margin:4px 0 0;font-size:18px;font-weight:900;color:#111;">₹${order.codChargePaid}</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:14px 16px;border-bottom:1px solid #f0f0f0;background:#fafafa;">
+                  <p style="margin:0;font-size:11px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;">Amount to Pay on Delivery</p>
+                  <p style="margin:4px 0 0;font-size:18px;font-weight:900;color:#111;">₹${order.amount}</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:14px 16px;border-bottom:1px solid #f0f0f0;">
+                  <p style="margin:0;font-size:11px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;">Booking Payment ID</p>
+                  <p style="margin:4px 0 0;font-size:12px;font-weight:600;color:#555;font-family:monospace;">${order.paymentId}</p>
+                </td>
+              </tr>` : `
               <tr>
                 <td style="padding:14px 16px;border-bottom:1px solid #f0f0f0;">
                   <p style="margin:0;font-size:11px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;">Amount Paid</p>
@@ -116,7 +141,7 @@ function buildEmailHtml(customer, order) {
                   <p style="margin:0;font-size:11px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;">Payment ID</p>
                   <p style="margin:4px 0 0;font-size:12px;font-weight:600;color:#555;font-family:monospace;">${order.paymentId}</p>
                 </td>
-              </tr>
+              </tr>`}
               ${customBlock}
               <tr>
                 <td style="padding:14px 16px;">
@@ -229,7 +254,7 @@ export default async function handler(req, res) {
 
   const { customer, order } = req.body;
 
-  if (!customer?.phone || !order?.paymentId) {
+  if (!customer?.phone) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 

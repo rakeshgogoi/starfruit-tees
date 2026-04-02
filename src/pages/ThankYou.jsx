@@ -4,7 +4,7 @@ import { CheckCircle, Package, MessageCircle, ArrowLeft } from 'lucide-react';
 
 const ThankYou = () => {
   const { state } = useLocation();
-  const { paymentId, customerName, product, amount } = state || {};
+  const { paymentId, customerName, product, amount, isCOD, codChargePaid } = state || {};
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4 py-16 font-sans">
@@ -19,10 +19,13 @@ const ThankYou = () => {
 
         {/* Heading */}
         <h1 className="text-3xl font-black uppercase tracking-tight mb-2">
-          Order Confirmed!
+          {isCOD ? 'Order Placed!' : 'Order Confirmed!'}
         </h1>
         <p className="text-slate-500 text-sm mb-8">
-          {customerName ? `Thank you, ${customerName}!` : 'Thank you!'} Your payment was successful and your order is now being processed.
+          {customerName ? `Thank you, ${customerName}!` : 'Thank you!'}{' '}
+          {isCOD
+            ? `Your COD order is confirmed. Please keep ₹${amount} ready when your order arrives.`
+            : 'Your payment was successful and your order is now being processed.'}
         </p>
 
         {/* Order summary card */}
@@ -33,17 +36,36 @@ const ThankYou = () => {
               <span className="text-xs font-semibold text-right max-w-[60%]">{product}</span>
             </div>
           )}
-          {amount && (
-            <div className="flex justify-between items-center">
-              <span className="text-xs font-black uppercase tracking-widest text-slate-400">Amount Paid</span>
-              <span className="text-sm font-black text-black">₹{amount}</span>
-            </div>
-          )}
-          {paymentId && (
-            <div className="flex justify-between items-start">
-              <span className="text-xs font-black uppercase tracking-widest text-slate-400">Payment ID</span>
-              <span className="text-[10px] font-mono text-slate-500 break-all text-right max-w-[60%]">{paymentId}</span>
-            </div>
+          {isCOD ? (
+            <>
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-black uppercase tracking-widest text-slate-400">Booking Paid Now</span>
+                <span className="text-sm font-black text-black">₹{codChargePaid}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-black uppercase tracking-widest text-slate-400">Pay on Delivery</span>
+                <span className="text-sm font-black text-slate-600">₹{amount}</span>
+              </div>
+              <div className="flex justify-between items-start pt-1 border-t border-slate-200">
+                <span className="text-xs font-black uppercase tracking-widest text-slate-400">Booking ID</span>
+                <span className="text-[10px] font-mono text-slate-500 break-all text-right max-w-[60%]">{paymentId}</span>
+              </div>
+            </>
+          ) : (
+            <>
+              {amount && (
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-black uppercase tracking-widest text-slate-400">Amount Paid</span>
+                  <span className="text-sm font-black text-black">₹{amount}</span>
+                </div>
+              )}
+              {paymentId && (
+                <div className="flex justify-between items-start">
+                  <span className="text-xs font-black uppercase tracking-widest text-slate-400">Payment ID</span>
+                  <span className="text-[10px] font-mono text-slate-500 break-all text-right max-w-[60%]">{paymentId}</span>
+                </div>
+              )}
+            </>
           )}
         </div>
 
@@ -54,8 +76,12 @@ const ThankYou = () => {
             <div className="flex gap-3 items-start">
               <div className="w-6 h-6 rounded-full bg-yellow-400 text-black flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5">1</div>
               <div>
-                <p className="text-sm font-bold text-black">Order Processing</p>
-                <p className="text-xs text-slate-500">We'll review your order and begin production within 1–2 business days.</p>
+                <p className="text-sm font-bold text-black">{isCOD ? 'COD Confirmation' : 'Order Processing'}</p>
+                <p className="text-xs text-slate-500">
+                  {isCOD
+                    ? 'Our team will call or WhatsApp you to confirm your COD order before dispatch.'
+                    : "We'll review your order and begin production within 1–2 business days."}
+                </p>
               </div>
             </div>
             <div className="flex gap-3 items-start">
@@ -81,7 +107,7 @@ const ThankYou = () => {
         {/* CTA */}
         <div className="space-y-3">
           <a
-            href={`https://wa.me/916362376160?text=${encodeURIComponent(`Hi! I just placed an order. Payment ID: ${paymentId || 'N/A'}. Please confirm.`)}`}
+            href={`https://wa.me/916362376160?text=${encodeURIComponent(isCOD ? `Hi! I just placed a COD order. Please confirm.` : `Hi! I just placed an order. Payment ID: ${paymentId || 'N/A'}. Please confirm.`)}`}
             target="_blank"
             rel="noreferrer"
             className="w-full flex items-center justify-center gap-2 py-3.5 rounded-full font-bold text-sm uppercase tracking-wide bg-black text-white hover:bg-yellow-400 hover:text-black transition-all"

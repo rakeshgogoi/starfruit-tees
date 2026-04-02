@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Package, User, Phone, Mail, MapPin, Hash } from 'lucide-react';
+import { X, Package, User, Phone, Mail, MapPin, Hash, Truck } from 'lucide-react';
+import { isMetroPincode, getDeliveryCharge, DELIVERY_METRO, DELIVERY_NON_METRO, COD_CHARGE } from '../utils/delivery';
 
 /** Expand jerseyItems into one entry per physical jersey unit */
 const expandJerseys = (items = []) => {
@@ -21,15 +22,21 @@ const INITIAL = {
   name: '', phone: '', email: '',
   address: '', pincode: '',
   customise: false,
+  paymentMethod: 'online',
 };
 
-export default function OrderForm({ isOpen, onClose, productName, jerseyItems = [], onSubmit, loading }) {
+export default function OrderForm({ isOpen, onClose, productName, jerseyItems = [], onSubmit, loading, cartTotal = 0 }) {
   const [form, setForm]               = useState(INITIAL);
   const [errors, setErrors]           = useState({});
   const [customisations, setCustomisations] = useState(() => expandJerseys(jerseyItems));
 
-  const hasJerseys   = jerseyItems.length > 0;
-  const totalJerseys = jerseyItems.reduce((s, i) => s + i.quantity, 0);
+  const hasJerseys    = jerseyItems.length > 0;
+  const totalJerseys  = jerseyItems.reduce((s, i) => s + i.quantity, 0);
+
+  const metro         = isMetroPincode(form.pincode);
+  const deliveryCharge = form.paymentMethod === 'online' ? getDeliveryCharge(form.pincode) : null;
+  const customiseCost = form.customise ? totalJerseys * 70 : 0;
+  const grandTotal    = cartTotal + customiseCost + (form.paymentMethod === 'cod' ? COD_CHARGE : (deliveryCharge ?? 0));
 
   // Re-initialise customisations each time the form opens
   useEffect(() => {
@@ -193,6 +200,52 @@ export default function OrderForm({ isOpen, onClose, productName, jerseyItems = 
             {errors.pincode && <p className="text-red-500 text-xs mt-1 font-medium">{errors.pincode}</p>}
           </div>
 
+          {/* Payment Method */}
+          <div>
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1">
+              <Truck size={10} /> Payment Method <span className="text-red-400">*</span>
+            </label>
+            <div className="space-y-2">
+              {/* Online */}
+              <label className={`flex items-start gap-3 p-3.5 rounded-xl border-2 cursor-pointer transition-all ${form.paymentMethod === 'online' ? 'border-yellow-400 bg-yellow-50' : 'border-slate-200 bg-white'}`}>
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="online"
+                  checked={form.paymentMethod === 'online'}
+                  onChange={() => update('paymentMethod', 'online')}
+                  className="mt-0.5 accent-yellow-500 flex-shrink-0"
+                />
+                <div>
+                  <p className="text-sm font-bold text-slate-800">💳 Pay Online</p>
+                  <p className="text-xs text-slate-500 mt-0.5">UPI, Cards, Net Banking</p>
+                  <p className="text-[11px] font-semibold text-slate-500 mt-1">
+                    {metro === null
+                      ? 'Delivery charge calculated from your pincode'
+                      : metro
+                        ? `Metro city delivery: +₹${DELIVERY_METRO}`
+                        : `Non-metro delivery: +₹${DELIVERY_NON_METRO}`}
+                  </p>
+                </div>
+              </label>
+              {/* COD */}
+              <label className={`flex items-start gap-3 p-3.5 rounded-xl border-2 cursor-pointer transition-all ${form.paymentMethod === 'cod' ? 'border-yellow-400 bg-yellow-50' : 'border-slate-200 bg-white'}`}>
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="cod"
+                  checked={form.paymentMethod === 'cod'}
+                  onChange={() => update('paymentMethod', 'cod')}
+                  className="mt-0.5 accent-yellow-500 flex-shrink-0"
+                />
+                <div>
+                  <p className="text-sm font-bold text-slate-800">💵 Cash on Delivery</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Pay when your order arrives · <span className="font-bold text-slate-700">+₹{COD_CHARGE} COD charge</span></p>
+                </div>
+              </label>
+            </div>
+          </div>
+
           {/* Customisation — jerseys only */}
           {hasJerseys && (
             <div className={`rounded-xl border-2 p-4 transition-all ${form.customise ? 'border-yellow-400 bg-yellow-50' : 'border-slate-200 bg-slate-50'}`}>
@@ -265,6 +318,67 @@ export default function OrderForm({ isOpen, onClose, productName, jerseyItems = 
             </div>
           )}
 
+          {/* Order Summary */}
+          {cartTotal > 0 && (
+            <div className="rounded-xl bg-slate-50 border border-slate-200 p-4">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Order Summary</p>
+              {form.paymentMethod === 'cod' ? (
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs text-slate-600">
+                    <span>Items</span>
+                    <span className="font-semibold">₹{cartTotal}</span>
+                  </div>
+                  {form.customise && (
+                    <div className="flex justify-between text-xs text-slate-600">
+                      <span>Customisation ({totalJerseys} jersey{totalJerseys > 1 ? 's' : ''})</span>
+                      <span className="font-semibold">+₹{customiseCost}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between text-xs text-slate-600">
+                    <span>COD booking <span className="text-slate-400 font-normal">(non-refundable)</span></span>
+                    <span className="font-semibold">+₹{COD_CHARGE}</span>
+                  </div>
+                  <div className="border-t border-slate-200 pt-2 space-y-1.5">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-bold text-slate-800">Pay now (via Razorpay)</span>
+                      <span className="text-base font-black text-black">₹{COD_CHARGE}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-bold text-slate-500">Pay on delivery</span>
+                      <span className="text-sm font-black text-slate-500">₹{cartTotal + customiseCost}</span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs text-slate-600">
+                    <span>Items</span>
+                    <span className="font-semibold">₹{cartTotal}</span>
+                  </div>
+                  {form.customise && (
+                    <div className="flex justify-between text-xs text-slate-600">
+                      <span>Customisation ({totalJerseys} jersey{totalJerseys > 1 ? 's' : ''})</span>
+                      <span className="font-semibold">+₹{customiseCost}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between text-xs text-slate-600">
+                    <span>Delivery{metro !== null ? (metro ? ' (Metro)' : ' (Non-metro)') : ''}</span>
+                    <span className="font-semibold">{deliveryCharge !== null ? `+₹${deliveryCharge}` : '—'}</span>
+                  </div>
+                  <div className="border-t border-slate-200 pt-2 flex justify-between items-center">
+                    <span className="text-xs font-black text-slate-800 uppercase tracking-wide">Total</span>
+                    <span className="text-base font-black text-black">
+                      ₹{grandTotal}{deliveryCharge === null ? '*' : ''}
+                    </span>
+                  </div>
+                  {deliveryCharge === null && (
+                    <p className="text-[10px] text-slate-400">* Enter a valid pincode to see final delivery charge</p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Spacer so last field isn't hidden behind footer */}
           <div className="h-2" />
         </form>
@@ -282,12 +396,14 @@ export default function OrderForm({ isOpen, onClose, productName, jerseyItems = 
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
                 </svg>
-                Opening payment…
+                {form.paymentMethod === 'cod' ? 'Placing order…' : 'Opening payment…'}
               </>
-            ) : '🔒 Proceed to Payment'}
+            ) : form.paymentMethod === 'cod' ? `📦 Pay ₹${COD_CHARGE} & Place COD Order` : '🔒 Proceed to Payment'}
           </button>
           <p className="text-center text-[10px] text-slate-400 font-medium mt-2">
-            Secured by Razorpay · UPI, Cards, Net Banking
+            {form.paymentMethod === 'cod'
+              ? `₹${COD_CHARGE} booking paid via Razorpay · Rest paid on delivery`
+              : 'Secured by Razorpay · UPI, Cards, Net Banking'}
           </p>
         </div>
       </div>
