@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, MapPin, ShoppingBag, CreditCard, MessageCirc
 import { loadProductsForSite, DEFAULT_PRODUCTS } from '../data/products';
 import { useCart } from '../context/CartContext';
 import { useRazorpay } from '../hooks/useRazorpay';
+import { getDeliveryCharge, COD_CHARGE } from '../utils/delivery';
 import Navbar from '../components/Navbar';
 import CartDrawer from '../components/CartDrawer';
 import OrderForm from '../components/OrderForm';
@@ -73,7 +74,9 @@ const ProductDetail = () => {
 
   const handleOrderFormSubmit = async (customer) => {
     if (!product) return;
-    const priceNum = getOfferPrice(product.category, product.price, product.discountRate) + (customer.customise ? 70 : 0);
+    const basePrice = getOfferPrice(product.category, product.price, product.discountRate);
+    const customisationCost = customer.customise ? 70 : 0;
+    const jerseyTotal = basePrice + customisationCost;
     const variantName = product.variants?.[selectedVariant]?.name;
     const label = variantName && variantName !== 'Variant' && variantName !== 'Default'
       ? `${product.name} (${variantName}) — Size ${selectedSize}`
@@ -81,17 +84,71 @@ const ProductDetail = () => {
 
     setFormLoading(true);
 
+    const isCOD = customer.paymentMethod === 'cod';
+    const deliveryCharge = isCOD ? 0 : (getDeliveryCharge(customer.pincode) ?? 60);
+    const totalAmount = isCOD ? jerseyTotal : jerseyTotal + deliveryCharge;
+
+    // ── COD flow — ₹120 booking fee paid online, rest on delivery ────────
+    if (isCOD) {
+      await pay({
+        amount: COD_CHARGE,
+        productName: `COD Booking — ${label}`,
+        receipt: `cod_${product.id}_${Date.now()}`,
+        customer,
+        onSuccess: async (response) => {
+          setShowOrderForm(false);
+          setFormLoading(false);
+          try {
+            await fetch('/api/notify-customer', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                customer,
+                order: {
+                  product: label,
+                  amount: jerseyTotal,
+                  paymentId: response.razorpay_payment_id,
+                  isCOD: true,
+                  codChargePaid: COD_CHARGE,
+                },
+              }),
+            });
+          } catch (e) {
+            console.error('Notify failed:', e);
+          }
+          navigate('/thank-you', {
+            state: {
+              paymentId: response.razorpay_payment_id,
+              customerName: customer.name,
+              product: label,
+              amount: jerseyTotal,
+              isCOD: true,
+              codChargePaid: COD_CHARGE,
+            },
+          });
+        },
+        onError: (msg) => {
+          setFormLoading(false);
+          if (msg !== 'Payment cancelled.') {
+            setShowOrderForm(false);
+            setPayStatus('error');
+            setPayMessage(msg);
+          }
+        },
+      });
+      return;
+    }
+
+    // ── Online payment flow ───────────────────────────────────────────────
     await pay({
-      amount: priceNum,
+      amount: totalAmount,
       productName: label,
       receipt: `prod_${product.id}_${Date.now()}`,
-      size: selectedSize,
       customer,
       onSuccess: async (response) => {
         setShowOrderForm(false);
         setFormLoading(false);
 
-        // Send notifications
         try {
           await fetch('/api/notify-customer', {
             method: 'POST',
@@ -100,8 +157,9 @@ const ProductDetail = () => {
               customer,
               order: {
                 product: label,
-                amount: priceNum,
+                amount: totalAmount,
                 paymentId: response.razorpay_payment_id,
+                deliveryCharge,
               },
             }),
           });
@@ -114,7 +172,7 @@ const ProductDetail = () => {
             paymentId: response.razorpay_payment_id,
             customerName: customer.name,
             product: label,
-            amount: priceNum,
+            amount: totalAmount,
           },
         });
       },
@@ -471,6 +529,7 @@ const ProductDetail = () => {
         jerseyItems={product?.category === 'Stadium Series' ? [{ key: String(product.id), name: product.name, quantity: 1 }] : []}
         onSubmit={handleOrderFormSubmit}
         loading={formLoading}
+        cartTotal={getOfferPrice(product?.category, product?.price, product?.discountRate)}
       />
     </div>
   );
