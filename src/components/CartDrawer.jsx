@@ -8,10 +8,13 @@ import { getDeliveryCharge, COD_CHARGE } from '../utils/delivery';
 
 // Discounted price per item — calculated from the product's actual price
 const DISCOUNT_RATE = { 'Stadium Series': 0.10, 'Legend Series': 0.10 };
+const SIZE_SURCHARGE_SIZES = new Set(['2XL', '3XL', '4XL']);
+const SIZE_SURCHARGE = 100;
 const getItemPrice = (item) => {
   const base = parseInt(String(item.price).replace(/[^\d]/g, ''), 10) || 0;
   const rate = DISCOUNT_RATE[item.category] ?? 0;
-  return Math.round(base * (1 - rate));
+  const surcharge = SIZE_SURCHARGE_SIZES.has(item.size) ? SIZE_SURCHARGE : 0;
+  return Math.round(base * (1 - rate)) + surcharge;
 };
 
 const CartDrawer = ({ isOpen, onClose }) => {
@@ -32,7 +35,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
   const handleWhatsApp = () => {
     if (cart.length === 0) return;
     const items = cart.map(item =>
-      `• ${item.name}${item.variant && item.variant !== 'Variant' && item.variant !== 'Default' ? ` (${item.variant})` : ''} x${item.quantity}`
+      `• ${item.name}${item.variant && item.variant !== 'Variant' && item.variant !== 'Default' ? ` (${item.variant})` : ''}${item.size ? ` — Size ${item.size}` : ''} x${item.quantity}`
     ).join('\n');
     const message = `Hi Starfruit Tees! I'd like to order the following:\n\n${items}\n\nTotal: ₹${cartTotal}\n\nPlease let me know the process!`;
     window.open(`https://wa.me/916362376160?text=${encodeURIComponent(message)}`, '_blank');
@@ -52,7 +55,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
     setFormLoading(true);
 
     const itemsSummary = cart.map(item =>
-      `• ${item.name}${item.variant && item.variant !== 'Variant' && item.variant !== 'Default' ? ` (${item.variant})` : ''} x${item.quantity}`
+      `• ${item.name}${item.variant && item.variant !== 'Variant' && item.variant !== 'Default' ? ` (${item.variant})` : ''}${item.size ? ` — Size ${item.size}` : ''} x${item.quantity}`
     ).join('\n');
 
     const jerseyQty        = jerseyItems.reduce((s, i) => s + i.quantity, 0);
@@ -213,12 +216,15 @@ const CartDrawer = ({ isOpen, onClose }) => {
                 )}
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-bold leading-tight mb-0.5 line-clamp-2">{item.name}</p>
-                  {item.variant && item.variant !== 'Variant' && item.variant !== 'Default' && (
-                    <p className="text-[10px] text-slate-400">{item.variant}</p>
-                  )}
+                  <div className="flex items-center gap-1.5">
+                    {item.variant && item.variant !== 'Variant' && item.variant !== 'Default' && (
+                      <p className="text-[10px] text-slate-400">{item.variant}</p>
+                    )}
+                    {item.size && <p className="text-[10px] text-slate-400">Size: {item.size}</p>}
+                  </div>
                   <div className="flex items-center gap-1.5 mt-1">
                     <span className="text-xs font-black text-black">₹{getItemPrice(item)}</span>
-                    <span className="text-[10px] text-slate-400 line-through">{item.price}</span>
+                    <span className="text-[10px] text-slate-400 line-through">₹{parseInt(String(item.price).replace(/[^\d]/g, ''), 10) + (SIZE_SURCHARGE_SIZES.has(item.size) ? SIZE_SURCHARGE : 0)}</span>
                   </div>
                   <div className="flex items-center gap-2 mt-2">
                     <button

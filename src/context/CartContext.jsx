@@ -18,9 +18,9 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem('starfruit_cart', JSON.stringify(cart));
   }, [cart]);
 
-  const addToCart = (product, variantIndex = 0, quantity = 1) => {
+  const addToCart = (product, variantIndex = 0, quantity = 1, size = '') => {
     const variant = product.variants?.[variantIndex];
-    const key = `${product.id}-${variantIndex}`;
+    const key = `${product.id}-${variantIndex}-${size}`;
     setCart(prev => {
       const existing = prev.find(item => item.key === key);
       if (existing) {
@@ -37,6 +37,7 @@ export const CartProvider = ({ children }) => {
         variant: variant?.name || 'Default',
         image: variant?.images?.[0] || '',
         quantity,
+        size,
       }];
     });
   };

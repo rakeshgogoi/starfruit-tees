@@ -11,6 +11,9 @@ import OrderForm from '../components/OrderForm';
 import logoSrc from '../assets/SC_Logo_Colored.png';
 
 const SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL'];
+const SIZE_SURCHARGE_SIZES = new Set(['2XL', '3XL', '4XL']);
+const SIZE_SURCHARGE = 100;
+const getSizeSurcharge = (size) => SIZE_SURCHARGE_SIZES.has(size) ? SIZE_SURCHARGE : 0;
 
 const RCB_CAPS = [
   { id: 'rcb-cap-red',      name: 'RCB Red Cap',         image: '/products/RCB-Cap4.png', category: 'Accessories' },
@@ -62,7 +65,7 @@ const ProductDetail = () => {
 
   const handleAddToCart = () => {
     if (!product) return;
-    addToCart(product, selectedVariant);
+    addToCart(product, selectedVariant, 1, selectedSize);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
@@ -74,7 +77,7 @@ const ProductDetail = () => {
 
   const handleOrderFormSubmit = async (customer) => {
     if (!product) return;
-    const basePrice = getOfferPrice(product.category, product.price, product.discountRate);
+    const basePrice = getOfferPrice(product.category, product.price, product.discountRate) + getSizeSurcharge(selectedSize);
     const customisationCost = customer.customise ? 150 : 0;
     const jerseyTotal = basePrice + customisationCost;
     const variantName = product.variants?.[selectedVariant]?.name;
@@ -302,15 +305,15 @@ const ProductDetail = () => {
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-black leading-tight mb-3">{product.name}</h1>
 
               <div className="flex items-baseline gap-3 mb-1">
-                <span className="text-2xl font-black text-black">₹{getOfferPrice(product.category, product.price, product.discountRate)}</span>
-                <span className="text-lg text-slate-400 line-through font-medium">{product.price}</span>
+                <span className="text-2xl font-black text-black">₹{getOfferPrice(product.category, product.price, product.discountRate) + getSizeSurcharge(selectedSize)}</span>
+                <span className="text-lg text-slate-400 line-through font-medium">₹{parseBasePrice(product.price) + getSizeSurcharge(selectedSize)}</span>
                 {getDiscountLabel(product.category, product.discountLabel) && (
                   <span className="text-xs font-black uppercase tracking-wider bg-yellow-400 text-black px-2 py-0.5 rounded-full">{getDiscountLabel(product.category, product.discountLabel)}</span>
                 )}
               </div>
               {product.category === 'Legend Series' && (
                 <p className="text-xs text-green-600 font-semibold mb-4">
-                  🎉 Special offer: 10% OFF — only ₹{getOfferPrice(product.category, product.price, product.discountRate)}!
+                  🎉 Special offer: 10% OFF — only ₹{getOfferPrice(product.category, product.price, product.discountRate) + getSizeSurcharge(selectedSize)}!
                 </p>
               )}
 
@@ -348,6 +351,9 @@ const ProductDetail = () => {
                     </button>
                   ))}
                 </div>
+                {SIZE_SURCHARGE_SIZES.has(selectedSize) && (
+                  <p className="text-xs text-amber-600 font-semibold mt-2">+₹{SIZE_SURCHARGE} for {selectedSize} size</p>
+                )}
               </div>
 
               {/* Size chart */}
@@ -529,7 +535,7 @@ const ProductDetail = () => {
         jerseyItems={product?.category === 'Stadium Series' ? [{ key: String(product.id), name: product.name, quantity: 1 }] : []}
         onSubmit={handleOrderFormSubmit}
         loading={formLoading}
-        cartTotal={getOfferPrice(product?.category, product?.price, product?.discountRate)}
+        cartTotal={getOfferPrice(product?.category, product?.price, product?.discountRate) + getSizeSurcharge(selectedSize)}
       />
     </div>
   );
