@@ -27,9 +27,9 @@ const CartDrawer = ({ isOpen, onClose }) => {
   const [formLoading, setFormLoading]   = useState(false);
 
   const cartTotal   = cart.reduce((sum, item) => sum + getItemPrice(item) * item.quantity, 0);
-  // Only actual jerseys (Stadium Series) — caps use 'Accessories' category
+  // Only RCB jersey (id '6') supports customisation — other jerseys and caps do not
   const jerseyItems = cart
-    .filter(i => i.category === 'Stadium Series')
+    .filter(i => i.id === '6')
     .map(i => ({ key: i.key, name: i.name, quantity: i.quantity }));
 
   const handleWhatsApp = () => {
