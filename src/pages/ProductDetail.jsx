@@ -75,7 +75,7 @@ const ProductDetail = () => {
   const handleOrderFormSubmit = async (customer) => {
     if (!product) return;
     const basePrice = getOfferPrice(product.category, product.price, product.discountRate);
-    const customisationCost = customer.customise ? 70 : 0;
+    const customisationCost = customer.customise ? 150 : 0;
     const jerseyTotal = basePrice + customisationCost;
     const variantName = product.variants?.[selectedVariant]?.name;
     const label = variantName && variantName !== 'Variant' && variantName !== 'Default'

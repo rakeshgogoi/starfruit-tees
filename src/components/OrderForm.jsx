@@ -35,7 +35,7 @@ export default function OrderForm({ isOpen, onClose, productName, jerseyItems = 
 
   const metro         = isMetroPincode(form.pincode);
   const deliveryCharge = form.paymentMethod === 'online' ? getDeliveryCharge(form.pincode) : null;
-  const customiseCost = form.customise ? totalJerseys * 70 : 0;
+  const customiseCost = form.customise ? totalJerseys * 150 : 0;
   const grandTotal    = cartTotal + customiseCost + (form.paymentMethod === 'cod' ? COD_CHARGE : (deliveryCharge ?? 0));
 
   // Re-initialise customisations each time the form opens
@@ -261,7 +261,7 @@ export default function OrderForm({ isOpen, onClose, productName, jerseyItems = 
                   <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
                     Add your name & number printed on the back{' '}
                     <span className="font-bold text-yellow-700">
-                      (+₹70{totalJerseys > 1 ? ' per jersey' : ''})
+                      (+₹150{totalJerseys > 1 ? ' per jersey' : ''})
                     </span>
                   </p>
                 </div>

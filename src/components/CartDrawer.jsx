@@ -56,7 +56,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
     ).join('\n');
 
     const jerseyQty        = jerseyItems.reduce((s, i) => s + i.quantity, 0);
-    const customisationCost = customer.customise ? jerseyQty * 70 : 0;
+    const customisationCost = customer.customise ? jerseyQty * 150 : 0;
 
     const isCOD           = customer.paymentMethod === 'cod';
     const deliveryCharge  = isCOD ? 0 : (getDeliveryCharge(customer.pincode) ?? 60);
