@@ -10,8 +10,8 @@ import CartDrawer from '../components/CartDrawer';
 import OrderForm from '../components/OrderForm';
 import logoSrc from '../assets/SC_Logo_Colored.png';
 
-const SIZES = ['S (38)', 'M (40)', 'L (42)', 'XL (44)', '2XL (46)', '3XL (48)'];
-const SIZE_SURCHARGE_SIZES = new Set(['2XL (46)', '3XL (48)']);
+const SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
+const SIZE_SURCHARGE_SIZES = new Set(['2XL', '3XL']);
 const SIZE_SURCHARGE = 100;
 const getSizeSurcharge = (size) => SIZE_SURCHARGE_SIZES.has(size) ? SIZE_SURCHARGE : 0;
 
@@ -22,7 +22,7 @@ const RCB_CAPS = [
 ];
 
 const SIZE_CHART = {
-  headers: ['S (38)', 'M (40)', 'L (42)', 'XL (44)', '2XL (46)', '3XL (48)'],
+  headers: ['S', 'M', 'L', 'XL', '2XL', '3XL'],
   rows: [
     { label: 'Chest', values: [38, 40, 42, 44, 46, 48] },
   ],
@@ -44,7 +44,7 @@ const ProductDetail = () => {
   const [products, setProducts] = useState(DEFAULT_PRODUCTS);
   const [imageIndex, setImageIndex] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState(0);
-  const [selectedSize, setSelectedSize] = useState('M (40)');
+  const [selectedSize, setSelectedSize] = useState('M');
   const [added, setAdded] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [payStatus, setPayStatus]     = useState(null); // null | 'loading' | 'success' | 'error'
