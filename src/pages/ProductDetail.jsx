@@ -306,7 +306,9 @@ const ProductDetail = () => {
 
               <div className="flex items-baseline gap-3 mb-1">
                 <span className="text-2xl font-black text-black">₹{getOfferPrice(product.category, product.price, product.discountRate) + getSizeSurcharge(selectedSize)}</span>
-                <span className="text-lg text-slate-400 line-through font-medium">₹{parseBasePrice(product.price) + getSizeSurcharge(selectedSize)}</span>
+                {getOfferPrice(product.category, product.price, product.discountRate) < parseBasePrice(product.price) && (
+                  <span className="text-lg text-slate-400 line-through font-medium">₹{parseBasePrice(product.price) + getSizeSurcharge(selectedSize)}</span>
+                )}
                 {getDiscountLabel(product.category, product.discountLabel) && (
                   <span className="text-xs font-black uppercase tracking-wider bg-yellow-400 text-black px-2 py-0.5 rounded-full">{getDiscountLabel(product.category, product.discountLabel)}</span>
                 )}
