@@ -241,9 +241,25 @@ const App = () => {
                   <div className="px-0.5 sm:px-1">
                     <h3 className="text-sm sm:text-base font-display font-black leading-tight mb-1 line-clamp-2">{product.name}</h3>
                     <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-                      <span className="text-sm font-black text-black">₹{Math.round(parseInt(String(product.price).replace(/[^\d]/g, ''), 10) * 0.90)}</span>
-                      <span className="text-xs text-slate-400 line-through">{product.price}</span>
-                      <span className="text-[10px] font-black uppercase bg-yellow-400 text-black px-1.5 py-0.5 rounded-full leading-none">10% OFF</span>
+                      {(() => {
+                        const DISCOUNT_RATE = { 'Stadium Series': 0.20, 'Legend Series': 0.10 };
+                        const DISCOUNT_LABEL = { 'Stadium Series': '20% OFF', 'Legend Series': '10% OFF' };
+                        const base = parseInt(String(product.price).replace(/[^\d]/g, ''), 10) || 0;
+                        const rate = product.discountRate ?? DISCOUNT_RATE[product.category] ?? 0;
+                        const offer = Math.round(base * (1 - rate));
+                        const label = product.discountLabel ?? DISCOUNT_LABEL[product.category] ?? '';
+                        return (
+                          <>
+                            <span className="text-sm font-black text-black">₹{offer}</span>
+                            {offer < base && (
+                              <span className="text-xs text-slate-400 line-through">{product.price}</span>
+                            )}
+                            {label && (
+                              <span className="text-[10px] font-black uppercase bg-yellow-400 text-black px-1.5 py-0.5 rounded-full leading-none">{label}</span>
+                            )}
+                          </>
+                        );
+                      })()}
                     </div>
                     <p className="text-slate-500 text-xs sm:text-sm leading-relaxed mb-2 line-clamp-2">{product.description}</p>
                     <Link
