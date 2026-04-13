@@ -8,12 +8,12 @@ import { getDeliveryCharge, COD_CHARGE } from '../utils/delivery';
 import { getStock, isInventoryTracked, refreshInventory } from '../data/inventory';
 
 // Discounted price per item — calculated from the product's actual price
-const DISCOUNT_RATE = { 'Stadium Series': 0.10, 'Legend Series': 0.10 };
+const DISCOUNT_RATE = { 'Stadium Series': 0.20, 'Legend Series': 0.10 };
 const SIZE_SURCHARGE_SIZES = new Set(['2XL', '3XL']);
 const SIZE_SURCHARGE = 100;
 const getItemPrice = (item) => {
   const base = parseInt(String(item.price).replace(/[^\d]/g, ''), 10) || 0;
-  const rate = DISCOUNT_RATE[item.category] ?? 0;
+  const rate = item.discountRate ?? DISCOUNT_RATE[item.category] ?? 0;
   const surcharge = SIZE_SURCHARGE_SIZES.has(item.size) ? SIZE_SURCHARGE : 0;
   return Math.round(base * (1 - rate)) + surcharge;
 };
