@@ -245,6 +245,25 @@ async function saveOrderToDb(customer, order) {
   }
 }
 
+async function decrementInventory(items) {
+  const dbUrl = process.env.DATABASE_URL;
+  if (!dbUrl || !items?.length) return;
+  try {
+    const { neon } = await import('@neondatabase/serverless');
+    const sql = neon(dbUrl);
+    for (const { productId, size, quantity } of items) {
+      if (!productId || !size || !quantity) continue;
+      await sql`
+        UPDATE inventory
+        SET quantity = quantity - ${quantity}, updated_at = NOW()
+        WHERE product_id = ${productId} AND size = ${size} AND quantity >= ${quantity}
+      `;
+    }
+  } catch (e) {
+    console.error('Inventory decrement failed:', e.message);
+  }
+}
+
 export default async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
 
@@ -260,6 +279,11 @@ export default async function handler(req, res) {
 
   // Persist order details to database before sending notifications
   await saveOrderToDb(customer, order);
+
+  // Decrement inventory for purchased items (server-side, authoritative)
+  if (order.inventoryItems?.length > 0) {
+    await decrementInventory(order.inventoryItems);
+  }
 
   const results = {};
   const phone   = `+91${customer.phone.replace(/^\+91/, '')}`;

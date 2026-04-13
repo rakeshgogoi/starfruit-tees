@@ -400,11 +400,302 @@ function OrdersTab() {
   );
 }
 
+// ─── Inventory Tab ────────────────────────────────────────────────────────────
+
+const PRODUCT_NAMES = {
+  '6':  'RCB IPL 2026 Jersey',
+  '16': 'RCB Virat Kohli Edition',
+  '10': 'KKR IPL 2026 Jersey',
+};
+
+const ALL_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
+
+function InventoryTab() {
+  const [inventory, setInventory] = useState([]);
+  const [loading, setLoading]     = useState(false);
+  const [saving, setSaving]       = useState(false);
+  const [error, setError]         = useState('');
+  const [success, setSuccess]     = useState('');
+  const [edits, setEdits]         = useState({});    // { "6-M": 5, ... }
+  const [newProduct, setNewProduct] = useState({ productId: '', size: 'M', quantity: 0 });
+  const [showAdd, setShowAdd]     = useState(false);
+
+  const pw = getSessionPassword();
+
+  const fetchInventory = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('/api/inventory-admin', {
+        headers: { 'x-admin-password': pw },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to load inventory');
+      setInventory(data.inventory || []);
+      setEdits({});
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchInventory(); }, []);
+
+  // Group inventory by product_id
+  const grouped = {};
+  for (const row of inventory) {
+    if (!grouped[row.product_id]) grouped[row.product_id] = {};
+    grouped[row.product_id][row.size] = row.quantity;
+  }
+
+  const handleEdit = (productId, size, value) => {
+    const key = `${productId}-${size}`;
+    const num = parseInt(value, 10);
+    setEdits(prev => ({ ...prev, [key]: isNaN(num) ? 0 : Math.max(0, num) }));
+  };
+
+  const getValue = (productId, size) => {
+    const key = `${productId}-${size}`;
+    if (key in edits) return edits[key];
+    return grouped[productId]?.[size] ?? '';
+  };
+
+  const hasChanges = Object.keys(edits).length > 0;
+
+  const handleSave = async () => {
+    if (!hasChanges) return;
+    setSaving(true);
+    setError('');
+    setSuccess('');
+
+    const updates = Object.entries(edits).map(([key, quantity]) => {
+      const [productId, size] = key.split('-');
+      return { productId, size, quantity };
+    });
+
+    try {
+      const res = await fetch('/api/inventory-admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-password': pw },
+        body: JSON.stringify({ updates }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to save');
+      setSuccess(`Updated ${updates.length} item(s) successfully.`);
+      setTimeout(() => setSuccess(''), 3000);
+      fetchInventory();
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAddProduct = async () => {
+    if (!newProduct.productId) return;
+    setSaving(true);
+    setError('');
+    try {
+      const updates = ALL_SIZES.map(size => ({
+        productId: newProduct.productId,
+        size,
+        quantity: 0,
+      }));
+      const res = await fetch('/api/inventory-admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-password': pw },
+        body: JSON.stringify({ updates }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to add');
+      setSuccess(`Added product ${newProduct.productId} to inventory tracking.`);
+      setTimeout(() => setSuccess(''), 3000);
+      setShowAdd(false);
+      setNewProduct({ productId: '', size: 'M', quantity: 0 });
+      fetchInventory();
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const totalStock = inventory.reduce((s, r) => s + r.quantity, 0);
+  const productIds = Object.keys(grouped).sort();
+
+  return (
+    <div className="space-y-6">
+      {/* Summary */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p className="text-slate-600 text-sm">
+            Manage jersey stock levels. Changes are saved to the database immediately.
+          </p>
+          <p className="text-xs text-slate-400 mt-1">
+            {productIds.length} product(s) tracked · {totalStock} total units in stock
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setShowAdd(!showAdd)}
+            className="px-4 py-2 rounded-lg border border-slate-300 text-slate-600 text-sm font-medium hover:bg-slate-100"
+          >
+            + Track New Product
+          </button>
+          <button
+            type="button"
+            onClick={fetchInventory}
+            disabled={loading}
+            className="px-4 py-2 rounded-lg border border-slate-300 text-slate-600 text-sm font-medium hover:bg-slate-100 disabled:opacity-50"
+          >
+            {loading ? 'Loading...' : 'Refresh'}
+          </button>
+        </div>
+      </div>
+
+      {/* Add new product form */}
+      {showAdd && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 space-y-3">
+          <p className="text-sm font-bold text-blue-800">Track a new product's inventory</p>
+          <div className="flex flex-wrap gap-3 items-end">
+            <div>
+              <label className="block text-xs font-medium text-blue-700 mb-1">Product ID</label>
+              <input
+                type="text"
+                value={newProduct.productId}
+                onChange={(e) => setNewProduct(p => ({ ...p, productId: e.target.value }))}
+                placeholder="e.g. 7"
+                className="w-28 px-3 py-2 border border-blue-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleAddProduct}
+              disabled={!newProduct.productId || saving}
+              className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+            >
+              Add to Tracking
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowAdd(false)}
+              className="px-4 py-2 rounded-lg text-slate-500 text-sm hover:text-slate-700"
+            >
+              Cancel
+            </button>
+          </div>
+          <p className="text-xs text-blue-600">This adds all sizes (S–3XL) with 0 stock. You can set quantities after.</p>
+        </div>
+      )}
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+          <p className="text-sm text-red-700 font-medium">{error}</p>
+        </div>
+      )}
+      {success && (
+        <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-3">
+          <p className="text-sm text-green-700 font-medium">{success}</p>
+        </div>
+      )}
+
+      {loading && inventory.length === 0 ? (
+        <div className="text-center py-12 text-slate-400">Loading inventory...</div>
+      ) : productIds.length === 0 ? (
+        <div className="text-center py-12 text-slate-400">No products being tracked. Add one above.</div>
+      ) : (
+        <>
+          {/* Inventory table per product */}
+          {productIds.map(pid => (
+            <div key={pid} className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+              <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                <div>
+                  <h3 className="font-bold text-slate-900 text-sm">
+                    {PRODUCT_NAMES[pid] || `Product #${pid}`}
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    ID: {pid} · Total: {ALL_SIZES.reduce((s, sz) => s + (getValue(pid, sz) || 0), 0)} units
+                  </p>
+                </div>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-100">
+                      <th className="text-left px-4 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider">Size</th>
+                      <th className="text-center px-4 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider">Current Stock</th>
+                      <th className="text-center px-4 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {ALL_SIZES.map(size => {
+                      const val = getValue(pid, size);
+                      const key = `${pid}-${size}`;
+                      const isEdited = key in edits;
+                      const original = grouped[pid]?.[size] ?? 0;
+                      return (
+                        <tr key={size} className={`border-b border-slate-50 ${val === 0 ? 'bg-red-50/30' : ''}`}>
+                          <td className="px-4 py-2.5 font-bold text-slate-700">{size}</td>
+                          <td className="px-4 py-2.5 text-center">
+                            <input
+                              type="number"
+                              min="0"
+                              value={val}
+                              onChange={(e) => handleEdit(pid, size, e.target.value)}
+                              className={`w-20 text-center px-2 py-1.5 border rounded-lg text-sm font-bold ${
+                                isEdited
+                                  ? 'border-yellow-400 bg-yellow-50 text-yellow-800'
+                                  : 'border-slate-200 text-slate-700'
+                              }`}
+                            />
+                            {isEdited && (
+                              <span className="ml-2 text-xs text-slate-400">was {original}</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-2.5 text-center">
+                            {val === 0 ? (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700">Sold Out</span>
+                            ) : val <= 2 ? (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-700">Low</span>
+                            ) : (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700">In Stock</span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))}
+
+          {/* Save button */}
+          {hasChanges && (
+            <div className="sticky bottom-4 flex justify-center">
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={saving}
+                className="px-8 py-3 rounded-full bg-black text-white font-bold text-sm shadow-lg hover:bg-slate-800 disabled:opacity-50 transition-all"
+              >
+                {saving ? 'Saving...' : `Save ${Object.keys(edits).length} Change(s)`}
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
 // ─── Main Admin ────────────────────────────────────────────────────────────────
 
 export default function Admin() {
   const [authenticated, setAuthenticated] = useState(false);
-  const [tab, setTab]         = useState('products'); // 'products' | 'orders'
+  const [tab, setTab]         = useState('products'); // 'products' | 'orders' | 'inventory'
   const [products, setProducts] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(createEmptyProduct());
@@ -577,7 +868,7 @@ export default function Admin() {
               <h1 className="text-lg font-display font-black">Admin</h1>
               {/* Tab switcher */}
               <div className="flex bg-slate-100 rounded-lg p-1 gap-0.5">
-                {[{ id: 'products', label: '📦 Products' }, { id: 'orders', label: '💳 Orders' }].map((t) => (
+                {[{ id: 'products', label: '📦 Products' }, { id: 'orders', label: '💳 Orders' }, { id: 'inventory', label: '📊 Inventory' }].map((t) => (
                   <button
                     key={t.id}
                     type="button"
@@ -637,6 +928,9 @@ export default function Admin() {
 
         {/* Orders Tab */}
         {tab === 'orders' && <OrdersTab />}
+
+        {/* Inventory Tab */}
+        {tab === 'inventory' && <InventoryTab />}
 
         {/* Products Tab — list */}
         {tab === 'products' && !isEditing && (

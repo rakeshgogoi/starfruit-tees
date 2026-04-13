@@ -5,6 +5,7 @@ import { useCart } from '../context/CartContext';
 import { useRazorpay } from '../hooks/useRazorpay';
 import OrderForm from './OrderForm';
 import { getDeliveryCharge, COD_CHARGE } from '../utils/delivery';
+import { getStock, isInventoryTracked, refreshInventory } from '../data/inventory';
 
 // Discounted price per item — calculated from the product's actual price
 const DISCOUNT_RATE = { 'Stadium Series': 0.10, 'Legend Series': 0.10 };
@@ -74,6 +75,10 @@ const CartDrawer = ({ isOpen, onClose }) => {
         receipt: `cod_${Date.now()}`,
         customer,
         onSuccess: async (response) => {
+          const inventoryItems = cart
+            .filter(i => isInventoryTracked(i.id))
+            .map(i => ({ productId: i.id, size: i.size, quantity: i.quantity }));
+
           setShowOrderForm(false);
           setFormLoading(false);
           setPayStatus('success');
@@ -91,6 +96,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                   paymentId: response.razorpay_payment_id,
                   isCOD: true,
                   codChargePaid: COD_CHARGE,
+                  inventoryItems,
                 },
               }),
             });
@@ -98,6 +104,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
             console.error('Notify failed:', e);
           }
 
+          refreshInventory();
           clearCart();
           navigate('/thank-you', {
             state: {
@@ -129,6 +136,10 @@ const CartDrawer = ({ isOpen, onClose }) => {
       receipt: `cart_${Date.now()}`,
       customer,
       onSuccess: async (response) => {
+        const inventoryItems = cart
+          .filter(i => isInventoryTracked(i.id))
+          .map(i => ({ productId: i.id, size: i.size, quantity: i.quantity }));
+
         setShowOrderForm(false);
         setFormLoading(false);
         setPayStatus('success');
@@ -145,6 +156,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                 amount: totalAmount,
                 paymentId: response.razorpay_payment_id,
                 deliveryCharge,
+                inventoryItems,
               },
             }),
           });
@@ -152,6 +164,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
           console.error('Notify failed:', e);
         }
 
+        refreshInventory();
         clearCart();
         navigate('/thank-you', {
           state: {
@@ -234,13 +247,26 @@ const CartDrawer = ({ isOpen, onClose }) => {
                       <Minus size={10} />
                     </button>
                     <span className="text-xs font-bold w-4 text-center">{item.quantity}</span>
-                    <button
-                      onClick={() => updateQuantity(item.key, item.quantity + 1)}
-                      className="w-6 h-6 rounded-full border border-slate-200 flex items-center justify-center hover:border-black transition-colors"
-                    >
-                      <Plus size={10} />
-                    </button>
+                    {(() => {
+                      const tracked = isInventoryTracked(item.id);
+                      const stock = tracked ? getStock(item.id, item.size) : Infinity;
+                      const atMax = tracked && item.quantity >= stock;
+                      return (
+                        <button
+                          onClick={() => !atMax && updateQuantity(item.key, item.quantity + 1)}
+                          disabled={atMax}
+                          className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${
+                            atMax ? 'border-slate-100 text-slate-200 cursor-not-allowed' : 'border-slate-200 hover:border-black'
+                          }`}
+                        >
+                          <Plus size={10} />
+                        </button>
+                      );
+                    })()}
                   </div>
+                  {isInventoryTracked(item.id) && item.quantity >= getStock(item.id, item.size) && (
+                    <p className="text-[9px] font-bold text-amber-500 mt-1">Max stock reached</p>
+                  )}
                 </div>
                 <button onClick={() => removeFromCart(item.key)} className="text-slate-300 hover:text-black transition-colors mt-0.5">
                   <X size={14} />

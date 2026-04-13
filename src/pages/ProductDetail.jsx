@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, MapPin, ShoppingBag, CreditCard, MessageCircle, Check, AlertCircle, CheckCircle } from 'lucide-react';
 import { loadProductsForSite, DEFAULT_PRODUCTS } from '../data/products';
 import { useCart } from '../context/CartContext';
+import { getStock, isInventoryTracked, refreshInventory } from '../data/inventory';
 import { useRazorpay } from '../hooks/useRazorpay';
 import { getDeliveryCharge, COD_CHARGE } from '../utils/delivery';
 import Navbar from '../components/Navbar';
@@ -38,7 +39,7 @@ const getDiscountLabel = (category, customLabel) => customLabel ?? DISCOUNT_LABE
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { addToCart } = useCart();
+  const { addToCart, getCartQty, inventoryReady } = useCart();
   const { pay, scriptLoaded } = useRazorpay();
 
   const [products, setProducts] = useState(DEFAULT_PRODUCTS);
@@ -63,15 +64,31 @@ const ProductDetail = () => {
   const product = products.find(p => String(p.id) === String(id));
   const images = product?.variants?.[selectedVariant]?.images || product?.images || [];
 
+  // Auto-select first available size if default is sold out
+  useEffect(() => {
+    if (!product || !inventoryReady || !isInventoryTracked(product.id)) return;
+    const stock = getStock(product.id, selectedSize);
+    if (stock > 0) return; // current selection is fine
+    const firstAvailable = SIZES.find(s => getStock(product.id, s) > 0);
+    if (firstAvailable) setSelectedSize(firstAvailable);
+  }, [product?.id, inventoryReady]);
+
+  const tracked = product ? isInventoryTracked(product.id) : false;
+  const currentStock = product ? getStock(product.id, selectedSize) : Infinity;
+  const inCartQty = product ? getCartQty(product.id, selectedSize) : 0;
+  const availableToAdd = tracked ? Math.max(0, currentStock - inCartQty) : Infinity;
+  const isSoldOut = tracked && availableToAdd <= 0;
+
   const handleAddToCart = () => {
-    if (!product) return;
-    addToCart(product, selectedVariant, 1, selectedSize);
+    if (!product || isSoldOut) return;
+    const success = addToCart(product, selectedVariant, 1, selectedSize);
+    if (success === false) return;
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
 
   const handleBuyNow = () => {
-    if (!product || !scriptLoaded) return;
+    if (!product || !scriptLoaded || isSoldOut) return;
     setShowOrderForm(true);
   };
 
@@ -99,6 +116,9 @@ const ProductDetail = () => {
         receipt: `cod_${product.id}_${Date.now()}`,
         customer,
         onSuccess: async (response) => {
+          const inventoryItems = isInventoryTracked(product.id)
+            ? [{ productId: product.id, size: selectedSize, quantity: 1 }]
+            : [];
           setShowOrderForm(false);
           setFormLoading(false);
           try {
@@ -113,12 +133,14 @@ const ProductDetail = () => {
                   paymentId: response.razorpay_payment_id,
                   isCOD: true,
                   codChargePaid: COD_CHARGE,
+                  inventoryItems,
                 },
               }),
             });
           } catch (e) {
             console.error('Notify failed:', e);
           }
+          refreshInventory();
           navigate('/thank-you', {
             state: {
               paymentId: response.razorpay_payment_id,
@@ -149,6 +171,9 @@ const ProductDetail = () => {
       receipt: `prod_${product.id}_${Date.now()}`,
       customer,
       onSuccess: async (response) => {
+        const inventoryItems = isInventoryTracked(product.id)
+          ? [{ productId: product.id, size: selectedSize, quantity: 1 }]
+          : [];
         setShowOrderForm(false);
         setFormLoading(false);
 
@@ -163,6 +188,7 @@ const ProductDetail = () => {
                 amount: totalAmount,
                 paymentId: response.razorpay_payment_id,
                 deliveryCharge,
+                inventoryItems,
               },
             }),
           });
@@ -170,6 +196,7 @@ const ProductDetail = () => {
           console.error('Notify failed:', e);
         }
 
+        refreshInventory();
         navigate('/thank-you', {
           state: {
             paymentId: response.razorpay_payment_id,
@@ -343,15 +370,37 @@ const ProductDetail = () => {
               <div className="mb-6">
                 <p className="text-xs font-black uppercase tracking-[0.25em] text-slate-400 mb-2">Size</p>
                 <div className="flex gap-2 flex-wrap">
-                  {SIZES.map(size => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className={`w-11 h-11 rounded-lg text-xs font-bold border transition-all ${selectedSize === size ? 'border-black bg-black text-white' : 'border-gray-200 text-gray-600 hover:border-gray-400'}`}
-                    >
-                      {size}
-                    </button>
-                  ))}
+                  {SIZES.map(size => {
+                    const tracked = product && isInventoryTracked(product.id);
+                    const stock = tracked ? getStock(product.id, size) : Infinity;
+                    const inCart = product ? getCartQty(product.id, size) : 0;
+                    const available = stock - inCart;
+                    const soldOut = tracked && available <= 0;
+
+                    return (
+                      <div key={size} className="flex flex-col items-center gap-1">
+                        <button
+                          onClick={() => !soldOut && setSelectedSize(size)}
+                          disabled={soldOut}
+                          className={`w-11 h-11 rounded-lg text-xs font-bold border transition-all ${
+                            soldOut
+                              ? 'border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed line-through'
+                              : selectedSize === size
+                                ? 'border-black bg-black text-white'
+                                : 'border-gray-200 text-gray-600 hover:border-gray-400'
+                          }`}
+                        >
+                          {size}
+                        </button>
+                        {tracked && soldOut && (
+                          <span className="text-[9px] font-bold text-red-400 uppercase">Sold</span>
+                        )}
+                        {tracked && !soldOut && stock <= 3 && (
+                          <span className="text-[9px] font-bold text-amber-500">{stock} left</span>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
                 {SIZE_SURCHARGE_SIZES.has(selectedSize) && (
                   <p className="text-xs text-amber-600 font-semibold mt-2">+₹{SIZE_SURCHARGE} for {selectedSize} size</p>
@@ -417,23 +466,43 @@ const ProductDetail = () => {
                 </div>
               )}
 
+              {/* Sold out notice */}
+              {isSoldOut && (
+                <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-xl px-3 py-2.5 mb-3">
+                  <AlertCircle size={15} className="text-red-500 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-red-700 font-semibold">
+                    {currentStock === 0
+                      ? `Size ${selectedSize} is sold out for this jersey.`
+                      : `Size ${selectedSize} is fully claimed — already in your cart.`}
+                  </p>
+                </div>
+              )}
+
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={handleAddToCart}
-                  className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-full font-bold text-sm uppercase tracking-wide border-2 transition-all duration-200 ${added
-                    ? 'border-green-500 bg-green-500 text-white'
-                    : 'border-black bg-white text-black hover:bg-black hover:text-white'
-                    }`}
+                  disabled={isSoldOut}
+                  className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-full font-bold text-sm uppercase tracking-wide border-2 transition-all duration-200 ${
+                    isSoldOut
+                      ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : added
+                        ? 'border-green-500 bg-green-500 text-white'
+                        : 'border-black bg-white text-black hover:bg-black hover:text-white'
+                  }`}
                 >
-                  {added ? <><Check size={16} /> Added!</> : <><ShoppingBag size={16} /> Add to Cart</>}
+                  {isSoldOut ? 'Sold Out' : added ? <><Check size={16} /> Added!</> : <><ShoppingBag size={16} /> Add to Cart</>}
                 </button>
                 <button
                   onClick={handleBuyNow}
-                  disabled={payStatus === 'loading' || !scriptLoaded}
-                  className="flex-1 flex items-center justify-center gap-2 py-4 rounded-full font-bold text-sm uppercase tracking-wide bg-black text-white hover:bg-yellow-400 hover:text-black transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={payStatus === 'loading' || !scriptLoaded || isSoldOut}
+                  className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-full font-bold text-sm uppercase tracking-wide transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
+                    isSoldOut
+                      ? 'bg-gray-100 text-gray-400'
+                      : 'bg-black text-white hover:bg-yellow-400 hover:text-black'
+                  }`}
                 >
-                  <CreditCard size={16} /> {payStatus === 'loading' ? 'Opening...' : 'Buy Now'}
+                  <CreditCard size={16} /> {payStatus === 'loading' ? 'Opening...' : isSoldOut ? 'Sold Out' : 'Buy Now'}
                 </button>
               </div>
 
