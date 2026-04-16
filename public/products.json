@@ -105,6 +105,7 @@
     "name": "RCB IPL 2026 Jersey",
     "category": "Stadium Series",
     "price": "₹999",
+    "sizes": ["XS", "S", "M", "L", "XL", "2XL", "3XL"],
     "description": "This is an exact replica of the original jersey. The jersey also comes with exclusive golden detailing on the IPL logo and a premium film finish just like the original.\n\n✨ Product Highlights:\n• Zipper jersey design\n• Premium 180 GSM fabric\n• UV protection\n• Dry-fit & anti-sweat\n• Anti-bacterial finish\n\nMake It Yours! Customize your jersey with a name and number for only ₹150 extra.",
     "tag": "New",
     "variants": [
@@ -277,6 +278,7 @@
     "price": "₹1499",
     "discountRate": 0.40,
     "discountLabel": "40% OFF",
+    "sizes": ["XS", "S", "M", "L", "XL", "2XL", "3XL"],
     "description": "This is an exact replica of the original jersey. The jersey also comes with exclusive golden detailing on the IPL logo and a premium film finish just like the original.\n\n✨ Product Highlights:\n• Zipper jersey design\n• Premium 180 GSM fabric\n• UV protection\n• Dry-fit & anti-sweat\n• Anti-bacterial finish",
     "tag": "New",
     "variants": [

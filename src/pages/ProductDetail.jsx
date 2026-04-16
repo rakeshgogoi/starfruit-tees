@@ -11,7 +11,7 @@ import CartDrawer from '../components/CartDrawer';
 import OrderForm from '../components/OrderForm';
 import logoSrc from '../assets/SC_Logo_Colored.png';
 
-const SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
+const DEFAULT_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
 const SIZE_SURCHARGE_SIZES = new Set(['2XL', '3XL']);
 const SIZE_SURCHARGE = 100;
 const getSizeSurcharge = (size) => SIZE_SURCHARGE_SIZES.has(size) ? SIZE_SURCHARGE : 0;
@@ -22,12 +22,18 @@ const RCB_CAPS = [
   { id: 'rcb-cap-redblack', name: 'RCB Red & Black Cap', image: '/products/RCB-Cap5.png', category: 'Accessories' },
 ];
 
-const SIZE_CHART = {
-  headers: ['S', 'M', 'L', 'XL', '2XL', '3XL'],
+// Chest measurement (inches) for each size
+const CHEST_BY_SIZE = { XS: 36, S: 38, M: 40, L: 42, XL: 44, '2XL': 46, '3XL': 48 };
+
+const getProductSizes = (product) =>
+  (Array.isArray(product?.sizes) && product.sizes.length > 0) ? product.sizes : DEFAULT_SIZES;
+
+const getSizeChart = (sizes) => ({
+  headers: sizes,
   rows: [
-    { label: 'Chest', values: [38, 40, 42, 44, 46, 48] },
+    { label: 'Chest', values: sizes.map(s => CHEST_BY_SIZE[s] ?? '-') },
   ],
-};
+});
 
 const DISCOUNT_RATE = { 'Stadium Series': 0.20, 'Legend Series': 0.10 };
 const DISCOUNT_LABEL = { 'Stadium Series': '20% OFF', 'Legend Series': '10% OFF' };
@@ -69,7 +75,7 @@ const ProductDetail = () => {
     if (!product || !inventoryReady || !isInventoryTracked(product.id)) return;
     const stock = getStock(product.id, selectedSize);
     if (stock > 0) return; // current selection is fine
-    const firstAvailable = SIZES.find(s => getStock(product.id, s) > 0);
+    const firstAvailable = getProductSizes(product).find(s => getStock(product.id, s) > 0);
     if (firstAvailable) setSelectedSize(firstAvailable);
   }, [product?.id, inventoryReady]);
 
@@ -370,7 +376,7 @@ const ProductDetail = () => {
               <div className="mb-6">
                 <p className="text-xs font-black uppercase tracking-[0.25em] text-slate-400 mb-2">Size</p>
                 <div className="flex gap-2 flex-wrap">
-                  {SIZES.map(size => {
+                  {getProductSizes(product).map(size => {
                     const tracked = product && isInventoryTracked(product.id);
                     const stock = tracked ? getStock(product.id, size) : Infinity;
                     const inCart = product ? getCartQty(product.id, size) : 0;
@@ -423,13 +429,13 @@ const ProductDetail = () => {
                         <thead>
                           <tr className="bg-gray-50">
                             <th className="text-left px-3 py-2 font-bold text-slate-500 border-b border-gray-100 whitespace-nowrap">Measurement</th>
-                            {SIZE_CHART.headers.map(h => (
+                            {getSizeChart(getProductSizes(product)).headers.map(h => (
                               <th key={h} className="px-3 py-2 font-bold text-slate-700 border-b border-gray-100 text-center">{h}</th>
                             ))}
                           </tr>
                         </thead>
                         <tbody>
-                          {SIZE_CHART.rows.map((row, i) => (
+                          {getSizeChart(getProductSizes(product)).rows.map((row, i) => (
                             <tr key={row.label} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                               <td className="px-3 py-2 font-semibold text-slate-600 whitespace-nowrap border-b border-gray-50">{row.label}</td>
                               {row.values.map((v, j) => (

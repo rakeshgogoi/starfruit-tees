@@ -409,6 +409,10 @@ const PRODUCT_NAMES = {
 };
 
 const ALL_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
+// Products that also carry XS (keep in sync with `sizes` in products.json)
+const XS_PRODUCT_IDS = new Set(['6', '16']);
+const getSizesForProduct = (pid) =>
+  XS_PRODUCT_IDS.has(String(pid)) ? ['XS', ...ALL_SIZES] : ALL_SIZES;
 
 function InventoryTab() {
   const [inventory, setInventory] = useState([]);
@@ -497,7 +501,7 @@ function InventoryTab() {
     setSaving(true);
     setError('');
     try {
-      const updates = ALL_SIZES.map(size => ({
+      const updates = getSizesForProduct(newProduct.productId).map(size => ({
         productId: newProduct.productId,
         size,
         quantity: 0,
@@ -616,7 +620,7 @@ function InventoryTab() {
                     {PRODUCT_NAMES[pid] || `Product #${pid}`}
                   </h3>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    ID: {pid} · Total: {ALL_SIZES.reduce((s, sz) => s + (getValue(pid, sz) || 0), 0)} units
+                    ID: {pid} · Total: {getSizesForProduct(pid).reduce((s, sz) => s + (getValue(pid, sz) || 0), 0)} units
                   </p>
                 </div>
               </div>
@@ -630,7 +634,7 @@ function InventoryTab() {
                     </tr>
                   </thead>
                   <tbody>
-                    {ALL_SIZES.map(size => {
+                    {getSizesForProduct(pid).map(size => {
                       const val = getValue(pid, size);
                       const key = `${pid}-${size}`;
                       const isEdited = key in edits;
