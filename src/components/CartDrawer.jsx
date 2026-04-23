@@ -63,7 +63,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
     const customisationCost = customer.customise ? jerseyQty * 150 : 0;
 
     const isCOD           = customer.paymentMethod === 'cod';
-    const deliveryCharge  = isCOD ? 0 : (getDeliveryCharge(customer.pincode) ?? 60);
+    const deliveryCharge  = isCOD ? 0 : (getDeliveryCharge(customer.pincode) ?? 80);
     const jerseyTotal     = cartTotal + customisationCost; // what customer pays on delivery for COD
     const totalAmount     = isCOD ? jerseyTotal : jerseyTotal + deliveryCharge;
 

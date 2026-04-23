@@ -111,7 +111,7 @@ const ProductDetail = () => {
     setFormLoading(true);
 
     const isCOD = customer.paymentMethod === 'cod';
-    const deliveryCharge = isCOD ? 0 : (getDeliveryCharge(customer.pincode) ?? 60);
+    const deliveryCharge = isCOD ? 0 : (getDeliveryCharge(customer.pincode) ?? 80);
     const totalAmount = isCOD ? jerseyTotal : jerseyTotal + deliveryCharge;
 
     // ── COD flow — ₹120 booking fee paid online, rest on delivery ────────

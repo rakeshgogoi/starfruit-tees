@@ -13,8 +13,8 @@ const METRO_PREFIXES = new Set([
   '201', // Noida / Ghaziabad (NCR)
 ]);
 
-export const DELIVERY_METRO     = 60;
-export const DELIVERY_NON_METRO = 80;
+export const DELIVERY_METRO     = 80;
+export const DELIVERY_NON_METRO = 100;
 export const COD_CHARGE         = 120;
 
 /** Returns true (metro), false (non-metro), or null (incomplete/invalid pincode) */
