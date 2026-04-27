@@ -28,9 +28,9 @@ const CartDrawer = ({ isOpen, onClose }) => {
   const [formLoading, setFormLoading]   = useState(false);
 
   const cartTotal   = cart.reduce((sum, item) => sum + getItemPrice(item) * item.quantity, 0);
-  // Only RCB jersey (id '6') supports customisation — other jerseys and caps do not
+  // RCB (id '6') and KKR (id '10') jerseys support customisation — other jerseys and caps do not
   const jerseyItems = cart
-    .filter(i => i.id === '6')
+    .filter(i => i.id === '6' || i.id === '10')
     .map(i => ({ key: i.key, name: i.name, quantity: i.quantity }));
 
   const handleWhatsApp = () => {

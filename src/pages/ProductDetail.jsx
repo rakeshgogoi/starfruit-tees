@@ -451,7 +451,7 @@ const ProductDetail = () => {
               )}
 
               {/* Customization note */}
-              {product.id === '6' && (
+              {(product.id === '6' || product.id === '10') && (
                 <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
                   <p className="font-bold text-yellow-800 text-sm mb-1">✍️ Want your name & number on the back?</p>
                   <p className="text-yellow-700 text-xs leading-relaxed">Full back customization available. Mention your preferred name & number when you place the order.</p>
@@ -609,7 +609,7 @@ const ProductDetail = () => {
             ? `${product?.name} (${v}) — Size ${selectedSize}`
             : `${product?.name} — Size ${selectedSize}`;
         })()}
-        jerseyItems={product?.id === '6' ? [{ key: String(product.id), name: product.name, quantity: 1 }] : []}
+        jerseyItems={(product?.id === '6' || product?.id === '10') ? [{ key: String(product.id), name: product.name, quantity: 1 }] : []}
         onSubmit={handleOrderFormSubmit}
         loading={formLoading}
         cartTotal={getOfferPrice(product?.category, product?.price, product?.discountRate) + getSizeSurcharge(selectedSize)}
