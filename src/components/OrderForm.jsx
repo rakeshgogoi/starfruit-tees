@@ -6,10 +6,12 @@ import { isMetroPincode, getDeliveryCharge, DELIVERY_METRO, DELIVERY_NON_METRO, 
 const expandJerseys = (items = []) => {
   const result = [];
   for (const item of items) {
+    const productId = String(item.key).split('-')[0];
     for (let i = 0; i < item.quantity; i++) {
       result.push({
         key: `${item.key}-${i}`,
         label: item.quantity > 1 ? `${item.name} #${i + 1}` : item.name,
+        productId,
         jerseyName: '',
         jerseyNumber: '',
       });
@@ -17,6 +19,10 @@ const expandJerseys = (items = []) => {
   }
   return result;
 };
+
+/** Per-team placeholder hints for the jersey customisation inputs */
+const NAME_PLACEHOLDER_BY_PRODUCT = { '6': 'e.g. VIRAT', '10': 'e.g. NARINE' };
+const NUMBER_PLACEHOLDER_BY_PRODUCT = { '6': 'e.g. 18', '10': 'e.g. 74' };
 
 const INITIAL = {
   name: '', phone: '', email: '',
@@ -286,7 +292,7 @@ export default function OrderForm({ isOpen, onClose, productName, jerseyItems = 
                             type="text"
                             value={c.jerseyName}
                             onChange={e => updateCustomisation(c.key, 'jerseyName', e.target.value.toUpperCase())}
-                            placeholder="e.g. VIRAT"
+                            placeholder={NAME_PLACEHOLDER_BY_PRODUCT[c.productId] || 'e.g. VIRAT'}
                             maxLength={15}
                             className={`w-full px-4 py-2.5 border rounded-lg text-sm font-bold uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-yellow-400 ${errors[`${c.key}_jerseyName`] ? 'border-red-400 bg-red-50' : 'border-yellow-300 bg-white'}`}
                           />
@@ -300,7 +306,7 @@ export default function OrderForm({ isOpen, onClose, productName, jerseyItems = 
                             type="text"
                             value={c.jerseyNumber}
                             onChange={e => updateCustomisation(c.key, 'jerseyNumber', e.target.value.replace(/\D/g, '').slice(0, 2))}
-                            placeholder="e.g. 18"
+                            placeholder={NUMBER_PLACEHOLDER_BY_PRODUCT[c.productId] || 'e.g. 18'}
                             maxLength={2}
                             className={`w-full px-4 py-2.5 border rounded-lg text-sm font-bold focus:outline-none focus:ring-2 focus:ring-yellow-400 ${errors[`${c.key}_jerseyNumber`] ? 'border-red-400 bg-red-50' : 'border-yellow-300 bg-white'}`}
                           />
