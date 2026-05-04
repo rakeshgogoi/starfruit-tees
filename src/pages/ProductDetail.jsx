@@ -559,7 +559,7 @@ const ProductDetail = () => {
                             price: '₹269',
                             category: 'Accessories',
                             variants: [{ name: 'Default', images: [cap.image] }],
-                          }, 0);
+                          }, 0, 1, 'One Size');
                           setCapAdded(cap.id);
                           setTimeout(() => setCapAdded(null), 2000);
                         }}

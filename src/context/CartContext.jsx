@@ -35,6 +35,10 @@ export const CartProvider = ({ children }) => {
   };
 
   const addToCart = (product, variantIndex = 0, quantity = 1, size = '') => {
+    if (!size) {
+      console.warn(`addToCart blocked: size is required for ${product?.id}`);
+      return false;
+    }
     const variant = product.variants?.[variantIndex];
     const key = `${product.id}-${variantIndex}-${size}`;
 
